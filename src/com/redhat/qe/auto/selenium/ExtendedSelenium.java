@@ -1,0 +1,264 @@
+package com.redhat.qe.auto.selenium;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.text.DateFormat;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
+
+import com.thoughtworks.selenium.CommandProcessor;
+import com.thoughtworks.selenium.DefaultSelenium;
+
+/**
+ * This class extends the DefaultSelenium functionality.  It 
+ * provides logging of UI actions (via java standard logging),
+ * and some convenience methods.
+ * @author jweiss
+ *
+ */
+public class ExtendedSelenium extends DefaultSelenium implements IScreenCapture {
+
+	private static ExtendedSelenium instance = null;
+	
+	private static Logger log = Logger.getLogger(ExtendedSelenium.class.getName());
+	private static File screenshotDir = null;
+	private static final DecimalFormat numFormat = new DecimalFormat("##0.#");
+	protected static final String DEFAULTTIMEOUT = "60000";
+
+	// load the log manager settings
+	/*static {
+		try {
+			String autoSubdir = System.getProperty("auto.subdir", "");
+			String fn = System.getProperty("user.dir") + File.separator + autoSubdir + File.separator + "log.properties";
+			LogManager.getLogManager().readConfiguration(new FileInputStream(fn));
+			log.fine("Loaded logger configuration.");
+		} catch (Exception e) {
+			System.err.println("Failed to load log settings.");
+			log.log(Level.WARNING,
+					"Unable to read logging settings.  Keeping default.", e);
+		}
+	}*/
+
+	public ExtendedSelenium(CommandProcessor processor) {
+		super(processor);
+
+	}
+
+	public ExtendedSelenium(String serverHost, int serverPort,
+			String browserStartCommand, String browserURL) {
+		super(serverHost, serverPort, browserStartCommand, browserURL);
+	}
+
+	@Override
+	public void start() {
+		super.start();
+		log.info("Selenium started.");
+
+		// TODO this is ugly
+		TestNGListener.setScreenCaptureUtility(this);
+		
+		windowMaximize();
+	}
+	
+
+	@Override
+	public void stop() {
+		super.stop();
+		log.info("Selenium stopped.");
+
+	}
+	
+	
+
+	public void clickAndWait(String locator) {
+		clickAndWait(locator, "60000", true);
+	}
+	
+
+	public void clickAndWait(String locator, String timeout) {
+		clickAndWait(locator, timeout, true);
+	}
+
+	public void clickAndWait(String locator, String timeout, boolean highlight) {
+		click(locator, highlight);
+		long start = System.currentTimeMillis();
+		waitForPageToLoad(timeout);
+		Double waitedInSecs = ((System.currentTimeMillis() - start)) / 1000.0;
+		
+		log.finer("Waited " + numFormat.format(waitedInSecs) + "s for page to load.");
+	}
+	
+
+	/**
+	 * @param locator
+	 * @param highlight - if true, highlight the element for a fraction of a second before clicking it.
+	 *   This makes it easier to see what selenium is doing "live".
+	 */
+	public void click(String locator, boolean highlight) {
+		if (highlight)
+			highlight(locator);
+		super.click(locator);
+		log.log(MyLevel.ACTION, "Clicked on locator: " + locator);
+
+	}
+
+	@Override
+	public void click(String locator) {
+		click(locator, true);
+	}
+	
+	
+	/**
+	 * Waits for an element to appear on the page, then clicks it.  This method is useful for interacting with 
+	 * elements that are created by AJAX calls.  You should be reasonably sure that the element will in fact appear,
+	 * otherwise the execution will not continue until the timeout is hit (and then an exception will be thrown).
+	 * @param locator A locator for the element to click on when it appears
+	 * @param timeout How long to wait for the element to appear before timing out and throwing an exception
+	 */
+	public void waitAndClick(String locator, String timeout){
+		super.waitForCondition("selenium.isElementPresent('" + locator + "');", timeout);
+		click(locator);
+	}
+
+	/**
+	 * Similar to waitAndClick-  waits for an element to appear on the page, then clicks it, then waits for the page
+	 * to load. 
+	 * @param locator A locator for the element to click on when it appears
+	 * @param timeout1 How long to wait for the element to appear before timing out and throwing an exception
+	 * @param timeout2 How long to wait for the page to load after clicking the element.
+	 */
+	public void waitAndClickAndWait(String locator, String timeout1, String timeout2){
+		super.waitForCondition("selenium.isElementPresent('" + locator + "');", timeout1);
+		clickAndWait(locator, timeout2);
+	}
+	
+	@Override
+	public void type(String locator, String value) {
+		highlight(locator);
+		super.type(locator, value);
+		log.log(MyLevel.ACTION, "Typed '" + value + "' into textbox '"
+				+ locator + "'");
+	}
+	
+	public void setText(String locator, String value){
+		type(locator, value);
+	}
+	
+	
+
+	@Override
+	public void open(String url) {
+		super.open(url);
+		log.log(MyLevel.ACTION, "Opened URL '" + url + "'.");
+	}
+
+	
+	
+	@Override
+	public void check(String locator) {
+		super.check(locator);
+		log.log(MyLevel.ACTION, "Checked checkbox '"
+				+ locator + "'");
+	}
+	
+	
+
+	@Override
+	public void select(String selectLocator, String optionLocator) {
+		super.select(selectLocator, optionLocator);
+		log.log(MyLevel.ACTION, "Selected item '"
+				+ optionLocator + "' in list '" + selectLocator + "'.");
+	}
+	
+
+	@Override
+	public void uncheck(String locator) {
+		super.uncheck(locator);
+		log.log(MyLevel.ACTION, "Unchecked checkbox '"
+				+ locator + "'");
+	}
+	
+	@Override
+	public boolean isElementPresent(String element){
+		if(super.isElementPresent(element)){
+		log.fine("Found element: "+element);
+		highlight(element);
+		return true;
+		}
+		else{
+			log.fine(" Did not find element: '"+ element+"'");
+			return false;
+		}
+	}
+	
+	@Override
+	public boolean isTextPresent(String txt){
+		if(super.isTextPresent(txt)){
+		log.fine("Success, Found text: '"+txt+"'");
+		//sel.highlight(txt);
+		return true;
+		}
+		else{
+			log.fine("Did not find text: '"+ txt+"'");
+			return false;
+		}
+	}
+	
+	public void goBack(){
+		super.goBack();
+		log.log(MyLevel.ACTION, "Clicked Browser Back Button");
+		waitForPageToLoad(DEFAULTTIMEOUT);
+	}
+
+
+	public void screenCapture() throws Exception {
+		if (screenshotDir == null) {
+			String dirName = System.getProperty("user.dir") + File.separator
+					+ "screenshots";
+			screenshotDir = new File(dirName);
+		}
+		if (!(screenshotDir.exists() && screenshotDir.isDirectory())) {
+			screenshotDir.mkdirs();
+		}
+		DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd-HHmmssS");
+
+		Date rightNow = new Date();
+		String outFileName = dateFormat.format(rightNow) + ".png";
+		try {
+			super.captureScreenshot(screenshotDir.getCanonicalPath()
+					+ File.separator + outFileName);
+		}
+		catch(Exception e ){
+			//if this failed, try the temp dir
+			super.captureScreenshot("/tmp"
+					+ File.separator + outFileName);
+		}
+	}
+
+	public static ExtendedSelenium getInstance(){
+		if (instance == null) throw new NullPointerException("Selenium instance not set yet.");
+		return instance;
+	}
+	
+	public static ExtendedSelenium newInstance(String serverHost, int serverPort, String browserStartCommand, String browserURL){
+		instance = new ExtendedSelenium(serverHost, serverPort, browserStartCommand, browserURL);
+		return instance;
+	}
+	
+	// custom logging level for java logging, to log clicks
+	public static class MyLevel extends Level {
+		static final long serialVersionUID = 3945372834L;
+		// Create the new level
+		public static final Level ACTION = new MyLevel("ACTION", Level.INFO
+				.intValue() + 1);
+
+		public MyLevel(String name, int value) {
+			super(name, value);
+		}
+	}
+
+}
