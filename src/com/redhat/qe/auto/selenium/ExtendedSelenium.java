@@ -27,10 +27,10 @@ public class ExtendedSelenium extends DefaultSelenium implements IScreenCapture 
 	private static Logger log = Logger.getLogger(ExtendedSelenium.class.getName());
 	private static File screenshotDir = null;
 	private static final DecimalFormat numFormat = new DecimalFormat("##0.#");
-	protected static final String DEFAULTTIMEOUT = "60000";
+	protected static final String DEFAULT_WAITFORPAGE_TIMEOUT = "60000";
 
 	// load the log manager settings
-	/*static {
+	static {
 		try {
 			String autoSubdir = System.getProperty("auto.subdir", "");
 			String fn = System.getProperty("user.dir") + File.separator + autoSubdir + File.separator + "log.properties";
@@ -41,7 +41,7 @@ public class ExtendedSelenium extends DefaultSelenium implements IScreenCapture 
 			log.log(Level.WARNING,
 					"Unable to read logging settings.  Keeping default.", e);
 		}
-	}*/
+	}
 
 	public ExtendedSelenium(CommandProcessor processor) {
 		super(processor);
@@ -75,7 +75,7 @@ public class ExtendedSelenium extends DefaultSelenium implements IScreenCapture 
 	
 
 	public void clickAndWait(String locator) {
-		clickAndWait(locator, "60000", true);
+		clickAndWait(locator, DEFAULT_WAITFORPAGE_TIMEOUT, true);
 	}
 	
 
@@ -85,14 +85,23 @@ public class ExtendedSelenium extends DefaultSelenium implements IScreenCapture 
 
 	public void clickAndWait(String locator, String timeout, boolean highlight) {
 		click(locator, highlight);
-		long start = System.currentTimeMillis();
 		waitForPageToLoad(timeout);
+	}
+	
+	public void selectAndWait(String selectLocator, String optionLocator){
+		select(selectLocator, optionLocator);
+		waitForPageToLoad(DEFAULT_WAITFORPAGE_TIMEOUT);
+	}
+	
+	@Override
+	public void waitForPageToLoad(String timeout){
+		long start = System.currentTimeMillis();
+		super.waitForPageToLoad(timeout);
 		Double waitedInSecs = ((System.currentTimeMillis() - start)) / 1000.0;
 		
 		log.finer("Waited " + numFormat.format(waitedInSecs) + "s for page to load.");
-	}
-	
 
+	}
 	/**
 	 * @param locator
 	 * @param highlight - if true, highlight the element for a fraction of a second before clicking it.
@@ -136,6 +145,10 @@ public class ExtendedSelenium extends DefaultSelenium implements IScreenCapture 
 		clickAndWait(locator, timeout2);
 	}
 	
+	public void waitAndClickAndWait(String locator, String timeout1){
+		waitAndClickAndWait(locator, timeout1, DEFAULT_WAITFORPAGE_TIMEOUT);
+	}
+	
 	@Override
 	public void type(String locator, String value) {
 		highlight(locator);
@@ -160,12 +173,16 @@ public class ExtendedSelenium extends DefaultSelenium implements IScreenCapture 
 	
 	@Override
 	public void check(String locator) {
-		super.check(locator);
+		checkUncheck(locator, true);
 		log.log(MyLevel.ACTION, "Checked checkbox '"
 				+ locator + "'");
 	}
 	
-	
+	protected void checkUncheck(String locator, boolean check){
+		if (isChecked(locator) != check) super.click(locator);
+		else log.log(Level.FINE, "Checkbox '"
+				+ locator + "' is already " + (check ? "checked.": "unchecked."));
+	}
 
 	@Override
 	public void select(String selectLocator, String optionLocator) {
@@ -177,7 +194,7 @@ public class ExtendedSelenium extends DefaultSelenium implements IScreenCapture 
 
 	@Override
 	public void uncheck(String locator) {
-		super.uncheck(locator);
+		checkUncheck(locator, false);
 		log.log(MyLevel.ACTION, "Unchecked checkbox '"
 				+ locator + "'");
 	}
@@ -211,9 +228,8 @@ public class ExtendedSelenium extends DefaultSelenium implements IScreenCapture 
 	public void goBack(){
 		super.goBack();
 		log.log(MyLevel.ACTION, "Clicked Browser Back Button");
-		waitForPageToLoad(DEFAULTTIMEOUT);
+		waitForPageToLoad(DEFAULT_WAITFORPAGE_TIMEOUT);
 	}
-
 
 	public void screenCapture() throws Exception {
 		if (screenshotDir == null) {
