@@ -30,7 +30,7 @@ public class ExtendedSelenium extends DefaultSelenium implements IScreenCapture 
 	protected static final String DEFAULT_WAITFORPAGE_TIMEOUT = "60000";
 
 	// load the log manager settings
-	static {
+	/*static {
 		try {
 			String autoSubdir = System.getProperty("auto.subdir", "");
 			String fn = System.getProperty("user.dir") + File.separator + autoSubdir + File.separator + "log.properties";
@@ -41,7 +41,7 @@ public class ExtendedSelenium extends DefaultSelenium implements IScreenCapture 
 			log.log(Level.WARNING,
 					"Unable to read logging settings.  Keeping default.", e);
 		}
-	}
+	}*/
 
 	public ExtendedSelenium(CommandProcessor processor) {
 		super(processor);
