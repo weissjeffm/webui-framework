@@ -29,20 +29,6 @@ public class ExtendedSelenium extends DefaultSelenium implements IScreenCapture 
 	private static final DecimalFormat numFormat = new DecimalFormat("##0.#");
 	protected static final String DEFAULT_WAITFORPAGE_TIMEOUT = "60000";
 
-	// load the log manager settings
-	/*static {
-		try {
-			String autoSubdir = System.getProperty("auto.subdir", "");
-			String fn = System.getProperty("user.dir") + File.separator + autoSubdir + File.separator + "log.properties";
-			LogManager.getLogManager().readConfiguration(new FileInputStream(fn));
-			log.fine("Loaded logger configuration.");
-		} catch (Exception e) {
-			System.err.println("Failed to load log settings.");
-			log.log(Level.WARNING,
-					"Unable to read logging settings.  Keeping default.", e);
-		}
-	}*/
-
 	public ExtendedSelenium(CommandProcessor processor) {
 		super(processor);
 
@@ -225,12 +211,30 @@ public class ExtendedSelenium extends DefaultSelenium implements IScreenCapture 
 		}
 	}
 	
+	@Override
 	public void goBack(){
 		super.goBack();
 		log.log(MyLevel.ACTION, "Clicked Browser Back Button");
 		waitForPageToLoad(DEFAULT_WAITFORPAGE_TIMEOUT);
 	}
+	
+	@Override
+	public void refresh(){
+		super.refresh();
+		log.log(MyLevel.ACTION, "Clicked Browser Refresh Button");
+		waitForPageToLoad(DEFAULT_WAITFORPAGE_TIMEOUT);
+	}
 
+	public void sleep(long millis){
+		try {
+			Thread.sleep(millis);
+		}
+		catch(InterruptedException ie){
+			log.log(Level.WARNING, "Sleep interrupted!", ie);
+		}
+	}
+	
+	
 	public void screenCapture() throws Exception {
 		if (screenshotDir == null) {
 			String dirName = System.getProperty("user.dir") + File.separator
@@ -254,6 +258,8 @@ public class ExtendedSelenium extends DefaultSelenium implements IScreenCapture 
 					+ File.separator + outFileName);
 		}
 	}
+	
+	
 
 	public static ExtendedSelenium getInstance(){
 		if (instance == null) throw new NullPointerException("Selenium instance not set yet.");
