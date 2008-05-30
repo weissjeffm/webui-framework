@@ -224,6 +224,35 @@ public class ExtendedSelenium extends DefaultSelenium implements IScreenCapture 
 		log.log(MyLevel.ACTION, "Clicked Browser Refresh Button");
 		waitForPageToLoad(DEFAULT_WAITFORPAGE_TIMEOUT);
 	}
+	
+	
+
+	@Override
+	public String getAlert() {
+		String text = super.getAlert();
+		log.log(MyLevel.ACTION, "Clicked OK on alert dialog: " + text);
+		return text;
+	}
+
+	@Override
+	public String getConfirmation() {
+		String text = super.getConfirmation();
+		log.log(MyLevel.ACTION, "Clicked OK on confirmation dialog: " + text);
+		return text;
+	}
+
+	@Override
+	public String getPrompt() {
+		String text = super.getPrompt();
+		log.log(MyLevel.ACTION, "Clicked OK on prompt dialog: " + text);
+		return text;
+	}
+	
+	@Override
+	public void answerOnNextPrompt(String answer){
+		super.answerOnNextPrompt(answer);
+		log.log(MyLevel.ACTION, "Answering prompt with: " + answer);
+	}
 
 	public void sleep(long millis){
 		try {
