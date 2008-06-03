@@ -1,13 +1,11 @@
 package com.redhat.qe.auto.selenium;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.logging.Level;
-import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 import com.thoughtworks.selenium.CommandProcessor;
