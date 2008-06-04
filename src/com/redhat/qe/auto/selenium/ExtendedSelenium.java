@@ -133,6 +133,11 @@ public class ExtendedSelenium extends DefaultSelenium implements IScreenCapture 
 		waitAndClickAndWait(locator, timeout1, DEFAULT_WAITFORPAGE_TIMEOUT);
 	}
 	
+	public void waitForElement(String locator, String timeout){
+		super.waitForCondition("selenium.isElementPresent('" + locator + "');", timeout);
+
+	}
+	
 	@Override
 	public void type(String locator, String value) {
 		highlight(locator);
