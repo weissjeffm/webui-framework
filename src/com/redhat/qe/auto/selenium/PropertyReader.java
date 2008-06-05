@@ -17,15 +17,16 @@ public class PropertyReader extends Properties {
 		String path = "/"
 				+ System.getProperty("harness.environment", "localhost")
 				+ "-settings.properties";
+		String mydir = System.getProperty("user.dir");
 		InputStream in = null;
 		try {
 			// try class path
 			// in = HarnessConfiguration.class.getResourceAsStream(path);
 			if (in == null) {
-				// try relative file path
+				//FIXME //wes needs to change this.. on hudson side too.
 				File fileBVT = new File("/home/rhnuser/automated-testing"
-						+ path);
-				File file = new File("src/main/resources" + path);
+						+ path);			
+				File file = new File(mydir + path);
 				if (fileBVT.exists()) {
 					in = new FileInputStream(fileBVT);
 					System.out.println("found BVT properties");
