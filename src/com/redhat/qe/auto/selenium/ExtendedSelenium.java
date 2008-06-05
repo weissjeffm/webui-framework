@@ -187,7 +187,11 @@ public class ExtendedSelenium extends DefaultSelenium implements IScreenCapture 
 		log.log(MyLevel.ACTION, "Unchecked checkbox '"
 				+ locator + "'");
 	}
-	
+	/*FIXME
+	 * Need to add an option here to enable/disable logging w/ a boolean.  Not doing right now
+	 * because a test is running.. and I can :(
+	 * @see com.thoughtworks.selenium.DefaultSelenium#isElementPresent(java.lang.String)
+	 */
 	@Override
 	public boolean isElementPresent(String element){
 		if(super.isElementPresent(element)){
