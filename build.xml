@@ -18,13 +18,7 @@
 
   <property name="test.lib.dir"
                 value="${basedir}/lib" />
-  <property name="firefox" value="*chrome" />
-  <property name="base.url"
-                value="http://rlx-2-04.rhndev.redhat.com" />
-  <property name="acceptance.test.list.dir"
-                value="/src/test/java/com/redhat/rhn/harness/satellite51" />
-  <property name="acceptance.test.report.dir"
-                value="${functional.test.dir}" />
+
 
 
 
