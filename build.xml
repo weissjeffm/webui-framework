@@ -19,6 +19,17 @@
   <property name="test.lib.dir"
                 value="${basedir}/lib" />
 
+	 <target name="test" depends="compile-test">
+		   <delete dir="${report.dir}" />
+	           <mkdir dir="${report.dir}" />
+
+	            <junit>
+	              <formatter type="xml" />
+		      <classpath refid="classpath.test" />
+		      <formatter type="brief" usefile="false" />
+		   
+		    </junit>
+		  </target>
 
 
 
