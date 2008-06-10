@@ -218,6 +218,20 @@ public class ExtendedSelenium extends DefaultSelenium implements IScreenCapture 
 		}
 	}
 	
+	public boolean isTextPresent(String txt, boolean logResults){
+		if(super.isTextPresent(txt)){
+			if(logResults){
+			log.fine("Success, Found text: '"+txt+"'");
+			}
+			//sel.highlight(txt);
+			return true;
+			}
+			else{
+				log.fine("Did not find text: '"+ txt+"'");
+				return false;
+			}
+	}
+	
 	@Override
 	public void goBack(){
 		super.goBack();
