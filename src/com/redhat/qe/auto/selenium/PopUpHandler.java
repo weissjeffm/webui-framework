@@ -69,7 +69,7 @@ public class PopUpHandler implements Runnable{
 				}
 			}
 			else{
-				log.info("pop up handler disabled");
+				log.finest("pop up handler disabled");
 			}
 		}
 		
