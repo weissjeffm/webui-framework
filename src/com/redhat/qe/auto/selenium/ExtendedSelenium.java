@@ -40,7 +40,7 @@ public class ExtendedSelenium extends DefaultSelenium implements IScreenCapture 
 	@Override
 	public void start() {
 		super.start();
-		log.fine("Selenium started.");
+		log.finest("Selenium started.");
 
 		// TODO this is ugly
 		TestNGListener.setScreenCaptureUtility(this);
@@ -52,7 +52,7 @@ public class ExtendedSelenium extends DefaultSelenium implements IScreenCapture 
 	@Override
 	public void stop() {
 		super.stop();
-		log.fine("Selenium stopped.");
+		log.finest("Selenium stopped.");
 
 	}
 	
@@ -96,12 +96,28 @@ public class ExtendedSelenium extends DefaultSelenium implements IScreenCapture 
 			highlight(locator);
 		super.click(locator);
 		log.log(MyLevel.ACTION, "Clicked on locator: " + locator);
-
 	}
 
 	@Override
 	public void click(String locator) {
 		click(locator, true);
+	}
+	
+	/**
+	 * @param locator
+	 * @param highlight - if true, highlight the element for a fraction of a second before clicking it.
+	 *   This makes it easier to see what selenium is doing "live".
+	 */
+	public void click(String locator, String humanReadableName,boolean highlight) {
+		if (highlight)
+			highlight(locator);
+		super.click(locator);
+		log.log(MyLevel.ACTION, "Clicked on locator: " + humanReadableName);
+	}
+
+
+	public void click(String locator, String humanReadableName) {
+		click(locator,humanReadableName, true);
 	}
 	
 	
@@ -216,15 +232,26 @@ public class ExtendedSelenium extends DefaultSelenium implements IScreenCapture 
 		}
 	}
 	
-	@Override
-	public boolean isTextPresent(String txt){
-		if(super.isTextPresent(txt)){
-		log.log(MyLevel.ACTION,"Success, Found text: '"+txt+"'");
-		//sel.highlight(txt);
+	public boolean isElementPresent(String element,boolean logResults){
+		if(super.isElementPresent(element)){
+		if(logResults)	
+			log.log(MyLevel.ACTION,"Found element: "+element);
+		highlight(element);
 		return true;
 		}
 		else{
-			log.fine("Did not find text: '"+ txt+"'");
+			if(logResults)
+				log.fine(" Did not find element: '"+ element+"'");
+			return false;
+		}
+	}
+	
+	@Override
+	public boolean isTextPresent(String txt){
+		if(super.isTextPresent(txt)){
+		return true;
+		}
+		else{
 			return false;
 		}
 	}
