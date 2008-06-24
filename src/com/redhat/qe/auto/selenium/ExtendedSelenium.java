@@ -40,7 +40,7 @@ public class ExtendedSelenium extends DefaultSelenium implements IScreenCapture 
 	@Override
 	public void start() {
 		super.start();
-		log.info("Selenium started.");
+		log.fine("Selenium started.");
 
 		// TODO this is ugly
 		TestNGListener.setScreenCaptureUtility(this);
@@ -52,7 +52,7 @@ public class ExtendedSelenium extends DefaultSelenium implements IScreenCapture 
 	@Override
 	public void stop() {
 		super.stop();
-		log.info("Selenium stopped.");
+		log.fine("Selenium stopped.");
 
 	}
 	
@@ -146,10 +146,21 @@ public class ExtendedSelenium extends DefaultSelenium implements IScreenCapture 
 				+ locator + "'");
 	}
 	
+	
+	public void type(String locator,String humanReadableName, String value) {
+		highlight(locator);
+		super.type(locator, value);
+		log.log(MyLevel.ACTION, "Typed '" + value + "' into textbox '"
+				+ humanReadableName + "'");
+	}
+	
 	public void setText(String locator, String value){
 		type(locator, value);
 	}
 	
+	public void setText(String locator, String humanReadableName,String value){
+		type(locator,humanReadableName, value);
+	}
 	
 
 	@Override
@@ -195,7 +206,7 @@ public class ExtendedSelenium extends DefaultSelenium implements IScreenCapture 
 	@Override
 	public boolean isElementPresent(String element){
 		if(super.isElementPresent(element)){
-		log.fine("Found element: "+element);
+		log.log(MyLevel.ACTION,"Found element: "+element);
 		highlight(element);
 		return true;
 		}
@@ -208,7 +219,7 @@ public class ExtendedSelenium extends DefaultSelenium implements IScreenCapture 
 	@Override
 	public boolean isTextPresent(String txt){
 		if(super.isTextPresent(txt)){
-		log.fine("Success, Found text: '"+txt+"'");
+		log.log(MyLevel.ACTION,"Success, Found text: '"+txt+"'");
 		//sel.highlight(txt);
 		return true;
 		}
@@ -221,13 +232,13 @@ public class ExtendedSelenium extends DefaultSelenium implements IScreenCapture 
 	public boolean isTextPresent(String txt, boolean logResults){
 		if(super.isTextPresent(txt)){
 			if(logResults){
-			log.fine("Success, Found text: '"+txt+"'");
+			log.log(MyLevel.ACTION,"Success, Found text: '"+txt+"'");
 			}
 			//sel.highlight(txt);
 			return true;
 			}
 			else{
-				log.fine("Did not find text: '"+ txt+"'");
+				log.log(MyLevel.ACTION,"Did not find text: '"+ txt+"'");
 				return false;
 			}
 	}
