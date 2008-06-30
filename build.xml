@@ -1,0 +1,26 @@
+<project name="Framework" default="compile" basedir=".">
+
+	<!--
+	<property name="framework.build.dir" location="output/classes" /> 
+	-->
+	<property name="framework.src.dir" location="src" />
+	<property name="framework.lib.dir" location="lib" />
+	<path id="lib.cp">
+		<fileset dir="${framework.lib.dir}">
+			<include name="*.jar" />
+		</fileset>
+	</path>
+
+	<target name="compile">
+		<echo message="Compiling webui-framework..." />
+		
+		<mkdir dir="${framework.build.dir}" />
+
+		<javac srcdir="${framework.src.dir}" destdir="${framework.build.dir}"
+			classpathref="lib.cp" debug="on" />
+					  
+
+	</target>
+
+	
+</project>

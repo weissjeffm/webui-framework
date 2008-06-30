@@ -26,7 +26,8 @@ public class ExtendedSelenium extends DefaultSelenium implements IScreenCapture 
 	private static File screenshotDir = null;
 	private static final DecimalFormat numFormat = new DecimalFormat("##0.#");
 	protected static final String DEFAULT_WAITFORPAGE_TIMEOUT = "60000";
-
+	protected static String WAITFORPAGE_TIMEOUT = DEFAULT_WAITFORPAGE_TIMEOUT;
+	
 	public ExtendedSelenium(CommandProcessor processor) {
 		super(processor);
 
@@ -59,7 +60,7 @@ public class ExtendedSelenium extends DefaultSelenium implements IScreenCapture 
 	
 
 	public void clickAndWait(String locator) {
-		clickAndWait(locator, DEFAULT_WAITFORPAGE_TIMEOUT, true);
+		clickAndWait(locator, WAITFORPAGE_TIMEOUT, true);
 	}
 	
 
@@ -74,7 +75,7 @@ public class ExtendedSelenium extends DefaultSelenium implements IScreenCapture 
 	
 	public void selectAndWait(String selectLocator, String optionLocator){
 		select(selectLocator, optionLocator);
-		waitForPageToLoad(DEFAULT_WAITFORPAGE_TIMEOUT);
+		waitForPageToLoad(WAITFORPAGE_TIMEOUT);
 	}
 	
 	@Override
@@ -146,7 +147,7 @@ public class ExtendedSelenium extends DefaultSelenium implements IScreenCapture 
 	}
 	
 	public void waitAndClickAndWait(String locator, String timeout1){
-		waitAndClickAndWait(locator, timeout1, DEFAULT_WAITFORPAGE_TIMEOUT);
+		waitAndClickAndWait(locator, timeout1, WAITFORPAGE_TIMEOUT);
 	}
 	
 	public void waitForElement(String locator, String timeout){
@@ -274,14 +275,14 @@ public class ExtendedSelenium extends DefaultSelenium implements IScreenCapture 
 	public void goBack(){
 		super.goBack();
 		log.log(MyLevel.ACTION, "Clicked Browser Back Button");
-		waitForPageToLoad(DEFAULT_WAITFORPAGE_TIMEOUT);
+		waitForPageToLoad(WAITFORPAGE_TIMEOUT);
 	}
 	
 	@Override
 	public void refresh(){
 		super.refresh();
 		log.log(MyLevel.ACTION, "Clicked Browser Refresh Button");
-		waitForPageToLoad(DEFAULT_WAITFORPAGE_TIMEOUT);
+		waitForPageToLoad(WAITFORPAGE_TIMEOUT);
 	}
 	
 	
@@ -311,6 +312,12 @@ public class ExtendedSelenium extends DefaultSelenium implements IScreenCapture 
 	public void answerOnNextPrompt(String answer){
 		super.answerOnNextPrompt(answer);
 		log.log(MyLevel.ACTION, "Answering prompt with: " + answer);
+	}
+	
+	@Override
+	public void setTimeout(String timeout){
+		super.setTimeout(timeout);
+		WAITFORPAGE_TIMEOUT = timeout;
 	}
 
 	public void sleep(long millis){
