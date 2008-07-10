@@ -151,7 +151,7 @@ public class ExtendedSelenium extends DefaultSelenium implements IScreenCapture 
 	}
 	
 	public void waitForElement(String locator, String timeout){
-		super.waitForCondition("selenium.isElementPresent('" + locator + "');", timeout);
+		super.waitForCondition("selenium.isElementPresent(\"" + locator + "\");", timeout);
 
 	}
 	
@@ -322,6 +322,7 @@ public class ExtendedSelenium extends DefaultSelenium implements IScreenCapture 
 
 	public void sleep(long millis){
 		try {
+			log.log(Level.INFO, "Sleeping for " + millis + "ms.");
 			Thread.sleep(millis);
 		}
 		catch(InterruptedException ie){
