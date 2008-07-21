@@ -151,6 +151,7 @@ public class ExtendedSelenium extends DefaultSelenium implements IScreenCapture 
 	}
 	
 	public void waitForElement(String locator, String timeout){
+		log.info("Waiting for element '" + locator  + "', with timeout of " + timeout + ".");
 		super.waitForCondition("selenium.isElementPresent(\"" + locator + "\");", timeout);
 
 	}

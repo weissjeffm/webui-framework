@@ -65,6 +65,12 @@ public class TestNGListener implements IResultListener {
 
 	
 	public void onConfigurationFailure(ITestResult result) {
+		try {
+			sc.screenCapture();
+		}
+		catch(Exception e){
+			log.log(Level.WARNING, "Unable to capture screenshot.", e);
+		}
 		log.log(Level.SEVERE, "Configuration Failed: " + result.getName(), result.getThrowable());
 		
 	}
