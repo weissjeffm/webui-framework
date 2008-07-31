@@ -45,6 +45,9 @@ public class TestNGListener implements IResultListener {
 		try {
 			sc.screenCapture();
 		}
+		catch(NullPointerException npe){
+			log.log(Level.WARNING, "Unable to capture screenshot, the capture utility has not been set up yet.");
+		}
 		catch(Exception e){
 			log.log(Level.WARNING, "Unable to capture screenshot.", e);
 		}
