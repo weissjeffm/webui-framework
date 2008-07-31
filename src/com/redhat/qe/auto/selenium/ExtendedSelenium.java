@@ -142,7 +142,7 @@ public class ExtendedSelenium extends DefaultSelenium implements IScreenCapture 
 	 * @param timeout2 How long to wait for the page to load after clicking the element.
 	 */
 	public void waitAndClickAndWait(String locator, String timeout1, String timeout2){
-		super.waitForCondition("selenium.isElementPresent('" + locator + "');", timeout1);
+		super.waitForCondition("selenium.isElementPresent(\"" + locator + "\");", timeout1);
 		clickAndWait(locator, timeout2);
 	}
 	
