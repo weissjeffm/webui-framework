@@ -5,6 +5,7 @@
 	-->
 	<property name="framework.src.dir" location="src" />
 	<property name="framework.lib.dir" location="lib" />
+	<property name="framework.build.dir" location="bin" />
 	<path id="lib.cp">
 		<fileset dir="${framework.lib.dir}">
 			<include name="*.jar" />
