@@ -130,7 +130,7 @@ public class ExtendedSelenium extends DefaultSelenium implements IScreenCapture 
 	 * @param timeout How long to wait for the element to appear before timing out and throwing an exception
 	 */
 	public void waitAndClick(String locator, String timeout){
-		super.waitForCondition("selenium.isElementPresent('" + locator + "');", timeout);
+		super.waitForCondition("selenium.isElementPresent(\"" + locator + "\");", timeout);
 		click(locator);
 	}
 
