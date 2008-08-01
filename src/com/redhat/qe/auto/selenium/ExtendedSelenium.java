@@ -133,7 +133,7 @@ public class ExtendedSelenium extends DefaultSelenium implements IScreenCapture 
 		super.waitForCondition("selenium.isElementPresent(\"" + locator + "\");", timeout);
 		click(locator);
 	}
-
+	
 	/**
 	 * Similar to waitAndClick-  waits for an element to appear on the page, then clicks it, then waits for the page
 	 * to load. 
