@@ -184,7 +184,7 @@ public class ExtendedSelenium extends DefaultSelenium implements IScreenCapture 
 	@Override
 	public void open(String url) {
 		super.open(url);
-		log.log(MyLevel.ACTION, "Opened URL '" + url + "'.");
+		log.log(MyLevel.ACTION, "Opened URL '" + url + "'.  Current location is " + getLocation() + " .");
 	}
 
 	
