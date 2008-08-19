@@ -209,6 +209,18 @@ public class ExtendedSelenium extends DefaultSelenium implements IScreenCapture 
 				+ optionLocator + "' in list '" + selectLocator + "'.");
 	}
 	
+	/**
+	 * Selects a list item by value.  To be used when a select list doesn't have any other 
+	 * good locators.  It's up to the
+	 * caller to make sure there isn't more than one select list on the page that contains 
+	 * the same value.
+	 * @param value  The value attribute of the Option.  This is not necessarily the same as what text 
+	 * appears in the browser.
+	 */
+	public void select(String value){
+		select("//select[option[@value='" + value + "']]", "value=" + value);
+	}
+	
 
 	@Override
 	public void uncheck(String locator) {
