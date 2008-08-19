@@ -75,6 +75,11 @@ public class ExtendedSelenium extends DefaultSelenium implements IScreenCapture 
 	
 	public void selectAndWait(String selectLocator, String optionLocator){
 		select(selectLocator, optionLocator);
+		waitForPageToLoad();
+	}
+	
+	
+	public void waitForPageToLoad(){
 		waitForPageToLoad(WAITFORPAGE_TIMEOUT);
 	}
 	
@@ -286,14 +291,14 @@ public class ExtendedSelenium extends DefaultSelenium implements IScreenCapture 
 	public void goBack(){
 		super.goBack();
 		log.log(MyLevel.ACTION, "Clicked Browser Back Button");
-		waitForPageToLoad(WAITFORPAGE_TIMEOUT);
+		waitForPageToLoad();
 	}
 	
 	@Override
 	public void refresh(){
 		super.refresh();
 		log.log(MyLevel.ACTION, "Clicked Browser Refresh Button");
-		waitForPageToLoad(WAITFORPAGE_TIMEOUT);
+		waitForPageToLoad();
 	}
 	
 	
