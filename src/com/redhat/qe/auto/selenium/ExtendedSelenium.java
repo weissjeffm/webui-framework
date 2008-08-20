@@ -80,7 +80,7 @@ public class ExtendedSelenium extends DefaultSelenium implements IScreenCapture 
 	
 	
 	public void waitForPageToLoad(){
-		waitForPageToLoad(WAITFORPAGE_TIMEOUT);
+		//waitForPageToLoad(WAITFORPAGE_TIMEOUT);
 	}
 	
 	@Override
