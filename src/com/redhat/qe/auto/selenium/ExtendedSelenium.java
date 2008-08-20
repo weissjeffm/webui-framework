@@ -85,11 +85,11 @@ public class ExtendedSelenium extends DefaultSelenium implements IScreenCapture 
 	
 	@Override
 	public void waitForPageToLoad(String timeout){
-		long start = System.currentTimeMillis();
-		super.waitForPageToLoad(timeout);
-		Double waitedInSecs = ((System.currentTimeMillis() - start)) / 1000.0;
+		//long start = System.currentTimeMillis();
+		//super.waitForPageToLoad(timeout);
+		//Double waitedInSecs = ((System.currentTimeMillis() - start)) / 1000.0;
 		
-		log.finer("Waited " + numFormat.format(waitedInSecs) + "s for page to load.");
+		//log.finer("Waited " + numFormat.format(waitedInSecs) + "s for page to load.");
 
 	}
 	/**
