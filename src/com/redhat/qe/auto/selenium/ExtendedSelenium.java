@@ -1,6 +1,8 @@
 package com.redhat.qe.auto.selenium;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -363,6 +365,10 @@ public class ExtendedSelenium extends DefaultSelenium implements IScreenCapture 
 		try {
 			super.captureScreenshot(screenshotDir.getCanonicalPath()
 					+ File.separator + outFileName);
+			BufferedWriter out = new BufferedWriter(new FileWriter(screenshotDir.getCanonicalPath()
+					 + File.separator + dateFormat.format(rightNow) + ".html"));
+			out.write(getHtmlSource());
+			out.close();
 		}
 		catch(Exception e ){
 			//if this failed, try the temp dir
