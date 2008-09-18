@@ -24,7 +24,7 @@ public class PropertyReader extends Properties {
 			// in = HarnessConfiguration.class.getResourceAsStream(path);
 			if (in == null) {
 				//FIXME //wes needs to change this.. on hudson side too.
-				File fileBVT = new File("/home/rhnuser/automated-testing"
+				File fileBVT = new File("/home/hudson/automated-testing"
 						+ path);			
 				File file = new File(mydir + path);
 				if (fileBVT.exists()) {
