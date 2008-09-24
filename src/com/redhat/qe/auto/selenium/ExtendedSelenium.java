@@ -55,6 +55,9 @@ public class ExtendedSelenium extends DefaultSelenium implements IScreenCapture 
 	@Override
 	public void stop() {
 		super.stop();
+		//added this as part of a fix to guarantee that only instance of selenium
+		//is running.  So be sure that there is only one browser session up at a time
+		killInstance();
 		log.finest("Selenium stopped.");
 
 	}
@@ -381,6 +384,11 @@ public class ExtendedSelenium extends DefaultSelenium implements IScreenCapture 
 
 	public static ExtendedSelenium getInstance(){
 		if (instance == null) throw new NullPointerException("Selenium instance not set yet.");
+		return instance;
+	}
+	
+	public static ExtendedSelenium killInstance(){
+		instance = null;//
 		return instance;
 	}
 	
