@@ -206,7 +206,7 @@ public class ExtendedSelenium extends DefaultSelenium implements IScreenCapture 
 				+ locator + "'");
 	}
 	
-	protected void checkUncheck(String locator, boolean check){
+	public void checkUncheck(String locator, boolean check){
 		if (isChecked(locator) != check) super.click(locator);
 		else log.log(Level.FINE, "Checkbox '"
 				+ locator + "' is already " + (check ? "checked.": "unchecked."));
