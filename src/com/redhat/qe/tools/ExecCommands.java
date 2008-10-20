@@ -1,8 +1,10 @@
 package com.redhat.qe.tools;
 
 import java.io.BufferedReader;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -10,7 +12,35 @@ import java.util.logging.Logger;
 public class ExecCommands {
 	private static Logger log = Logger.getLogger(ExecCommands.class.getName());
 
-
+	public String rcpAndExecuteViaRsh(String hostname, String command){
+		log.fine("RCP/RSH executing: " + command);
+		String output = "";
+		try{
+			FileOutputStream newFile = new FileOutputStream("/tmp/runFile");
+			PrintStream p = new PrintStream( newFile );
+			p.println(". /env.sh && " + command);
+			p.close();
+		} catch(IOException ioe){
+			System.out.println(ioe.toString());
+			log.info("Failed to RCP command to client machine");
+			return output;
+		}
+		try{
+			this.submitCommandToLocalWithReturn(true, "rcp /tmp/runFile", " root@"+hostname +":/tmp/");
+		} catch(IOException ioe){
+			log.info("command failed");
+			return output;
+		}
+		
+		try{
+			output = this.submitCommandToLocalWithReturn(true, "/usr/bin/rsh -l root " + hostname, "sh /tmp/runFile");
+		} catch(IOException ioe){
+			log.info("command failed");
+			return output;
+		}
+		return output;
+	}
+	
 	public void submitCommandToLocal(String command, String arguments) throws IOException{
 //		 Execute a command with an argument
 		String fullCommand;
@@ -106,7 +136,7 @@ public class ExecCommands {
 		String result ="";
 		String fullCommand;
         fullCommand = command + " " + arguments;
-        log.finest("Executing " + fullCommand);
+        log.fine("Executing " + fullCommand);
 
        Process child = Runtime.getRuntime().exec(fullCommand);
        //Process child = new ProcessBuilder().start();
@@ -120,15 +150,15 @@ public class ExecCommands {
        try {
     	   		if(showLogResults){
     	       	  while ((s2 = buffer2.readLine()) != null) {
-    	                 result=(s2);
-    	                 log.fine("Command Output: " + result);
+    	                 result+=(s2) + '\n';
+    	                 log.fine("Command Output: " + (s2));
     	               }
     	   		}
     	   		//Cant think of another way to log the while loop when I want to or not..
     	   		else{
     	   			while ((s2 = buffer2.readLine()) != null) {
-   	                 result=(s2);
-   	              log.finest("Error Output: " + result);
+   	                 result+=(s2) + '\n';
+   	              log.fine("Error Output: " + (s2));
     	   			}
     	   		}
 
@@ -136,15 +166,15 @@ public class ExecCommands {
     	   		if(showLogResults){
 		    	   while (((s = buffer.readLine()) != null))  {
 		           //result=("<li> Output: " + s);
-		    		 result=(s);
-		    		 log.fine("Output: " + result);
+		    		 result+=(s) + '\n';
+		    		 log.fine("Output: " + (s));
 		    	   	}
     	   		}
     	   		else{
     	   			while (((s = buffer.readLine()) != null))  {
     			           //result=("<li> Output: " + s);
-    			    		 result=(s);
-    			    		 log.finest("Output: " + result);
+    			    		 result+=(s) + '\n';
+    			    		 log.fine("Output: " + (s));
     	   					}
     	   			}
 
