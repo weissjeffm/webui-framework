@@ -29,6 +29,7 @@ public class ExtendedSelenium extends DefaultSelenium implements IScreenCapture 
 	private static final DecimalFormat numFormat = new DecimalFormat("##0.#");
 	protected static final String DEFAULT_WAITFORPAGE_TIMEOUT = "60000";
 	protected static String WAITFORPAGE_TIMEOUT = DEFAULT_WAITFORPAGE_TIMEOUT;
+	private DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd-HHmmssS");
 	
 	public ExtendedSelenium(CommandProcessor processor) {
 		super(processor);
@@ -361,23 +362,35 @@ public class ExtendedSelenium extends DefaultSelenium implements IScreenCapture 
 		if (!(screenshotDir.exists() && screenshotDir.isDirectory())) {
 			screenshotDir.mkdirs();
 		}
-		DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd-HHmmssS");
+		
 
 		Date rightNow = new Date();
 		String outFileName = dateFormat.format(rightNow) + ".png";
 		try {
+			writeHtmlOnError(screenshotDir);
 			super.captureScreenshot(screenshotDir.getCanonicalPath()
 					+ File.separator + outFileName);
-			BufferedWriter out = new BufferedWriter(new FileWriter(screenshotDir.getCanonicalPath()
-					 + File.separator + dateFormat.format(rightNow) + ".html"));
-			out.write(getHtmlSource());
-			out.close();
+			
 		}
 		catch(Exception e ){
+			log.log(Level.FINER, "Couldn't capture screenshot.", e);
 			//if this failed, try the temp dir
+			screenshotDir = new File("/tmp");
 			super.captureScreenshot("/tmp"
 					+ File.separator + outFileName);
+			//writeHtmlOnError(screenshotDir);
+			
 		}
+		
+	}
+	
+	protected void writeHtmlOnError(File dir) throws Exception{
+
+		Date rightNow = new Date();
+		BufferedWriter out = new BufferedWriter(new FileWriter(dir.getCanonicalPath()
+				 + File.separator + dateFormat.format(rightNow) + ".html"));
+		out.write(getHtmlSource());
+		out.close();
 	}
 	
 	
