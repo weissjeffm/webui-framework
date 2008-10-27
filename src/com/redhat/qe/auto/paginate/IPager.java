@@ -11,4 +11,6 @@ public interface IPager {
 	public int getTotalNumberOfPages();
 
 	public boolean isLastPage();
+	
+	public int getTotalItems();
 }
