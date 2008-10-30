@@ -360,7 +360,8 @@ public class ExtendedSelenium extends DefaultSelenium implements IScreenCapture 
 	}
 	
 	
-	public void screenCapture() throws Exception {
+	public String screenCapture() throws Exception {
+		String fullPathtoFile = null;
 		if (screenshotDir == null) {
 			String dirName = System.getProperty("user.dir") + File.separator
 					+ "screenshots";
@@ -377,6 +378,8 @@ public class ExtendedSelenium extends DefaultSelenium implements IScreenCapture 
 			writeHtmlOnError(screenshotDir);
 			super.captureScreenshot(screenshotDir.getCanonicalPath()
 					+ File.separator + outFileName);
+			//log.log(Level.FINE, "Captured ScreenShot to "+screenshotDir.getCanonicalPath()+ File.separator + outFileName);
+			fullPathtoFile = screenshotDir.getCanonicalPath()+ File.separator + outFileName;
 			
 		}
 		catch(Exception e ){
@@ -385,9 +388,12 @@ public class ExtendedSelenium extends DefaultSelenium implements IScreenCapture 
 			screenshotDir = new File("/tmp");
 			super.captureScreenshot("/tmp"
 					+ File.separator + outFileName);
-			//writeHtmlOnError(screenshotDir);
+			//log.log(Level.FINE, "Captured ScreenShot to "+"/tmp"+ File.separator + outFileName);
+			fullPathtoFile = "/tmp"+ File.separator + outFileName;
 			
+			//writeHtmlOnError(screenshotDir);		
 		}
+		return fullPathtoFile;
 		
 	}
 	
