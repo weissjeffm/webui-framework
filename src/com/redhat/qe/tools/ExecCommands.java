@@ -45,7 +45,7 @@ public class ExecCommands {
 //		 Execute a command with an argument
 		String fullCommand;
         fullCommand = command + " " + arguments;
-        log.info("Executing " + fullCommand);
+        log.finer("Executing " + fullCommand);
         Process child = Runtime.getRuntime().exec(fullCommand);
         //Process child = new ProcessBuilder().start();
         BufferedReader buffer = new BufferedReader(
@@ -57,14 +57,14 @@ public class ExecCommands {
         String s2 = null;
         try {
           while (((s = buffer.readLine()) != null) && ((s2 = buffer2.readLine()) == null)) {
-        	  log.info("Output: " + s);
+        	  log.finer("Output: " + s);
           }
 
           if(s2 != null){
         	  log.info("Error Encountered");
         	  log.info("Error Output: " + s2);
         	  while ((s2 = buffer2.readLine()) != null) {
-        		  log.info("Error Output: " + s2);
+        		  log.finer("Error Output: " + s2);
                 }
           }
           buffer.close();
