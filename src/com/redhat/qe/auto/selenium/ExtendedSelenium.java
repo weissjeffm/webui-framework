@@ -276,15 +276,6 @@ public class ExtendedSelenium extends DefaultSelenium implements IScreenCapture 
 		}
 	}
 	
-	@Override
-	public boolean isTextPresent(String txt){
-		if(super.isTextPresent(txt)){
-		return true;
-		}
-		else{
-			return false;
-		}
-	}
 	
 	public boolean isTextPresent(String txt, boolean logResults){
 		if(super.isTextPresent(txt)){
