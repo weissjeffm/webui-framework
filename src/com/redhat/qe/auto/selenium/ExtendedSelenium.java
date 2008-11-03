@@ -252,7 +252,7 @@ public class ExtendedSelenium extends DefaultSelenium implements IScreenCapture 
 	@Override
 	public boolean isElementPresent(String element){
 		if(super.isElementPresent(element)){
-		log.log(MyLevel.ACTION,"Found element: "+element);
+		log.log(Level.INFO,"Found element: "+element);
 		highlight(element);
 		return true;
 		}
@@ -265,7 +265,7 @@ public class ExtendedSelenium extends DefaultSelenium implements IScreenCapture 
 	public boolean isElementPresent(String element,boolean logResults){
 		if(super.isElementPresent(element)){
 		if(logResults)	
-			log.log(MyLevel.ACTION,"Found element: "+element);
+			log.log(Level.INFO,"Found element: "+element);
 		highlight(element);
 		return true;
 		}
@@ -280,13 +280,13 @@ public class ExtendedSelenium extends DefaultSelenium implements IScreenCapture 
 	public boolean isTextPresent(String txt, boolean logResults){
 		if(super.isTextPresent(txt)){
 			if(logResults){
-			log.log(MyLevel.ACTION,"Success, Found text: '"+txt+"'");
+			log.log(Level.INFO,"Success, Found text: '"+txt+"'");
 			}
 			//sel.highlight(txt);
 			return true;
 			}
 			else{
-				log.log(MyLevel.ACTION,"Did not find text: '"+ txt+"'");
+				log.log(Level.INFO,"Did not find text: '"+ txt+"'");
 				return false;
 			}
 	}
@@ -414,16 +414,5 @@ public class ExtendedSelenium extends DefaultSelenium implements IScreenCapture 
 		return instance;
 	}
 	
-	// custom logging level for java logging, to log clicks
-	public static class MyLevel extends Level {
-		static final long serialVersionUID = 3945372834L;
-		// Create the new level
-		public static final Level ACTION = new MyLevel("ACTION", Level.INFO
-				.intValue() + 1);
-
-		public MyLevel(String name, int value) {
-			super(name, value);
-		}
-	}
-
+	
 }

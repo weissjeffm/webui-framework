@@ -11,22 +11,35 @@ import java.util.logging.LogRecord;
  */
 public class TestProcedureHandler extends Handler {
 
+	protected StringBuffer sb = new StringBuffer();
+	
+	public TestProcedureHandler() {
+ 	
+		setLevel(MyLevel.ACTION);
+		setFormatter(new TestProcedureFormatter());
+	
+    }
+	
+	@Override
+	public void publish(LogRecord record) {
+		// TODO Auto-generated method stub
+		if (isLoggable(record)) 
+			sb.append(getFormatter().format(record));
+	}
+	
+	
+
 	@Override
 	public void close() throws SecurityException {
-		// TODO Auto-generated method stub
-
+		
 	}
 
 	@Override
 	public void flush() {
-		// TODO Auto-generated method stub
-
+		
 	}
 
-	@Override
-	public void publish(LogRecord record) {
-		// TODO Auto-generated method stub
-
+	public String getLog(){
+		return sb.toString();
 	}
-
 }

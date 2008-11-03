@@ -29,7 +29,7 @@ public class LogFormatter extends Formatter {
 	}
 
 	
-	private String throwableToString(Throwable t){
+	protected String throwableToString(Throwable t){
 		StringWriter sw = new StringWriter();
 		PrintWriter pw = new PrintWriter(sw);
 		t.printStackTrace(pw);
