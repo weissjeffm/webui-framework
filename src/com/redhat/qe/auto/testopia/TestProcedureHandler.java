@@ -1,7 +1,9 @@
-package com.redhat.qe.auto.selenium;
+package com.redhat.qe.auto.testopia;
 
 import java.util.logging.Handler;
 import java.util.logging.LogRecord;
+
+import com.redhat.qe.auto.selenium.MyLevel;
 
 /**
  * @author jweiss

@@ -1,6 +1,9 @@
-package com.redhat.qe.auto.selenium;
+package com.redhat.qe.auto.testopia;
 
 import java.util.logging.LogRecord;
+
+import com.redhat.qe.auto.selenium.LogFormatter;
+import com.redhat.qe.auto.selenium.MyLevel;
 
 public class TestProcedureFormatter extends LogFormatter {
 
