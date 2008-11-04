@@ -31,8 +31,11 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpState;
 import org.apache.xmlrpc.client.XmlRpcClient;
 import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
+import org.apache.xmlrpc.client.XmlRpcCommonsTransportFactory;
 
 /**
  * 
@@ -68,6 +71,7 @@ public class TestCaseRun {
 	private int build_ID; 
 	private int environment_ID;
 	
+	private HttpState httpState;
 	
 	/**
 	 * Use this constructor if you just want to use gets
@@ -243,7 +247,12 @@ public class TestCaseRun {
 			TrustAllCerts();
 
 			XmlRpcClient client = getXMLclient();
-
+			HttpClient httpClient = new HttpClient();
+		    XmlRpcCommonsTransportFactory fac = new XmlRpcCommonsTransportFactory(client);
+		    fac.setHttpClient(httpClient);
+		    client.setTransportFactory(fac);
+		    if(httpState == null)
+		    	httpState = httpClient.getState();
 			ArrayList<Object> params = new ArrayList<Object>();
 			
 			//set up params, to identify the test case
@@ -285,6 +294,13 @@ public class TestCaseRun {
 
 		    XmlRpcClient client = new XmlRpcClient();
 		    client.setConfig(config);
+		    
+		    HttpClient httpClient = new HttpClient();
+		    XmlRpcCommonsTransportFactory fac = new XmlRpcCommonsTransportFactory(client);
+		    fac.setHttpClient(httpClient);
+		    client.setTransportFactory(fac);
+		    if(httpState == null)
+		    	httpState = httpClient.getState();
 		    
 		    return client;
 		}

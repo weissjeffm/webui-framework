@@ -32,8 +32,14 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpState;
+import org.apache.commons.httpclient.contrib.ssl.EasySSLProtocolSocketFactory;
+import org.apache.commons.httpclient.protocol.Protocol;
+import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
 import org.apache.xmlrpc.client.XmlRpcClient;
 import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
+import org.apache.xmlrpc.client.XmlRpcCommonsTransportFactory;
 
 
 public class TestopiaTestCase {
@@ -56,6 +62,7 @@ public class TestopiaTestCase {
 	private String script; 
 	private String caseStatusID;
 	private String summary; 
+	static HttpState httpState;
 	
 	/** 
 	 * @param userName your bugzilla/testopia userName
@@ -512,12 +519,28 @@ public class TestopiaTestCase {
 
 			XmlRpcClient client = new XmlRpcClient();
 			client.setConfig(config);
+			
+			HttpClient httpClient = new HttpClient();
+		    XmlRpcCommonsTransportFactory fac = new XmlRpcCommonsTransportFactory(client);
+		    fac.setHttpClient(httpClient);
+		    client.setTransportFactory(fac);
+		    if(httpState == null)
+		    	httpState = httpClient.getState();
 
 			ArrayList<Object> params = new ArrayList<Object>();
 
 			// set up params, to identify the test plan
 			params.add(values);
-
+			
+			HashMap<String, Object> map = new HashMap<String, Object>();
+			map.put("login", userName);
+			map.put("password", password);
+			ArrayList<Object> params2 = new ArrayList<Object>();
+			params2.add(map);
+			
+			Object result2 = (Object) client.execute(
+					"User.login", params2);
+			
 			// get the hashmap
 			Object[] result = (Object[]) client.execute(
 					"TestCase.list", params);
@@ -602,48 +625,14 @@ public class TestopiaTestCase {
 	 }
 	
 	private static void TrustAllCerts()
-	throws java.security.NoSuchAlgorithmException,
-	       java.security.KeyManagementException  
-{
+	{
 	// Create a trust manager that does not validate certificate chains
-
-	TrustManager[] trustAllCerts = new TrustManager[] 
-    {
-        new X509TrustManager() 
-        {
-            public X509Certificate[] getAcceptedIssuers() 
-            {
-                return null;
-            }
- 
-            public void checkClientTrusted(X509Certificate[] certs, String authType) 
-            {
-                // Trust always
-            }
- 
-            public void checkServerTrusted(X509Certificate[] certs, String authType) 
-            {
-                // Trust always
-            }
-        }
-    };
- 
-    // Install the all-trusting trust manager
-    SSLContext sc = SSLContext.getInstance("SSL");
-    
-    // Create empty HostnameVerifier
-    HostnameVerifier hv = new HostnameVerifier() 
-    {
-    	public boolean verify(String arg0, SSLSession arg1) 
-    	{
-    		return true;
-        }
-    };
-
-    sc.init(null, trustAllCerts, new java.security.SecureRandom());
-    HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
-    HttpsURLConnection.setDefaultHostnameVerifier(hv);
-}
+		try{
+			ProtocolSocketFactory sf = new EasySSLProtocolSocketFactory();
+			Protocol p = new Protocol("https", sf, 443);
+			Protocol.registerProtocol("https", p);
+		}catch(Exception e){e.printStackTrace();}
+	}
 	
 	private XmlRpcClient getXMLclient() throws Exception
 	{

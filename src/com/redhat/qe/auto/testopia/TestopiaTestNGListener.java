@@ -144,7 +144,9 @@ public class TestopiaTestNGListener implements IResultListener {
 		Map<String, Object> values = new HashMap<String, Object>();
 		values.put("summary", "dfdfg");
 		Object[] result = TestopiaTestCase.getList(TESTOPIA_USER, TESTOPIA_PW, new URL(TESTOPIA_URL), values);
-		System.out.println(result);
+		for (Object res: result){
+			System.out.println(res.toString());
+		}
 	}
 
 }
