@@ -44,4 +44,8 @@ public class TestProcedureHandler extends Handler {
 	public String getLog(){
 		return sb.toString();
 	}
+	
+	public void reset(){
+		sb = new StringBuffer();
+	}
 }

@@ -23,6 +23,7 @@ import java.net.URL;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
@@ -497,7 +498,7 @@ public class TestopiaTestCase {
 	 * @return
 	 */
 	public static Object[] getList(String userName, String password,
-			URL url, HashMap<String, Object> values)
+			URL url, Map<String, Object> values)
 	{
 		try 
 		{
@@ -656,6 +657,7 @@ public class TestopiaTestCase {
 
 		    XmlRpcClient client = new XmlRpcClient();
 		    client.setConfig(config);
+		    
 		    
 		    return client;
 		}

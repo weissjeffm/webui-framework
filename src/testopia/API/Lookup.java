@@ -36,7 +36,7 @@ public class Lookup {
 	public static void main(String args[]) throws Exception
 	{
 		//declare variables 
-		url = new URL("http://apibugzillastage.provo.novell.com/tr_xmlrpc.cgi");
+		url = new URL("https://testopia-01.lab.bos.redhat.com/bugzilla/tr_xmlrpc.cgi");
 		
 		//get username and password
 		System.out.println("Welcome to Testopia Lookup tool 1.0");
