@@ -28,12 +28,13 @@ public class TestNGListener implements IResultListener {
 	//TestNG's Test Listener methods so Selenium can log and screenshot properly
 
 	public void onFinish(ITestContext context){
-		log.info("TestNG Finishing: " + context.getName());
+		log.info("=========  TestNG Finishing: " + context.getName()+ " ============================================");
 		
 	}
 	
 	public void onStart(ITestContext context) {
-		log.info("TestNG Starting: " + context.getName());
+		
+		log.info("=========  TestNG Starting:" + context.getName()+ " =============================================");
 	}
 	
 	public void onTestFailedButWithinSuccessPercentage(ITestResult result) {
@@ -54,15 +55,15 @@ public class TestNGListener implements IResultListener {
 		log.log(Level.SEVERE, "Test failed: "+ result.getName(), result.getThrowable());
 	}
 	public void onTestSkipped(ITestResult result) {
-		log.info("Skipping test: " + result.getName());
+		log.info("========= Skipping test: " + result.getName()+ " ============================================");
 
 	}
 	public  void onTestStart(ITestResult result) {
-		log.info("Starting test: " + result.getName());
+		log.info("========= Starting test: " + result.getName()+ " ============================================");
 		
 	}
 	public  void onTestSuccess(ITestResult result) {
-		log.info("Test Passed: " + result.getName());
+		log.info("========= Test Passed: " + result.getName()+ " ============================================");
 		
 	}
 
@@ -80,13 +81,13 @@ public class TestNGListener implements IResultListener {
 
 	
 	public void onConfigurationSkip(ITestResult result) {
-		log.fine("Configuration skipped: " + result.getName());
+		log.fine("========= Configuration skipped: " + result.getName()+ " ============================================");
 		
 	}
 
 	
 	public void onConfigurationSuccess(ITestResult result) {
-		log.fine("Configuration passed: " + result.getName());
+		log.fine("========= Configuration passed: " + result.getName()+ " ============================================");
 		
 	}
 	
