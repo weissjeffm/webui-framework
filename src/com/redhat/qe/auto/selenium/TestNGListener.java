@@ -65,6 +65,7 @@ public class TestNGListener implements IResultListener {
 	public  void onTestSuccess(ITestResult result) {
 		log.info("========= Test Passed: " + result.getName()+ " ============================================");
 		
+		
 	}
 
 	
@@ -87,7 +88,7 @@ public class TestNGListener implements IResultListener {
 
 	
 	public void onConfigurationSuccess(ITestResult result) {
-		log.fine("========= Configuration passed: " + result.getName()+ " ============================================");
+		//log.fine("========= Configuration passed: " + result.getName()+ " ============================================");
 		
 	}
 	
