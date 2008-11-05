@@ -23,6 +23,7 @@ package testopia.API;
 import java.util.ArrayList;
 import java.util.HashMap;
 import org.apache.commons.httpclient.HttpState;
+import org.apache.xmlrpc.XmlRpcException;
 import org.apache.xmlrpc.client.XmlRpcClient;
 
 /**
@@ -30,7 +31,7 @@ import org.apache.xmlrpc.client.XmlRpcClient;
  * @author anelson, bstice 
  * Creates a wrapper class for the TestRunCase
  */
-public class TestCaseRun {
+public class TestCaseRun extends TestopiaObject{
 	
 	private int caseID;
 	private int runID;
@@ -54,10 +55,7 @@ public class TestCaseRun {
 	private int assigneeID;
 	private int build_ID; 
 	private int environment_ID;
-	
-	private HttpState httpState;
-	private Session session;
-	
+		
 	/**
 	 * Use this constructor if you just want to use gets
 	 * @param userName your bugzilla username
@@ -101,13 +99,14 @@ public class TestCaseRun {
 	 * @param caseRunStatusID
 	 * @param caseTextVersion
 	 * @return caseRunID
+	 * @throws XmlRpcException 
 	 * @throws Exception
 	 */
-	public int makeTestCaseRun(int assigneeID, int caseTextVersion) throws Exception
+	public int makeTestCaseRun(int assigneeID, int caseTextVersion) throws XmlRpcException 
 	{
 		if (canUpdate == false) 
 		{
-			throw new Exception(
+			throw new RuntimeException(
 					"You can't update if you use the 3 parameter constructor, you must use the constuctor with 7 parameters");
 		}
 		
@@ -121,34 +120,9 @@ public class TestCaseRun {
 		map.put("build_id", buildID);
 		
 		//System.out.println("assignee: "+assigneeID+"\ncase_id: "+caseID+"\ncase_text_version: "+caseTextVersion+"\nenvironment_id: "+environmentID+"\nrun_id: "+runID+"\nbuild_id: "+buildID);
-				
-		try 
-		{
-
-			XmlRpcClient client = session.getClient();
-
-			ArrayList<Object> params = new ArrayList<Object>();
-			
-			//set up params, to identify the test case
-			params.add(map);
-			
-
-			//update the test case
-			int result = (Integer)client.execute("TestCaseRun.create",
-					params);
-			
-			caseRunID = result; 
-			//System.out.println(result);	
-			return result;
-			
-		}			
 		
-		catch (Exception e)
-		{
-			e.printStackTrace();
-			System.out.println("ERROR: Unable to create new TestCaseRun");
-			return 0;
-		}
+		return (Integer)callXmlrpcMethod("TestCaseRun.create", map);
+		
 	}
 	
 	/**
@@ -179,73 +153,27 @@ public class TestCaseRun {
 		if(isSetEnvironmentID)
 			map.put("environment_id", environment_ID);
 		
-		try 
-		{
-
-			XmlRpcClient client = session.getClient();
-
-			ArrayList<Object> params = new ArrayList<Object>();
-			
-			//set up params, to identify the test case
-			params.add(runID);
-			params.add(caseID);
-			params.add(buildID);
-			params.add(environmentID);
-			params.add(map);
-
-			//update the testRunCase
-			HashMap result = (HashMap) client.execute("TestCaseRun.update",
-					params);
-			
-			//System.out.println(result);
-			
-			//make sure multiple updates aren't called, for one set
-			isSetAssigneeID = false;
-			isSetBuildID = false;
-			isSetEnvironmentID = false; 
-			isSetNotes = false; 
-			isSetStatus = false; 
-			
-		}			
+		callXmlrpcMethod("TestCaseRun.update", runID, caseID, buildID, environmentID, map);
 		
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
+		//make sure multiple updates aren't called, for one set
+		isSetAssigneeID = false;
+		isSetBuildID = false;
+		isSetEnvironmentID = false; 
+		isSetNotes = false; 
+		isSetStatus = false; 
+		
 	}
 	
 	/**
 	 * 
 	 * @return a hashMap of all the values found. Returns null if there is an error
 	 * and the TestCaseRun cannot be returned
+	 * @throws XmlRpcException 
 	 */
-	public HashMap<String, Object> getAttributes()
+	public HashMap<String, Object> getAttributes() throws XmlRpcException
 	{
-		try 
-		{
-
-			XmlRpcClient client = session.getClient();
-			ArrayList<Object> params = new ArrayList<Object>();
-			
-			//set up params, to identify the test case
-			params.add(caseRunID);
-			
-			//update the testRunCase
-			HashMap result = (HashMap) client.execute("TestCaseRun.get",
-					params);
-			
-			//System.out.println(result);
-			
-			return result;
+		return (HashMap<String, Object>)callXmlrpcMethod("TestCaseRun.get", caseRunID);
 		
-			
-		}			
-		
-		catch (Exception e)
-		{
-			e.printStackTrace();
-			return null;
-		}
 	}
 
 	/**

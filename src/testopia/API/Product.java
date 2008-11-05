@@ -31,6 +31,7 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
+import org.apache.xmlrpc.XmlRpcException;
 import org.apache.xmlrpc.client.XmlRpcClient;
 import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
 
@@ -40,7 +41,7 @@ import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
  * @author anelson
  *
  */
-public class Product {
+public class Product extends TestopiaObject{
 	private String userName;
 	private String password;
 	private URL url;
@@ -64,31 +65,12 @@ public class Product {
 	  * @param productName the name of the product, that the ID will be returned for. 0 Will be 
 	  * returned if the product can't be found
 	  * @return the ID of the specified product
+	 * @throws XmlRpcException 
 	  */
-	 public int getProductIDByName(String productName)
+	 public int getProductIDByName(String productName) throws XmlRpcException
 	 {
-		 try 
-			{
-				XmlRpcClient client = session.getClient();
-
-				ArrayList<Object> params = new ArrayList<Object>();
-				
-				//set up params, to identify the product
-				params.add(productName);
-				
-				//get the result
-				int result = (Integer)client.execute("Product.lookup_id_by_name",params);
-				//System.out.println(result);
-				
-				return result;			
-				
-			}			
-			
-			catch (Exception e)
-			{
-				e.printStackTrace();
-				return 0;
-			}
+		 return (Integer)callXmlrpcMethod("Product.lookup_id_by_name", productName);
+		 
 	 }
 	 
 	/**
@@ -96,58 +78,15 @@ public class Product {
 	 * @param id the ID of the product name that will be returned. Null is returned 
 	 * if the product can't be found
 	 * @return the product name that corresponds the specified product ID
+	 * @throws XmlRpcException 
 	 */
-	 public String getProductNameByID(int id)
+	 public String getProductNameByID(int id) throws XmlRpcException
 	 {
-		 try 
-			{
-				XmlRpcClient client = session.getClient();
-
-				ArrayList<Object> params = new ArrayList<Object>();
-				
-				//set up params, to identify the product
-				params.add(id);
-				
-				//get the result
-				String result = (String)client.execute("Product.lookup_name_by_id", params);
-				
-				//System.out.println(result);
-				
-				return result;
-			}			
-			
-			catch (Exception e)
-			{
-				e.printStackTrace();
-				return null;
-			}
+		 return (String)callXmlrpcMethod("Product.lookup_name_by_id", id);
 	 }
 	 
-	 public Object[] getMilestones(int id)
+	 public Object[] getMilestones(int id) throws XmlRpcException
 	 {
-		 try 
-			{
-				XmlRpcClient client = session.getClient();
-
-				ArrayList<Object> params = new ArrayList<Object>();
-				
-				//set up params, to identify the product
-				params.add(id);
-				
-				//get the result
-				Object[] result = (Object[])client.execute("Product.get_milestones", params);
-				
-				//System.out.println(result);
-				
-				return result;
-			
-				
-			}			
-			
-			catch (Exception e)
-			{
-				e.printStackTrace();
-				return null;
-			}
+		 return (Object[])callXmlrpcMethod("Product.get_milestones", id);
 	 }
 }
