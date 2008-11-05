@@ -20,21 +20,11 @@
   *
   */
 package testopia.API;
-import java.net.URL;
-import java.security.cert.X509Certificate;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
-
 import org.apache.xmlrpc.XmlRpcException;
-import org.apache.xmlrpc.client.XmlRpcClient;
-import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
 
 /**
  * Allows the user to get a buildID from it's name, or it's name from the buildID. 
@@ -42,9 +32,7 @@ import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
  * @author anelson
  *
  */
-public class Build extends TestopiaObject {
-	
-	 
+public class Build extends TestopiaObject{	 
 	 /**
 	  * 
 	  * @param userName - your testopia/bugzilla username
@@ -65,9 +53,7 @@ public class Build extends TestopiaObject {
 	 * @throws XmlRpcException 
 	  */
 	 public int makeBuild(String name, int productID, Boolean isactive, String milestone) throws XmlRpcException
-	 {
-		 int result = 0;
-		 
+	 { 
 		 //Check if the build already exists. Will return a 0 if the build does not exist
 		 int buildTest = getBuildIDByName(name);
 		 
@@ -85,15 +71,14 @@ public class Build extends TestopiaObject {
 			 else
 				 map.put("isactive", 0);
 			 
-			 return (Integer)callXmlrpcMethod("Build.create", map);
-			 
+			 //get the result
+			 return (Integer) this.callXmlrpcMethod("Build.create", map);
 		 }
 		 else{
 			 //Build already exists
 			 System.out.println("-->Build "+name+" already exists will not create build");
 			 //Make sure we don't forget to set the buildID
-			 result = buildTest;
-			 return result;
+			 return buildTest;
 		 }
 	 }
 	 
@@ -128,9 +113,7 @@ public class Build extends TestopiaObject {
 		 if(description != null)
 			 map.put("description", description);
 		 
-		 callXmlrpcMethod("Build.update", buildID, map);
-
-		 
+		 this.callXmlrpcMethod("Build.update", buildID, map);
 	 }
 	 
 	 /**
@@ -142,8 +125,8 @@ public class Build extends TestopiaObject {
 	  */
 	 public int getBuildIDByName(String buildName) throws XmlRpcException
 	 {
-		 return (Integer)callXmlrpcMethod("Build.lookup_id_by_name", buildName);
-		
+		//get the result
+		return (Integer)this.callXmlrpcMethod("Build.lookup_id_by_name", buildName);
 	 }
 	 
 	/**
@@ -155,9 +138,7 @@ public class Build extends TestopiaObject {
 	 */
 	 public String getBuildNameByID(int id) throws XmlRpcException
 	 {
-		 return(String)callXmlrpcMethod("Build.lookup_id_by_name", id);
-		
+		//get the result
+		return (String)this.callXmlrpcMethod("Build.lookup_id_by_name", id);
 	 }
-	 
-
 }

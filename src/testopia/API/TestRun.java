@@ -19,23 +19,11 @@
   *
   */
 package testopia.API;
-import java.net.URL;
-import java.security.cert.X509Certificate;
-import java.util.ArrayList;
+
 import java.util.HashMap;
+import org.apache.xmlrpc.XmlRpcException;
 
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
-
-import org.apache.xmlrpc.client.XmlRpcClient;
-import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
-
-
-public class TestRun {
+public class TestRun extends TestopiaObject{
 	//inputed values to get a testRun
 	private Integer runID;
 	private Session session;
@@ -149,41 +137,21 @@ public class TestRun {
 		 
 		 if(newPlanID != null)
 			 map.put("plan_id", newPlanID);
-		 
-		 
-		 		
-		try 
-		{
-			XmlRpcClient client = session.getClient();
-
-			ArrayList<Object> params = new ArrayList<Object>();
 			
-			//set up params, to identify the test case
-			params.add(runID);
-			params.add(map);
+		 //update the testRunCase
+		 this.callXmlrpcMethod("TestRun.update",
+				 				runID,
+								map);
 			
-
-			//update the testRunCase
-			HashMap result = (HashMap) client.execute("TestRun.update",
-					params);
 			
-			//System.out.println(result);
-			
-			 notes = null;
-			 managerID = null;  
-			 summary = null;  
-			 startDate = null;
-			 stopDate = null; 
-			 buildID = null;  
-			 environmentID = null; 
-			 newPlanID = null; 
-			
-		}			
-		
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
+		 notes = null;
+		 managerID = null;  
+		 summary = null;  
+		 startDate = null;
+		 stopDate = null; 
+		 buildID = null;  
+		 environmentID = null; 
+		 newPlanID = null;
 	}
 	
 	/**
@@ -191,78 +159,17 @@ public class TestRun {
 	 * @return a hashMap of all the values found. Returns null if there is an error
 	 * and the TestRun cannot be returned
 	 * @throws Exception 
+	 * @throws XmlRpcException
 	 */
 	@SuppressWarnings("unchecked")
-	public HashMap<String, Object> getAttributes() throws Exception
+	public HashMap<String, Object> getAttributes() throws Exception, XmlRpcException
 	{
 		if (runID == null) 
-		{
 			throw new Exception("runID is null.");
-		}
 		
-		try 
-		{
-			XmlRpcClient client = session.getClient();
-
-			ArrayList<Object> params = new ArrayList<Object>();
-			
-			//set up params, to identify the test plan
-			params.add(runID.intValue());
-			
-			//get the hashmap
-			HashMap<String, Object> result = (HashMap<String, Object>) client.execute("TestRun.get",
-					params);
-			
-			//System.out.println(result);
-			
-			return result;		
-			
-		}			
-		
-		catch (Exception e)
-		{
-			e.printStackTrace();
-			return null;
-		}
-	}
-	
-	/**
-	 * Returns hashmap(s) of testplans that match the inputed values 
-	 * @param userName your bugzilla/testopia userName
-	 * @param password your password 
-	 * @param url the url of the testopia server
-	 * @param values a HashMap with the parameters that will be searched for
-	 * if you supply the pair "run_id", 5 then run_id 5 will be returned. Any combination
-	 * of testrun attributes can be entered and the result will be all matches that fit 
-	 * the inputed values
-	 * @return
-	 */
-	public static Object[] getList(Session session, HashMap<String, Object> values)
-	{
-		try 
-		{
-			XmlRpcClient client = session.getClient();
-
-			ArrayList<Object> params = new ArrayList<Object>();
-
-			// set up params, to identify the test plan
-			params.add(values);
-
-			// get the hashmap
-			Object[] result = (Object[]) client.execute(
-					"TestRun.list", params);
-
-			// System.out.println(result);
-
-			return result;		
-			
-		}			
-		
-		catch (Exception e)
-		{
-			e.printStackTrace();
-			return null;
-		}
+		//get the hashmap
+		return (HashMap<String, Object>) this.callXmlrpcMethod("TestRun.get",
+																runID.intValue());
 	}
 
 	/**
@@ -276,6 +183,7 @@ public class TestRun {
 	{
 		this.session = session;
 		this.runID = runID; 
+		this.listMethod = "TestRun.list";
 	}
 	
 	/**
@@ -287,9 +195,11 @@ public class TestRun {
 	 * @param planTextVersion
 	 * @param summary String - text summary of the run
 	 * @return the ID of the test run
+	 * @throws XmlRpcException
 	 */
 	public int makeTestRun(int buildID, int environmentID, int managerID, int planID,
 			int planTextVersion, String summary)
+	throws XmlRpcException
 	{
 		//set the values for the test plan
 		HashMap<String, Object> map = new HashMap<String, Object>();
@@ -300,34 +210,12 @@ public class TestRun {
 		map.put("plan_text_version", planTextVersion);
 		map.put("summary", summary);
 		
-		
-		try 
-		{
-			XmlRpcClient client = session.getClient();
-
-			ArrayList<Object> params = new ArrayList<Object>();
+		//update the testRunCase
+		int result = (Integer)this.callXmlrpcMethod("TestRun.create",
+													map);
 			
-			//set up params, to identify the test case
-			params.add(map);
-			
-
-			//update the testRunCase
-			int result = (Integer)client.execute("TestRun.create",
-					params);
-			
-			runID = result; 
-			//System.out.println(result);	
-			
-			return result;
-			
-		}			
-		
-		catch (Exception e)
-		{
-			e.printStackTrace();
-			return 0;
-		}			 
-		
+		runID = result; 	
+		return result;		
 	}
 	
 	/**
@@ -335,41 +223,17 @@ public class TestRun {
 	 * @return an array of objects (Object[]) of all the testcases found. 
 	 * Returns null if there is an error and the TestRun cannot be returned
 	 * @throws Exception
+	 * @throws XmlRpcException
 	 */
-	public Object[] getTestCases() throws Exception
+	public Object[] getTestCases() throws Exception, XmlRpcException
 	{
-		if (runID == null) 
-		{
+		if (runID == null)
 			throw new Exception("runID is null.");
-		}
-		
-		try 
-		{
-			XmlRpcClient client = session.getClient();
-
-			ArrayList<Object> params = new ArrayList<Object>();
-			
-			//set up params, to identify the test plan
-			params.add(runID.intValue());
-			
-			
 			//get the hashmap
-			Object[] categories = (Object[])client.execute("TestRun.get_test_cases",
-					params);
-			
-			//System.out.println(result);
-			
-			return categories;		
-			
-		}			
+		return (Object[])this.callXmlrpcMethod("TestRun.get_test_cases",
+												runID.intValue());
+	}			
 		
-		catch (Exception e)
-		{
-			e.printStackTrace();
-			return null;
-		}
-	}
-	
 	/**
 	 * 
 	 * @return an array of objects (Object[]) of all the testCaseRuns found. 
@@ -379,33 +243,10 @@ public class TestRun {
 	public Object[] getTestCaseRuns() throws Exception
 	{
 		if (runID == null) 
-		{
 			throw new Exception("runID is null.");
-		}
-		
-		try 
-		{
-			XmlRpcClient client = session.getClient();
-
-			ArrayList<Object> params = new ArrayList<Object>();
 			
-			//set up params, to identify the test plan
-			params.add(runID.intValue());
+		return (Object[])this.callXmlrpcMethod("TestRun.get_test_case_runs",
+												runID.intValue());		
 			
-			//get the hashmap
-			Object[] categories = (Object[])client.execute("TestRun.get_test_case_runs",
-					params);
-			
-			//System.out.println(result);
-			
-			return categories;		
-			
-		}			
-		
-		catch (Exception e)
-		{
-			e.printStackTrace();
-			return null;
-		}
 	}	
 }

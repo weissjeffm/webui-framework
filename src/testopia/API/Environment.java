@@ -21,11 +21,8 @@
   */
 package testopia.API;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-
 import org.apache.xmlrpc.XmlRpcException;
-import org.apache.xmlrpc.client.XmlRpcClient;
 
 /**
  * Allows the user to get an environment from it's ID. It can also create 
@@ -34,14 +31,10 @@ import org.apache.xmlrpc.client.XmlRpcClient;
  *
  */
 public class Environment extends TestopiaObject{
-	
 	 
 	 /**
-	  * 
-	  * @param userName - your testopia/bugzilla username
-	  * @param password - the password for your account 
-	  * @param login - the user you want attributes returned for
-	  * @param url - the url of the testopia server
+	  * Constructor for Testopia Environment Object
+	  * @param session session object to facilitate XMLRPC connection
 	  */
 	 public Environment(Session session)
 	 {
@@ -52,19 +45,17 @@ public class Environment extends TestopiaObject{
 	 /**
 	  * Creates a new environment and returns the environmentID, 0 is returned 
 	  * if an error occurs
-	  * @param name
-	  * @param productID
+	  * @param name name of environment
+	  * @param productID product ID integer that environment is tied to
+	  * @param isActive boolean stating whether environment is active or not
 	 * @throws XmlRpcException 
 	  */
-	 public int makeEnvironment(String name, int productID, boolean isActive) throws XmlRpcException
-	 {
-		 int result = 0;
-		 
+	 public int makeEnvironment(String name, int productID, boolean isActive)
+	 throws XmlRpcException
+	 { 
 		 //Check if the environment already exists. Will return a null if the environment does not exist
 		 HashMap<String, Object> environmentTest = listEnvironments(productID, name);
-		 	
-		 //System.out.println("Environment Returned: "+ environmentTest.toString());
-		 		 
+		 
 		 if(environmentTest == null){
 			 //environment does not exist so we need to create a new environment
 		 
@@ -77,18 +68,16 @@ public class Environment extends TestopiaObject{
 				 map.put("isactive", 0);
 			 
 			 map.put("name", name);
-			 map.put("product_id", productID);
-			 
-			 return (Integer)callXmlrpcMethod("Environment.create", map);
-			
+			 map.put("product_id", productID);	
+			//get the result
+			return (Integer) this.callXmlrpcMethod("Environment.create", map);
 		 }
 		 else{
 			 //Build already exists
 			 System.out.println("-->Build "+name+" already exists will not create build");
 			 //Set the id correctly before returning
 			 String envIDString = environmentTest.get("environment_id").toString();
-			 result = Integer.parseInt(envIDString);
-			 return result;
+			 return Integer.parseInt(envIDString);
 		 }
 	 }
 	 
@@ -105,24 +94,23 @@ public class Environment extends TestopiaObject{
 			 Integer productID, int environmentID) throws XmlRpcException
 	 {
 		 //put values into map if they are not null 
-		 HashMap<String, Object> map = new HashMap<String, Object>();
-		 if(name != null)
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		if(name != null)
 			 map.put("name", name);
-		 if(productID != null)
+		if(productID != null)
 			 map.put("product_id", productID);
-		 if(isactive != null)
-		 {
+		if(isactive != null)
+		{
 			 //put 1 into map if true
 			 if(isactive)
 				 map.put("isactive", 1);
-		 	//else put false
+		 	 //else put false
 			 else 
 				 map.put("isactive", 0);
-		 }
-		 		
-		 callXmlrpcMethod("Environment.update", environmentID, map);
-		 
-		 
+		}
+		//get the result
+		this.callXmlrpcMethod("Environment.update",environmentID,
+												   map);
 	 }
 	 
 	 /**
@@ -132,10 +120,10 @@ public class Environment extends TestopiaObject{
 	 * @throws XmlRpcException 
 	  */
 	@SuppressWarnings("unchecked")
-	public HashMap<String, Object> getEnvirnoment(int environmentID) throws XmlRpcException
+	public HashMap<String, Object> getEnvirnoment(int environmentID)
+	throws XmlRpcException
 	 {
-		return (HashMap<String, Object>)callXmlrpcMethod("Environment.get", environmentID);
-		
+		return (HashMap<String, Object>)this.callXmlrpcMethod("Environment.get", environmentID);
 	 }
 	 
 	 /**
@@ -146,31 +134,36 @@ public class Environment extends TestopiaObject{
 	 * @throws XmlRpcException 
 	  */
 	@SuppressWarnings("unchecked")
-	public HashMap<String, Object> listEnvironments(String productName, String environmentName) throws XmlRpcException
-	 {
-				XmlRpcClient client = session.getClient();
-
-				ArrayList<Object> params = new ArrayList<Object>();
-				
-				//set up params, to identify the environment
-				if(productName != null)	
-				{
-					Product product = new Product(session);
-					int productId = product.getProductIDByName(productName);
-					params.add(productId);
-				}
-				
-				if(environmentName != null)
-					params.add(environmentName);
-				
-				//get the result
-				HashMap<String, Object> result = (HashMap<String, Object>)client.execute("Environment.get", params);
-				
-				//System.out.println(result);
-				
-				return result;
-
-	 }
+	public HashMap<String, Object> listEnvironments(String productName, String environmentName)
+	throws XmlRpcException
+	{
+		//set up params, to identify the environment
+		if(productName != null)	
+		{
+			Product product = new Product(session);
+			int productId = product.getProductIDByName(productName);
+			if(environmentName != null)
+				return (HashMap<String, Object>)this.callXmlrpcMethod("Environment.get",
+																	  productId,
+																	  environmentName);
+			else
+				return (HashMap<String, Object>)this.callXmlrpcMethod("Environment.get",
+						  											  productId);
+		}
+		if(environmentName != null){
+			if(productName != null){
+				Product product = new Product(session);
+				int productId = product.getProductIDByName(productName);
+				return (HashMap<String, Object>)this.callXmlrpcMethod("Environment.get",
+						  											  productId,
+						  											  environmentName);
+			}
+			else
+				return (HashMap<String, Object>)this.callXmlrpcMethod("Environment.get",
+						  											  environmentName);
+		}
+		return null;
+	}
 
 	 /**
 	  * 

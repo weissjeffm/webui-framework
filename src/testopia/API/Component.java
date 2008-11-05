@@ -20,52 +20,35 @@
   */
 package testopia.API;
 
-import java.net.URL;
-import java.security.cert.X509Certificate;
-import java.util.ArrayList;
 import java.util.HashMap;
-
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
-
 import org.apache.xmlrpc.XmlRpcException;
-import org.apache.xmlrpc.client.XmlRpcClient;
-import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
 
 /**
  * Allows the user to get a hashmap of the component values by inputing the component ID
  * @author anelson
  *
  */
-public class Component extends TestopiaObject {
-		
-		 
-		 /**
-		  * 
-		  * @param userName - your testopia/bugzilla username
-		  * @param password - the password for your account 
-		  * @param url - the url of the testopia server
-		  */
+
+public class Component extends TestopiaObject{
+		/**
+		 * Constructor for Testopia Component Object
+		 * @param session session object to facilitate XMLRPC connection
+		 */
 		 public Component(Session session)
 		 {
 			 this.session = session;
 		 }
 		 
 		/**
-		 * 
+		 * Returns components that match supplied ID number
 		 * @param id the ID of the component that will be returned. Null is returned 
 		 * if the component can't be found
 		 * @return the product name that corresponds the specified product ID
-		 * @throws XmlRpcException 
 		 */
 		@SuppressWarnings("unchecked")
 		public HashMap<String, Object> getComponentByID(int id) throws XmlRpcException
-		 {
-			return (HashMap<String,Object>)callXmlrpcMethod("Component.get", id);
-			
-		 }
+		{
+			return (HashMap<String, Object>)
+				this.callXmlrpcMethod("Component.get", id);
+		}
 }

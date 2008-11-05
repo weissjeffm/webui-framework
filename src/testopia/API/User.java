@@ -19,21 +19,18 @@
   *
   */
 package testopia.API;
-import java.util.ArrayList;
 
 import org.apache.xmlrpc.client.XmlRpcClient;
+import org.apache.xmlrpc.XmlRpcException;
 
 /**
  * 
  * @author anelson, bstice
  * Retrives the user ID for the inputed email
  */
-public class User {
+public class User extends TestopiaObject{
 	 
-	
 	private String user; 
-	private Session session;
-	
 	 
 	 /**
 	  * 
@@ -52,32 +49,10 @@ public class User {
 	 /**
 	 * @return the user_id for the specified login. Returns 0 if there is
 	 *         an error and the user ID cannot be returned
+	 * @throws XmlRpcException 
 	 */
-	 public int getAttributes()
-		{
-			try 
-			{
-				XmlRpcClient client = session.getClient();
-
-				ArrayList<Object> params = new ArrayList<Object>();
-				
-				//set up params, to identify the user
-				params.add(user);
-				
-				//update the testRunCase
-				int result = (Integer)client.execute("User.lookup_id_by_login",params);
-				
-				//System.out.println(result);
-				
-				return result;
-			
-				
-			}			
-			
-			catch (Exception e)
-			{
-				e.printStackTrace();
-				return 0;
-			}
-		}
+	 public int getAttributes() throws XmlRpcException
+	 {
+		 return (Integer)this.callXmlrpcMethod("User.lookup_id_by_login", user);
+	 }
 }
