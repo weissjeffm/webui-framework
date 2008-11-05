@@ -62,19 +62,16 @@ public class TestopiaTestCase {
 	private String script; 
 	private String caseStatusID;
 	private String summary; 
-	static HttpState httpState;
-	
+	private XmlRpcClient client;
 	/** 
 	 * @param userName your bugzilla/testopia userName
 	 * @param password your password 
 	 * @param url the url of the testopia server
 	 * @param caseID - Integer the caseID, you may enter null here if you are creating a test case
 	 */
-	public TestopiaTestCase(String userName, String password, URL url, Integer caseID)
+	public TestopiaTestCase(Session session, Integer caseID)
 	{
-		this.userName = userName;
-		this.password = password;
-		this.url = url; 
+		this.client = session.getClient();
 		this.caseID = caseID; 
 	}
 	/**
@@ -192,9 +189,6 @@ public class TestopiaTestCase {
 		
 		try 
 		{
-			TrustAllCerts();
-
-			XmlRpcClient client = getXMLclient();
 
 			ArrayList<Object> params = new ArrayList<Object>();
 			
@@ -231,10 +225,7 @@ public class TestopiaTestCase {
 		
 		try 
 		{
-			TrustAllCerts();
-
-			XmlRpcClient client = getXMLclient();
-
+	
 			ArrayList<Object> params = new ArrayList<Object>();
 			
 			//set up params, to identify the test case
@@ -270,9 +261,6 @@ public class TestopiaTestCase {
 		
 		try 
 		{
-			TrustAllCerts();
-
-			XmlRpcClient client = getXMLclient();
 
 			ArrayList<Object> params = new ArrayList<Object>();
 			
@@ -346,10 +334,7 @@ public class TestopiaTestCase {
 		 		
 		try 
 		{
-			TrustAllCerts();
-
-			XmlRpcClient client = getXMLclient();
-
+	
 			ArrayList<Object> params = new ArrayList<Object>();
 			
 			//set up params, to identify the test case
@@ -425,9 +410,6 @@ public class TestopiaTestCase {
 		
 		try 
 		{
-			TrustAllCerts();
-
-			XmlRpcClient client = getXMLclient();
 
 			ArrayList<Object> params = new ArrayList<Object>();
 			
@@ -467,9 +449,6 @@ public class TestopiaTestCase {
 		
 		try 
 		{
-			TrustAllCerts();
-
-			XmlRpcClient client = getXMLclient();
 
 			ArrayList<Object> params = new ArrayList<Object>();
 			
@@ -504,43 +483,17 @@ public class TestopiaTestCase {
 	 * the inputed values
 	 * @return
 	 */
-	public static Object[] getList(String userName, String password,
-			URL url, Map<String, Object> values)
+	public static Object[] getList(Session session, Map<String, Object> values)
 	{
 		try 
 		{
-			TrustAllCerts();
-
-			//setup client
-			XmlRpcClientConfigImpl config = new XmlRpcClientConfigImpl();
-			config.setServerURL(url);
-			config.setBasicUserName(userName);
-			config.setBasicPassword(password);
-
-			XmlRpcClient client = new XmlRpcClient();
-			client.setConfig(config);
-			
-			HttpClient httpClient = new HttpClient();
-		    XmlRpcCommonsTransportFactory fac = new XmlRpcCommonsTransportFactory(client);
-		    fac.setHttpClient(httpClient);
-		    client.setTransportFactory(fac);
-		    if(httpState == null)
-		    	httpState = httpClient.getState();
+			XmlRpcClient client = session.getClient();
 
 			ArrayList<Object> params = new ArrayList<Object>();
 
 			// set up params, to identify the test plan
 			params.add(values);
-			
-			HashMap<String, Object> map = new HashMap<String, Object>();
-			map.put("login", userName);
-			map.put("password", password);
-			ArrayList<Object> params2 = new ArrayList<Object>();
-			params2.add(map);
-			
-			Object result2 = (Object) client.execute(
-					"User.login", params2);
-			
+						
 			// get the hashmap
 			Object[] result = (Object[]) client.execute(
 					"TestCase.list", params);
@@ -562,9 +515,6 @@ public class TestopiaTestCase {
 	{
 		try 
 		{
-			TrustAllCerts();
-
-			XmlRpcClient client = getXMLclient();
 
 			ArrayList<Object> params = new ArrayList<Object>();
 			
@@ -599,9 +549,6 @@ public class TestopiaTestCase {
 	 {
 		 try 
 			{
-				TrustAllCerts();
-
-				XmlRpcClient client = getXMLclient();
 
 				ArrayList<Object> params = new ArrayList<Object>();
 				
@@ -624,38 +571,5 @@ public class TestopiaTestCase {
 			}
 	 }
 	
-	private static void TrustAllCerts()
-	{
-	// Create a trust manager that does not validate certificate chains
-		try{
-			ProtocolSocketFactory sf = new EasySSLProtocolSocketFactory();
-			Protocol p = new Protocol("https", sf, 443);
-			Protocol.registerProtocol("https", p);
-		}catch(Exception e){e.printStackTrace();}
-	}
-	
-	private XmlRpcClient getXMLclient() throws Exception
-	{
-		try
-		{
 
-		    XmlRpcClientConfigImpl config = new XmlRpcClientConfigImpl();
-		    config.setServerURL(url);
-		    config.setBasicUserName(userName);
-		    config.setBasicPassword(password);
-
-		    XmlRpcClient client = new XmlRpcClient();
-		    client.setConfig(config);
-		    
-		    
-		    return client;
-		}
-		
-		catch (Exception e)
-		{
-			e.printStackTrace();			
-		}
-		
-		throw new Exception("could not connect to server");
-	}
 }

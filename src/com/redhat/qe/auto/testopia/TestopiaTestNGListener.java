@@ -13,6 +13,7 @@ import org.testng.ITestContext;
 import org.testng.ITestResult;
 import org.testng.internal.IResultListener;
 
+import testopia.API.Session;
 import testopia.API.TestopiaTestCase;
 import testopia.API.User;
 
@@ -135,7 +136,9 @@ public class TestopiaTestNGListener implements IResultListener {
 	}
 	
 	public static void main(String args[]) throws Exception{
-		TestopiaTestCase tc = new TestopiaTestCase(TESTOPIA_USER, TESTOPIA_PW, new URL(TESTOPIA_URL), null ); 
+		Session session = new Session(TESTOPIA_USER, TESTOPIA_PW, new URL(TESTOPIA_URL));
+		session.login();
+		TestopiaTestCase tc = new TestopiaTestCase(session, null ); 
 		User user = new User(TESTOPIA_USER, TESTOPIA_PW, TESTOPIA_USER, new URL(TESTOPIA_URL));
 		
 		int id = user.getAttributes();
@@ -143,7 +146,7 @@ public class TestopiaTestNGListener implements IResultListener {
 		//tc.makeTestCase(id, 0, 0, true, 271, "This is a test of the testy test", 0);
 		Map<String, Object> values = new HashMap<String, Object>();
 		values.put("summary", "dfdfg");
-		Object[] result = TestopiaTestCase.getList(TESTOPIA_USER, TESTOPIA_PW, new URL(TESTOPIA_URL), values);
+		Object[] result = TestopiaTestCase.getList(session, values);
 		for (Object res: result){
 			System.out.println(res.toString());
 		}
