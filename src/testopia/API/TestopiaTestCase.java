@@ -19,35 +19,13 @@
   *
   */
 package testopia.API;
-import java.net.URL;
-import java.security.cert.X509Certificate;
-import java.util.ArrayList;
+
 import java.util.HashMap;
-import java.util.Map;
+import org.apache.xmlrpc.XmlRpcException;
 
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
-
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpState;
-import org.apache.commons.httpclient.contrib.ssl.EasySSLProtocolSocketFactory;
-import org.apache.commons.httpclient.protocol.Protocol;
-import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
-import org.apache.xmlrpc.client.XmlRpcClient;
-import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
-import org.apache.xmlrpc.client.XmlRpcCommonsTransportFactory;
-
-
-public class TestopiaTestCase {
+public class TestopiaTestCase extends TestopiaObject{
 	
 	//inputed values to get a testCase
-	private String userName;
-	private String password;
-	private URL url; 
 	private Integer caseID; 
 	
 	//values for updates 
@@ -61,8 +39,8 @@ public class TestopiaTestCase {
 	private String requirement;
 	private String script; 
 	private String caseStatusID;
-	private String summary; 
-	private XmlRpcClient client;
+	private String summary;
+	
 	/** 
 	 * @param userName your bugzilla/testopia userName
 	 * @param password your password 
@@ -71,8 +49,9 @@ public class TestopiaTestCase {
 	 */
 	public TestopiaTestCase(Session session, Integer caseID)
 	{
-		this.client = session.getClient();
 		this.caseID = caseID; 
+		this.session = session;
+		this.listMethod = "TestCase.list";
 	}
 	/**
 	 * 
@@ -181,35 +160,17 @@ public class TestopiaTestCase {
 	 * @param componentID the ID of the component that will be added to the
 	 * testCase
 	 * @throws Exception
+	 * @throws XmlRpcException
 	 */
-	public void addComponent(int componentID) throws Exception
+	public void addComponent(int componentID) throws Exception, XmlRpcException
 	{
 		if(caseID == null)
 			throw new Exception("CaseID cannot be null");
 		
-		try 
-		{
-
-			ArrayList<Object> params = new ArrayList<Object>();
-			
-			//set up params, to identify the test case
-			params.add(caseID);
-			params.add(componentID);
-			
-
-			//add the component to the test case
-			int result = (Integer) client.execute("TestCase.add_component",
-					params);
-			
-			//System.out.println(result);
-						
-		}			
-		
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
-		
+		//add the component to the test case
+		this.callXmlrpcMethod("TestCase.add_component",
+							  caseID,
+							  componentID);
 	}
 	
 	/**
@@ -217,35 +178,17 @@ public class TestopiaTestCase {
 	 * @param componentID the ID of the component that will be removed from the
 	 * testCase
 	 * @throws Exception
+	 * @throws XmlRpcException
 	 */
-	public void removeComponent(int componentID) throws Exception
+	public void removeComponent(int componentID) throws Exception, XmlRpcException
 	{
 		if(caseID == null)
 			throw new Exception("CaseID cannot be null");
 		
-		try 
-		{
-	
-			ArrayList<Object> params = new ArrayList<Object>();
-			
-			//set up params, to identify the test case
-			params.add(caseID);
-			params.add(componentID);
-			
-
-			//add the component to the test case
-			int result = (Integer) client.execute("TestCase.remove_component",
-					params);
-			
-			//System.out.println(result);
-						
-		}			
-		
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
-		
+		//add the component to the test case
+		this.callXmlrpcMethod("TestCase.remove_component",
+							  caseID,
+							  componentID);
 	}
 	
 	/**
@@ -258,30 +201,10 @@ public class TestopiaTestCase {
 	{
 		if(caseID == null)
 			throw new Exception("CaseID cannot be null");
-		
-		try 
-		{
 
-			ArrayList<Object> params = new ArrayList<Object>();
-			
-			//set up params, to identify the test case
-			params.add(caseID);
-
-			// get the hashmap
-			Object[] result = (Object[]) client.execute(
-					"TestCase.get_components", params);
-
-			// System.out.println(result);
-
-			return result;		
-			
-		}			
-		
-		catch (Exception e)
-		{
-			e.printStackTrace();
-			return null;
-		}
+		// get the hashmap
+		return (Object[]) this.callXmlrpcMethod("TestCase.get_components", 
+												caseID);	
 	}
 
 		
@@ -289,14 +212,13 @@ public class TestopiaTestCase {
 	 * Updates are not called when the .set is used. You must call update after all your sets
 	 * to push the changes over to testopia.
 	 * @throws Exception if planID is null 
+	 * @throws XmlRpcException
 	 * (you made the TestCase with a null caseID and have not created a new test plan)
 	 */
-	public void update() throws Exception
+	public void update() throws Exception, XmlRpcException
 	{
 		if (caseID == null) 
-		{
 			throw new Exception("caseID is null.");
-		}
 		
 		//hashmap to store attributes to be updated
 		HashMap<String, Object> map = new HashMap<String, Object>();
@@ -331,30 +253,11 @@ public class TestopiaTestCase {
 		
 		if(summary != null)
 			map.put("summary", summary); 
-		 		
-		try 
-		{
-	
-			ArrayList<Object> params = new ArrayList<Object>();
-			
-			//set up params, to identify the test case
-			params.add(caseID);
-			params.add(map);
-			
-
-			//update the testRunCase
-			HashMap result = (HashMap) client.execute("TestCase.update",
-					params);
-			
-			//System.out.println(result);
-						
-		}			
 		
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
-		
+		//update the testRunCase
+		this.callXmlrpcMethod("TestCase.update",
+							  caseID,
+							  map);
 		//make sure multiple updates aren't called 
 		isAutomated = null;
 		priorityID = null;
@@ -378,9 +281,11 @@ public class TestopiaTestCase {
 	 * @param summary string - the summary of the testCase. Null allowed
 	 * @param priorityID Integer - the priority of the testCase (0-5). Null allowed
 	 * @return
+	 * @throws XmlRpcException
 	 */
 	public int makeTestCase(int authorID, int caseStatusID, int categoryID,
 			boolean isAutomated, int planID, String summary,Integer priorityID)
+	throws XmlRpcException
 	{
 				
 		int isAutomatedInt; 
@@ -408,134 +313,38 @@ public class TestopiaTestCase {
 		if(priorityID != null)
 			map.put("priority_id", priorityID.intValue());
 		
-		try 
-		{
-
-			ArrayList<Object> params = new ArrayList<Object>();
+		//update the test case
+		int result = (Integer)this.callXmlrpcMethod("TestCase.create",
+													map);
 			
-			//set up params, to identify the test case
-			params.add(map);
-			
-
-			//update the test case
-			int result = (Integer)client.execute("TestCase.create",
-					params);
-			
-			caseID = result; 
-			//System.out.println(result);	
-			return result;
-			
-		}			
-		
-		catch (Exception e)
-		{
-			e.printStackTrace();
-			return 0;
-		}
+		caseID = result; 
+		//System.out.println(result);	
+		return result;
 	}
 	
 	/**
 	 * Gets the attributes of the test case, caseID must not be null
 	 * @return a hashMap of all the values found. Returns null if there is an error
 	 * and the TestCase cannot be returned
-	 * @throws Exception 
+	 * @throws Exception
+	 * @throws XmlRpcException
 	 */
-	public HashMap<String, Object> getAttributes() throws Exception
+	@SuppressWarnings("unchecked")
+	public HashMap<String, Object> getAttributes() throws Exception, XmlRpcException
 	{
-		if (caseID == null) 
-		{
+		if (caseID == null)
 			throw new Exception("caseID is null.");
-		}
 		
-		try 
-		{
-
-			ArrayList<Object> params = new ArrayList<Object>();
-			
-			//set up params, to identify the test plan
-			params.add(caseID.intValue());
-			
-			//get the hashmap
-			HashMap result = (HashMap) client.execute("TestCase.get",
-					params);
-			
-			//System.out.println(result);
-			
-			return result;		
-			
-		}			
-		
-		catch (Exception e)
-		{
-			e.printStackTrace();
-			return null;
-		}
+		//get the hashmap
+		return (HashMap<String, Object>) this.callXmlrpcMethod("TestCase.get",
+																caseID.intValue());	
 	}
 	
-	/**
-	 * Returns hashmap(s) of testcases that match the inputed values 
-	 * @param userName your bugzilla/testopia userName
-	 * @param password your password 
-	 * @param url the url of the testopia server
-	 * @param values a HashMap with the parameters that will be searched for
-	 * if you supply the pair "case_id", 5 then case_id 5 will be returned. Any combination
-	 * of testcase attributes can be entered and the result will be all the matches that fit
-	 * the inputed values
-	 * @return
-	 */
-	public static Object[] getList(Session session, Map<String, Object> values)
+	public int getCategoryIdByName(String categoryName) throws XmlRpcException
 	{
-		try 
-		{
-			XmlRpcClient client = session.getClient();
-
-			ArrayList<Object> params = new ArrayList<Object>();
-
-			// set up params, to identify the test plan
-			params.add(values);
-						
-			// get the hashmap
-			Object[] result = (Object[]) client.execute(
-					"TestCase.list", params);
-
-			// System.out.println(result);
-
-			return result;		
-			
-		}			
-		
-		catch (Exception e)
-		{
-			e.printStackTrace();
-			return null;
-		}
-	}
-	
-	public int getCategoryIdByName(String categoryName)
-	{
-		try 
-		{
-
-			ArrayList<Object> params = new ArrayList<Object>();
-			
-			//set up params, to identify the category
-			params.add(categoryName);
-			
-			//get the result
-			int result = (Integer)client.execute("TestCase.lookup_category_id_by_name", params);
-			
-			//System.out.println(result);
-			
-			return result;			
-			
-		}			
-		
-		catch (Exception e)
-		{
-			e.printStackTrace();
-			return 0;
-		}
-		
+		//get the result
+		return (Integer) this.callXmlrpcMethod("TestCase.lookup_category_id_by_name",
+												  categoryName);	
 	}
 	
 	 /**
@@ -544,31 +353,13 @@ public class TestopiaTestCase {
 	  * test plans that this test case belongs to and return the first category with a matching name. 0 Will be 
 	  * returned if the category can't be found
 	  * @return the ID of the specified product
+	  * @throws XmlRpcException
 	  */
-	 public int getBuildIDByName(String categoryName)
+	 public int getBuildIDByName(String categoryName) throws XmlRpcException
 	 {
-		 try 
-			{
-
-				ArrayList<Object> params = new ArrayList<Object>();
-				
-				//set up params, to identify the category
-				params.add(categoryName);
-				
-				//get the result
-				int result = (Integer)client.execute("TestCase.lookup_category_id_by_name", params);
-				
-				//System.out.println(result);
-				
-				return result;			
-				
-			}			
-			
-			catch (Exception e)
-			{
-				e.printStackTrace();
-				return 0;
-			}
+		//get the result
+		return (Integer)this.callXmlrpcMethod("TestCase.lookup_category_id_by_name",
+											  categoryName);
 	 }
 	
 
