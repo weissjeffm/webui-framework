@@ -32,6 +32,7 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
+import org.apache.xmlrpc.XmlRpcException;
 import org.apache.xmlrpc.client.XmlRpcClient;
 import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
 
@@ -41,8 +42,7 @@ import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
  * @author anelson
  *
  */
-public class Build {
-	private XmlRpcClient client;
+public class Build extends TestopiaObject {
 	
 	 
 	 /**
@@ -62,8 +62,9 @@ public class Build {
 	  * Creates a new build and returns the buildID, 0 is returned if an error occurs
 	  * @param name
 	  * @param productID
+	 * @throws XmlRpcException 
 	  */
-	 public int makeBuild(String name, int productID, Boolean isactive, String milestone)
+	 public int makeBuild(String name, int productID, Boolean isactive, String milestone) throws XmlRpcException
 	 {
 		 int result = 0;
 		 
@@ -84,27 +85,8 @@ public class Build {
 			 else
 				 map.put("isactive", 0);
 			 
-			 try 
-				{
-	
-					ArrayList<Object> params = new ArrayList<Object>();
-					
-					//set up params, to identify the build
-					params.add(map);
-					
-					//get the result
-					result = (Integer)client.execute("Build.create",params);
-					return result; 
-					
-					//System.out.println(result);								
-					
-				}			
-				
-				catch (Exception e)
-				{
-					e.printStackTrace();
-					return 0;
-				}
+			 return (Integer)callXmlrpcMethod("Build.create", map);
+			 
 		 }
 		 else{
 			 //Build already exists
@@ -122,9 +104,10 @@ public class Build {
 	  * @param isactive Boolean - if the build is active. Can be null
  	  * @param description String - description of the build. Can be null
 	  * @param buildID int - the buildID
+	 * @throws XmlRpcException 
 	  */
 	 public void updateBuild(String name, String milestone, Boolean isactive, 
-			 String description, int buildID)
+			 String description, int buildID) throws XmlRpcException
 	 {
 		 //put values into map if they are not null 
 		 HashMap<String, Object> map = new HashMap<String, Object>();
@@ -145,26 +128,8 @@ public class Build {
 		 if(description != null)
 			 map.put("description", description);
 		 
-		 try 
-			{
-				ArrayList<Object> params = new ArrayList<Object>();
-				
-				//set up params, to identify the build
-				params.add(buildID);
-				params.add(map);
-				
-				//get the result
-				HashMap result = (HashMap)client.execute("Build.update",params);
-				
-				//System.out.println(result);								
-				
-			}			
-			
-			catch (Exception e)
-			{
-				e.printStackTrace();
-				
-			}
+		 callXmlrpcMethod("Build.update", buildID, map);
+
 		 
 	 }
 	 
@@ -173,30 +138,12 @@ public class Build {
 	  * @param BuildName the name of the build that the ID will be returned for. 0 Will be 
 	  * returned if the build can't be found
 	  * @return the ID of the specified product
+	 * @throws XmlRpcException 
 	  */
-	 public int getBuildIDByName(String buildName)
+	 public int getBuildIDByName(String buildName) throws XmlRpcException
 	 {
-		 try 
-			{
-				ArrayList<Object> params = new ArrayList<Object>();
-				
-				//set up params, to identify the build
-				params.add(buildName);
-				
-				//get the result
-				int result = (Integer)client.execute("Build.lookup_id_by_name",params);
-				
-				//System.out.println(result);
-				
-				return result;			
-				
-			}			
-			
-			catch (Exception e)
-			{
-				e.printStackTrace();
-				return 0;
-			}
+		 return (Integer)callXmlrpcMethod("Build.lookup_id_by_name", buildName);
+		
 	 }
 	 
 	/**
@@ -204,31 +151,12 @@ public class Build {
 	 * @param id the ID of the build name that will be returned. Null is returned 
 	 * if the product can't be found
 	 * @return the product name that corresponds the specified product ID
+	 * @throws XmlRpcException 
 	 */
-	 public String getBuildNameByID(int id)
+	 public String getBuildNameByID(int id) throws XmlRpcException
 	 {
-		 try 
-			{
-				ArrayList<Object> params = new ArrayList<Object>();
-				
-				//set up params, to identify the build
-				params.add(id);
-				
-				//get the result
-				String result = (String)client.execute("Build.lookup_id_by_name", params);
-				
-				//System.out.println(result);
-				
-				return result;
-			
-				
-			}			
-			
-			catch (Exception e)
-			{
-				e.printStackTrace();
-				return null;
-			}
+		 return(String)callXmlrpcMethod("Build.lookup_id_by_name", id);
+		
 	 }
 	 
 

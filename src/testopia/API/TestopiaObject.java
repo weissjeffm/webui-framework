@@ -1,7 +1,7 @@
 package testopia.API;
 
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.xmlrpc.XmlRpcException;
 import org.apache.xmlrpc.client.XmlRpcClient;
@@ -18,13 +18,13 @@ public abstract class TestopiaObject {
 	/**
 	 * Generic method designed to obtain a list of objects that match parameters
 	 * supplies in provided HashMap object
-	 * @param values a HashMap with the parameters that will be searched for;
+	 * @param values a Map with the parameters that will be searched for;
 	 * if you supply the pair {"plan_id": 5}, plan_id #5 will be returned. Any combination
 	 * of attributes can be entered and the result will be all matches that fit 
 	 * the input values
 	 * @return list of matching objects
 	 */
-	public Object[] getList(HashMap<String, Object> values)
+	public Object[] getList(Map<String, Object> values)
 	{
 		//some Testopia objects have no listing mechanism
 		if(listMethod == null)
