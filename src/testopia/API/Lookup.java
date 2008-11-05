@@ -84,7 +84,7 @@ public class Lookup {
 		
 			else if(command.toString().equals("component"))
 			{
-				TestPlan testPlan = new TestPlan(username, password, url, new Integer(object.toString()));
+				TestPlan testPlan = new TestPlan(session, new Integer(object.toString()));
 				Object[] objects = testPlan.getComponents();
 				for(Object o : objects)
 					System.out.println(o.toString());				
