@@ -64,6 +64,8 @@ public class TestPlan {
 	 private boolean isSetName = false; 		
 	 private boolean isSetProductID = false;  	
 	 private boolean isSetTypeID = false; 
+	 
+	 private Session session;
 	
 	/**
 	 * 
@@ -72,11 +74,9 @@ public class TestPlan {
 	 * @param url the url of the testopia server
 	 * @param planID - Integer the planID, you may enter null here if you are creating a test plan
 	 */
-	public TestPlan(String userName, String password, URL url, Integer planID)
+	public TestPlan(Session session, Integer planID)
 	{
-		this.userName = userName; 
-		this.password = password;
-		this.url = url; 
+		this.session = session;
 		this.planID = planID; 
 	}
 	
@@ -103,9 +103,8 @@ public class TestPlan {
 		
 		try 
 		{
-			TrustAllCerts();
 
-			XmlRpcClient client = getXMLclient();
+			XmlRpcClient client = session.getClient();
 
 			ArrayList<Object> params = new ArrayList<Object>();
 			
@@ -172,9 +171,8 @@ public class TestPlan {
 		 		
 		try 
 		{
-			TrustAllCerts();
 
-			XmlRpcClient client = getXMLclient();
+			XmlRpcClient client = session.getClient();
 
 			ArrayList<Object> params = new ArrayList<Object>();
 			
@@ -299,9 +297,8 @@ public class TestPlan {
 		
 		try 
 		{
-			TrustAllCerts();
 
-			XmlRpcClient client = getXMLclient();
+			XmlRpcClient client = session.getClient();
 
 			ArrayList<Object> params = new ArrayList<Object>();
 			
@@ -340,9 +337,7 @@ public class TestPlan {
 		
 		try 
 		{
-			TrustAllCerts();
-
-			XmlRpcClient client = getXMLclient();
+			XmlRpcClient client = session.getClient();
 
 			ArrayList<Object> params = new ArrayList<Object>();
 			
@@ -381,9 +376,7 @@ public class TestPlan {
 		
 		try 
 		{
-			TrustAllCerts();
-
-			XmlRpcClient client = getXMLclient();
+			XmlRpcClient client = session.getClient();
 
 			ArrayList<Object> params = new ArrayList<Object>();
 			
@@ -422,9 +415,7 @@ public class TestPlan {
 		
 		try 
 		{
-			TrustAllCerts();
-
-			XmlRpcClient client = getXMLclient();
+			XmlRpcClient client = session.getClient();
 
 			ArrayList<Object> params = new ArrayList<Object>();
 			
@@ -459,21 +450,12 @@ public class TestPlan {
 	 * the inputed values
 	 * @return
 	 */
-	public static Object[] getList(String userName, String password,
-			URL url, HashMap<String, Object> values)
+	public static Object[] getList(Session session, URL url, HashMap<String, Object> values)
 	{
 		try 
 		{
-			TrustAllCerts();
 
-			//setup client
-			XmlRpcClientConfigImpl config = new XmlRpcClientConfigImpl();
-			config.setServerURL(url);
-			config.setBasicUserName(userName);
-			config.setBasicPassword(password);
-
-			XmlRpcClient client = new XmlRpcClient();
-			client.setConfig(config);
+			XmlRpcClient client = session.getClient();
 
 			ArrayList<Object> params = new ArrayList<Object>();
 
@@ -512,9 +494,8 @@ public class TestPlan {
 		
 		try 
 		{
-			TrustAllCerts();
 
-			XmlRpcClient client = getXMLclient();
+			XmlRpcClient client = session.getClient();
 
 			ArrayList<Object> params = new ArrayList<Object>();
 			
@@ -553,9 +534,7 @@ public class TestPlan {
 		
 		try 
 		{
-			TrustAllCerts();
-
-			XmlRpcClient client = getXMLclient();
+			XmlRpcClient client = session.getClient();
 
 			ArrayList<Object> params = new ArrayList<Object>();
 			
@@ -577,74 +556,6 @@ public class TestPlan {
 			e.printStackTrace();
 			return null;
 		}
-	}
-			
-	private static void TrustAllCerts()
-	throws java.security.NoSuchAlgorithmException,
-	       java.security.KeyManagementException  
-{
-	// Create a trust manager that does not validate certificate chains
-
-	TrustManager[] trustAllCerts = new TrustManager[] 
-    {
-        new X509TrustManager() 
-        {
-            public X509Certificate[] getAcceptedIssuers() 
-            {
-                return null;
-            }
- 
-            public void checkClientTrusted(X509Certificate[] certs, String authType) 
-            {
-                // Trust always
-            }
- 
-            public void checkServerTrusted(X509Certificate[] certs, String authType) 
-            {
-                // Trust always
-            }
-        }
-    };
- 
-    // Install the all-trusting trust manager
-    SSLContext sc = SSLContext.getInstance("SSL");
-    
-    // Create empty HostnameVerifier
-    HostnameVerifier hv = new HostnameVerifier() 
-    {
-    	public boolean verify(String arg0, SSLSession arg1) 
-    	{
-    		return true;
-        }
-    };
-
-    sc.init(null, trustAllCerts, new java.security.SecureRandom());
-    HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
-    HttpsURLConnection.setDefaultHostnameVerifier(hv);
-}
-	
-	private XmlRpcClient getXMLclient() throws Exception
-	{
-		try
-		{
-
-		    XmlRpcClientConfigImpl config = new XmlRpcClientConfigImpl();
-		    config.setServerURL(url);
-		    config.setBasicUserName(userName);
-		    config.setBasicPassword(password);
-
-		    XmlRpcClient client = new XmlRpcClient();
-		    client.setConfig(config);
-		    
-		    return client;
-		}
-		
-		catch (Exception e)
-		{
-			e.printStackTrace();			
-		}
-		
-		throw new Exception("could not connect to server");
 	}
 
 }
