@@ -42,9 +42,7 @@ import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
  *
  */
 public class Build {
-	private String userName;
-	private String password;
-	private URL url; 
+	private XmlRpcClient client;
 	
 	 
 	 /**
@@ -54,11 +52,9 @@ public class Build {
 	  * @param login - the user you want attributes returned for
 	  * @param url - the url of the testopia server
 	  */
-	 public Build(String userName, String password, URL url)
+	 public Build(Session session)
 	 {
-		 this.userName = userName;
-		 this.password = password; 
-		 this.url = url;
+		 this.client = session.getClient();
 	 }
 	 
 	 
@@ -90,9 +86,6 @@ public class Build {
 			 
 			 try 
 				{
-					TrustAllCerts();
-	
-					XmlRpcClient client = getXMLclient();
 	
 					ArrayList<Object> params = new ArrayList<Object>();
 					
@@ -154,10 +147,6 @@ public class Build {
 		 
 		 try 
 			{
-				TrustAllCerts();
-
-				XmlRpcClient client = getXMLclient();
-
 				ArrayList<Object> params = new ArrayList<Object>();
 				
 				//set up params, to identify the build
@@ -189,10 +178,6 @@ public class Build {
 	 {
 		 try 
 			{
-				TrustAllCerts();
-
-				XmlRpcClient client = getXMLclient();
-
 				ArrayList<Object> params = new ArrayList<Object>();
 				
 				//set up params, to identify the build
@@ -224,10 +209,6 @@ public class Build {
 	 {
 		 try 
 			{
-				TrustAllCerts();
-
-				XmlRpcClient client = getXMLclient();
-
 				ArrayList<Object> params = new ArrayList<Object>();
 				
 				//set up params, to identify the build
@@ -250,78 +231,5 @@ public class Build {
 			}
 	 }
 	 
-	
-	 
-	 /**
-		 * 
-		 * @return the XML client used to connect to and modify TestCaseRun
-		 */
-	 private XmlRpcClient getXMLclient() throws Exception
-		{
-			try
-			{
-
-			    XmlRpcClientConfigImpl config = new XmlRpcClientConfigImpl();
-			    config.setServerURL(url);
-			    config.setBasicUserName(userName);
-			    config.setBasicPassword(password);
-
-			    XmlRpcClient client = new XmlRpcClient();
-			    client.setConfig(config);
-			    
-			    return client;
-			}
-			
-			catch (Exception e)
-			{
-				e.printStackTrace();			
-			}
-			
-			throw new Exception("could not connect to server");
-		}
-	 
-	 private static void TrustAllCerts()
-		throws java.security.NoSuchAlgorithmException,
-		       java.security.KeyManagementException  
-	{
-		// Create a trust manager that does not validate certificate chains
-
-		TrustManager[] trustAllCerts = new TrustManager[] 
-	    {
-	        new X509TrustManager() 
-	        {
-	            public X509Certificate[] getAcceptedIssuers() 
-	            {
-	                return null;
-	            }
-	 
-	            public void checkClientTrusted(X509Certificate[] certs, String authType) 
-	            {
-	                // Trust always
-	            }
-	 
-	            public void checkServerTrusted(X509Certificate[] certs, String authType) 
-	            {
-	                // Trust always
-	            }
-	        }
-	    };
-	 
-	    // Install the all-trusting trust manager
-	    SSLContext sc = SSLContext.getInstance("SSL");
-	    
-	    // Create empty HostnameVerifier
-	    HostnameVerifier hv = new HostnameVerifier() 
-	    {
-	    	public boolean verify(String arg0, SSLSession arg1) 
-	    	{
-	    		return true;
-	        }
-	    };
-
-	    sc.init(null, trustAllCerts, new java.security.SecureRandom());
-	    HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
-	    HttpsURLConnection.setDefaultHostnameVerifier(hv);
-	}
 
 }

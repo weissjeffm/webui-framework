@@ -61,6 +61,10 @@ public class Lookup {
 		String username = userNameStringBuilder.toString();
 		String password = passwordStringBuilder.toString();
 		StringBuilder secondObject;
+		
+		Session session = new Session(username, password, url);
+		session.login();
+		
 		while(true)
 		{
 			command = new StringBuilder();
@@ -73,7 +77,7 @@ public class Lookup {
 		
 			if(command.toString().equals("build"))
 			{
-				Build build = new Build(username, password, url);
+				Build build = new Build(session);
 				int buildId = build.getBuildIDByName(object.toString());
 				System.out.println(buildId);
 			}
