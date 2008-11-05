@@ -16,6 +16,7 @@ import org.testng.internal.IResultListener;
 import testopia.API.Session;
 import testopia.API.TestopiaTestCase;
 import testopia.API.User;
+import testopia.API.TestCaseRun;
 
 /**
  * @author jweiss
@@ -139,7 +140,7 @@ public class TestopiaTestNGListener implements IResultListener {
 		Session session = new Session(TESTOPIA_USER, TESTOPIA_PW, new URL(TESTOPIA_URL));
 		session.login();
 		TestopiaTestCase tc = new TestopiaTestCase(session, null ); 
-		User user = new User(TESTOPIA_USER, TESTOPIA_PW, TESTOPIA_USER, new URL(TESTOPIA_URL));
+		User user = new User(session, TESTOPIA_USER);
 		
 		int id = user.getAttributes();
 		System.out.println(id);
@@ -150,6 +151,11 @@ public class TestopiaTestNGListener implements IResultListener {
 		for (Object res: result){
 			System.out.println(res.toString());
 		}
+		TestCaseRun tcr = new TestCaseRun(session, 2935, 1, 1, 1, 1);
+		tcr.makeTestCaseRun(1, 1);
+		tcr.setNotes("RICK ASTLEY");
+		tcr.setStatus(2);
+		tcr.update();
 	}
 
 }

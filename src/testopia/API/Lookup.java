@@ -92,7 +92,7 @@ public class Lookup {
 			
 			else if(command.toString().equals("environmentByProduct"))
 			{
-				Environment environment = new Environment(username, password, url);
+				Environment environment = new Environment(session);
 						
 				HashMap<String, Object> map = environment.listEnvironments(object.toString(), null);
 				
@@ -103,7 +103,7 @@ public class Lookup {
 			
 			else if(command.toString().equals("environmentByName"))
 			{
-				Environment environment = new Environment(username, password, url);
+				Environment environment = new Environment(session);
 						
 				HashMap<String, Object> map = environment.listEnvironments(object.toString(), null);
 				
@@ -114,7 +114,7 @@ public class Lookup {
 			
 			else if(command.toString().equals("exit"))
 			{
-				System.out.println("Thanks For Using the Lookup Tool");
+				System.out.println("Thanks For Using the Lookup Tool <3 <3 <3 :-D ROFL");
 				break;
 			}
 		

@@ -20,20 +20,11 @@
   *
   */
 package testopia.API;
-import java.net.URL;
-import java.security.cert.X509Certificate;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
-
 import org.apache.xmlrpc.client.XmlRpcClient;
-import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
 
 /**
  * Allows the user to get an environment from it's ID. It can also create 
@@ -42,9 +33,7 @@ import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
  *
  */
 public class Environment {
-	private String userName;
-	private String password;
-	private URL url; 
+	private Session session;
 	
 	 
 	 /**
@@ -54,11 +43,9 @@ public class Environment {
 	  * @param login - the user you want attributes returned for
 	  * @param url - the url of the testopia server
 	  */
-	 public Environment(String userName, String password, URL url)
+	 public Environment(Session session)
 	 {
-		 this.userName = userName;
-		 this.password = password; 
-		 this.url = url;
+		 this.session = session;
 	 }
 	 
 	 
@@ -93,9 +80,7 @@ public class Environment {
 			 
 			 try 
 				{
-					TrustAllCerts();
-	
-					XmlRpcClient client = getXMLclient();
+					XmlRpcClient client = session.getClient();
 	
 					ArrayList<Object> params = new ArrayList<Object>();
 					
@@ -155,9 +140,7 @@ public class Environment {
 		 		 
 		 try 
 			{
-				TrustAllCerts();
-
-				XmlRpcClient client = getXMLclient();
+				XmlRpcClient client = session.getClient();
 
 				ArrayList<Object> params = new ArrayList<Object>();
 				
@@ -184,13 +167,12 @@ public class Environment {
 	  * @param environmentName
 	  * @return
 	  */
-	 public HashMap<String, Object> getEnvirnoment(int environmentID)
+	@SuppressWarnings("unchecked")
+	public HashMap<String, Object> getEnvirnoment(int environmentID)
 	 {
 		 try 
 			{
-				TrustAllCerts();
-
-				XmlRpcClient client = getXMLclient();
+				XmlRpcClient client = session.getClient();
 
 				ArrayList<Object> params = new ArrayList<Object>();
 				
@@ -198,7 +180,7 @@ public class Environment {
 				params.add(environmentID);
 				
 				//get the result
-				HashMap result = (HashMap)client.execute("Environment.get", params);
+				HashMap<String, Object> result = (HashMap<String, Object>)client.execute("Environment.get", params);
 				
 				//System.out.println(result);
 				
@@ -219,20 +201,19 @@ public class Environment {
 	  * @param environmentName
 	  * @return
 	  */
-	 public HashMap<String, Object> listEnvironments(String productName, String environmentName)
+	@SuppressWarnings("unchecked")
+	public HashMap<String, Object> listEnvironments(String productName, String environmentName)
 	 {
 		 try 
 			{
-				TrustAllCerts();
-
-				XmlRpcClient client = getXMLclient();
+				XmlRpcClient client = session.getClient();
 
 				ArrayList<Object> params = new ArrayList<Object>();
 				
 				//set up params, to identify the environment
 				if(productName != null)	
 				{
-					Product product = new Product(userName, password, url);
+					Product product = new Product(session);
 					int productId = product.getProductIDByName(productName);
 					params.add(productId);
 				}
@@ -241,7 +222,7 @@ public class Environment {
 					params.add(environmentName);
 				
 				//get the result
-				HashMap result = (HashMap)client.execute("Environment.get", params);
+				HashMap<String, Object> result = (HashMap<String, Object>)client.execute("Environment.get", params);
 				
 				//System.out.println(result);
 				
@@ -266,9 +247,7 @@ public class Environment {
 	 {
 		 try 
 			{
-				TrustAllCerts();
-
-				XmlRpcClient client = getXMLclient();
+				XmlRpcClient client = session.getClient();
 
 				ArrayList<Object> params = new ArrayList<Object>();
 				
@@ -292,77 +271,4 @@ public class Environment {
 				return null;
 			}
 	 }
-	 
-	 /**
-		 * 
-		 * @return the XML client used to connect to and modify TestCaseRun
-		 */
-	 private XmlRpcClient getXMLclient() throws Exception
-		{
-			try
-			{
-
-			    XmlRpcClientConfigImpl config = new XmlRpcClientConfigImpl();
-			    config.setServerURL(url);
-			    config.setBasicUserName(userName);
-			    config.setBasicPassword(password);
-
-			    XmlRpcClient client = new XmlRpcClient();
-			    client.setConfig(config);
-			    
-			    return client;
-			}
-			
-			catch (Exception e)
-			{
-				e.printStackTrace();			
-			}
-			
-			throw new Exception("could not connect to server");
-		}
-	 
-	 private static void TrustAllCerts()
-		throws java.security.NoSuchAlgorithmException,
-		       java.security.KeyManagementException  
-	{
-		// Create a trust manager that does not validate certificate chains
-
-		TrustManager[] trustAllCerts = new TrustManager[] 
-	    {
-	        new X509TrustManager() 
-	        {
-	            public X509Certificate[] getAcceptedIssuers() 
-	            {
-	                return null;
-	            }
-	 
-	            public void checkClientTrusted(X509Certificate[] certs, String authType) 
-	            {
-	                // Trust always
-	            }
-	 
-	            public void checkServerTrusted(X509Certificate[] certs, String authType) 
-	            {
-	                // Trust always
-	            }
-	        }
-	    };
-	 
-	    // Install the all-trusting trust manager
-	    SSLContext sc = SSLContext.getInstance("SSL");
-	    
-	    // Create empty HostnameVerifier
-	    HostnameVerifier hv = new HostnameVerifier() 
-	    {
-	    	public boolean verify(String arg0, SSLSession arg1) 
-	    	{
-	    		return true;
-	        }
-	    };
-
-	    sc.init(null, trustAllCerts, new java.security.SecureRandom());
-	    HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
-	    HttpsURLConnection.setDefaultHostnameVerifier(hv);
-	}
-
 }

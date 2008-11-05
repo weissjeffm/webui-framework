@@ -41,9 +41,7 @@ import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
  *
  */
 public class Component {
-		private String userName;
-		private String password;
-		private URL url; 
+		private Session session; 
 		
 		 
 		 /**
@@ -52,11 +50,9 @@ public class Component {
 		  * @param password - the password for your account 
 		  * @param url - the url of the testopia server
 		  */
-		 public Component(String userName, String password, URL url)
+		 public Component(Session session)
 		 {
-			 this.userName = userName;
-			 this.password = password; 
-			 this.url = url;
+			 this.session = session;
 		 }
 		 
 			/**
@@ -65,13 +61,12 @@ public class Component {
 			 * if the component can't be found
 			 * @return the product name that corresponds the specified product ID
 			 */
-			 public HashMap<String, Object> getComponentByID(int id)
+			@SuppressWarnings("unchecked")
+			public HashMap<String, Object> getComponentByID(int id)
 			 {
 				 try 
 					{
-						TrustAllCerts();
-
-						XmlRpcClient client = getXMLclient();
+						XmlRpcClient client = session.getClient();
 
 						ArrayList<Object> params = new ArrayList<Object>();
 						
@@ -94,77 +89,4 @@ public class Component {
 						return null;
 					}
 			 }
-			 
-			 /**
-				 * 
-				 * @return the XML client used to connect to and modify TestCaseRun
-				 */
-			 private XmlRpcClient getXMLclient() throws Exception
-				{
-					try
-					{
-
-					    XmlRpcClientConfigImpl config = new XmlRpcClientConfigImpl();
-					    config.setServerURL(url);
-					    config.setBasicUserName(userName);
-					    config.setBasicPassword(password);
-
-					    XmlRpcClient client = new XmlRpcClient();
-					    client.setConfig(config);
-					    
-					    return client;
-					}
-					
-					catch (Exception e)
-					{
-						e.printStackTrace();			
-					}
-					
-					throw new Exception("could not connect to server");
-				}
-			 
-			 private static void TrustAllCerts()
-				throws java.security.NoSuchAlgorithmException,
-				       java.security.KeyManagementException  
-			{
-				// Create a trust manager that does not validate certificate chains
-
-				TrustManager[] trustAllCerts = new TrustManager[] 
-			    {
-			        new X509TrustManager() 
-			        {
-			            public X509Certificate[] getAcceptedIssuers() 
-			            {
-			                return null;
-			            }
-			 
-			            public void checkClientTrusted(X509Certificate[] certs, String authType) 
-			            {
-			                // Trust always
-			            }
-			 
-			            public void checkServerTrusted(X509Certificate[] certs, String authType) 
-			            {
-			                // Trust always
-			            }
-			        }
-			    };
-			 
-			    // Install the all-trusting trust manager
-			    SSLContext sc = SSLContext.getInstance("SSL");
-			    
-			    // Create empty HostnameVerifier
-			    HostnameVerifier hv = new HostnameVerifier() 
-			    {
-			    	public boolean verify(String arg0, SSLSession arg1) 
-			    	{
-			    		return true;
-			        }
-			    };
-
-			    sc.init(null, trustAllCerts, new java.security.SecureRandom());
-			    HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
-			    HttpsURLConnection.setDefaultHostnameVerifier(hv);
-			}
-
 }

@@ -328,6 +328,7 @@ public class TestPlan {
 	 * and the TestPlan cannot be returned
 	 * @throws Exception
 	 */
+	@SuppressWarnings("unchecked")
 	public HashMap<String, Object> getCategories() throws Exception
 	{
 		if (planID == null) 
@@ -345,7 +346,7 @@ public class TestPlan {
 			params.add(planID.intValue());
 			
 			//get the hashmap
-			HashMap<String, Object> categories = (HashMap)client.execute("TestPlan.get",
+			HashMap<String, Object> categories = (HashMap<String, Object>)client.execute("TestPlan.get",
 					params);
 			
 			//System.out.println(result);
