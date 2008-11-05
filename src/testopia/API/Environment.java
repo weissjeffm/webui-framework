@@ -24,6 +24,7 @@ package testopia.API;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.apache.xmlrpc.XmlRpcException;
 import org.apache.xmlrpc.client.XmlRpcClient;
 
 /**
@@ -32,8 +33,7 @@ import org.apache.xmlrpc.client.XmlRpcClient;
  * @author anelson
  *
  */
-public class Environment {
-	private Session session;
+public class Environment extends TestopiaObject{
 	
 	 
 	 /**
@@ -54,8 +54,9 @@ public class Environment {
 	  * if an error occurs
 	  * @param name
 	  * @param productID
+	 * @throws XmlRpcException 
 	  */
-	 public int makeEnvironment(String name, int productID, boolean isActive)
+	 public int makeEnvironment(String name, int productID, boolean isActive) throws XmlRpcException
 	 {
 		 int result = 0;
 		 
@@ -78,28 +79,8 @@ public class Environment {
 			 map.put("name", name);
 			 map.put("product_id", productID);
 			 
-			 try 
-				{
-					XmlRpcClient client = session.getClient();
-	
-					ArrayList<Object> params = new ArrayList<Object>();
-					
-					//set up params, to identify the environment
-					params.add(map);
-					
-					//get the result
-					result = (Integer) client.execute("Environment.create",params);
-					return result; 
-					
-					//System.out.println(result);								
-					
-				}			
-				
-				catch (Exception e)
-				{
-					e.printStackTrace();
-					return 0;
-				}
+			 return (Integer)callXmlrpcMethod("Environment.create", map);
+			
 		 }
 		 else{
 			 //Build already exists
@@ -118,9 +99,10 @@ public class Environment {
 	  * @param isactive Boolean - if the build is active. Can be null
  	  * @param description String - description of the build. Can be null
 	  * @param buildID int - the buildID
+	 * @throws XmlRpcException 
 	  */
 	 public void updateEnvironment(String name, Boolean isactive, 
-			 Integer productID, int environmentID)
+			 Integer productID, int environmentID) throws XmlRpcException
 	 {
 		 //put values into map if they are not null 
 		 HashMap<String, Object> map = new HashMap<String, Object>();
@@ -137,28 +119,9 @@ public class Environment {
 			 else 
 				 map.put("isactive", 0);
 		 }
-		 		 
-		 try 
-			{
-				XmlRpcClient client = session.getClient();
-
-				ArrayList<Object> params = new ArrayList<Object>();
-				
-				//set up params, to identify the build
-				params.add(environmentID);
-				params.add(map);
-				
-				//get the result
-				HashMap result = (HashMap)client.execute("Environment.update",params);
-				
-				//System.out.println(result);								
-				
-			}			
-			
-			catch (Exception e)
-			{
-				e.printStackTrace();				
-			}
+		 		
+		 callXmlrpcMethod("Environment.update", environmentID, map);
+		 
 		 
 	 }
 	 
@@ -166,33 +129,13 @@ public class Environment {
 	  * Returns the environmnet as a HashMap or null if environment can't be found
 	  * @param environmentName
 	  * @return
+	 * @throws XmlRpcException 
 	  */
 	@SuppressWarnings("unchecked")
-	public HashMap<String, Object> getEnvirnoment(int environmentID)
+	public HashMap<String, Object> getEnvirnoment(int environmentID) throws XmlRpcException
 	 {
-		 try 
-			{
-				XmlRpcClient client = session.getClient();
-
-				ArrayList<Object> params = new ArrayList<Object>();
-				
-				//set up params, to identify the environment
-				params.add(environmentID);
-				
-				//get the result
-				HashMap<String, Object> result = (HashMap<String, Object>)client.execute("Environment.get", params);
-				
-				//System.out.println(result);
-				
-				return result;			
-				
-			}			
-			
-			catch (Exception e)
-			{
-				e.printStackTrace();
-				return null;
-			}
+		return (HashMap<String, Object>)callXmlrpcMethod("Environment.get", environmentID);
+		
 	 }
 	 
 	 /**
@@ -200,12 +143,11 @@ public class Environment {
 	  * @param productName - the name of the product that the 
 	  * @param environmentName
 	  * @return
+	 * @throws XmlRpcException 
 	  */
 	@SuppressWarnings("unchecked")
-	public HashMap<String, Object> listEnvironments(String productName, String environmentName)
+	public HashMap<String, Object> listEnvironments(String productName, String environmentName) throws XmlRpcException
 	 {
-		 try 
-			{
 				XmlRpcClient client = session.getClient();
 
 				ArrayList<Object> params = new ArrayList<Object>();
@@ -227,14 +169,7 @@ public class Environment {
 				//System.out.println(result);
 				
 				return result;
-				
-			}			
-			
-			catch (Exception e)
-			{
-				e.printStackTrace();
-				return null;
-			}
+
 	 }
 
 	 /**
@@ -242,33 +177,12 @@ public class Environment {
 	  * @param productId - the product id 
 	  * @param environmentName
 	  * @return
+	 * @throws XmlRpcException 
 	  */
-	 public HashMap<String, Object> listEnvironments(int productId, String environmentName)
+	 public HashMap<String, Object> listEnvironments(int productId, String environmentName) throws XmlRpcException
 	 {
-		 try 
-			{
-				XmlRpcClient client = session.getClient();
-
-				ArrayList<Object> params = new ArrayList<Object>();
-				
-				params.add(productId);
-								
-				if(environmentName != null)
-					params.add(environmentName);
-				
-				//get the result
-				HashMap result = (HashMap)client.execute("Environment.get", params);
-				
-				//System.out.println(result);
-				
-				return result;
-				
-			}			
-			
-			catch (Exception e)
-			{
-				e.printStackTrace();
-				return null;
-			}
+		 if(environmentName != null) return (HashMap<String, Object>)callXmlrpcMethod("Environment.get", productId, environmentName);
+		 else return (HashMap<String, Object>)callXmlrpcMethod("Environment.get", productId);
+		 
 	 }
 }

@@ -8,11 +8,11 @@ import org.apache.xmlrpc.client.XmlRpcClient;
 
 public abstract class TestopiaObject {
 
-	protected XmlRpcClient client;
+	protected Session session;
 	protected String listMethod;
 	
 	protected Object callXmlrpcMethod(String methodName, Object... params) throws XmlRpcException{	
-		return (Object) client.execute(methodName, Arrays.asList(params));	
+		return (Object) session.getClient().execute(methodName, Arrays.asList(params));	
 	}
 
 	/**

@@ -54,7 +54,7 @@ public class Build extends TestopiaObject {
 	  */
 	 public Build(Session session)
 	 {
-		 this.client = session.getClient();
+		 this.session = session;
 	 }
 	 
 	 

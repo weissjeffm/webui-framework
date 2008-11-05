@@ -32,6 +32,7 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
+import org.apache.xmlrpc.XmlRpcException;
 import org.apache.xmlrpc.client.XmlRpcClient;
 import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
 
@@ -40,8 +41,7 @@ import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
  * @author anelson
  *
  */
-public class Component {
-		private Session session; 
+public class Component extends TestopiaObject {
 		
 		 
 		 /**
@@ -55,38 +55,17 @@ public class Component {
 			 this.session = session;
 		 }
 		 
-			/**
-			 * 
-			 * @param id the ID of the component that will be returned. Null is returned 
-			 * if the component can't be found
-			 * @return the product name that corresponds the specified product ID
-			 */
-			@SuppressWarnings("unchecked")
-			public HashMap<String, Object> getComponentByID(int id)
-			 {
-				 try 
-					{
-						XmlRpcClient client = session.getClient();
-
-						ArrayList<Object> params = new ArrayList<Object>();
-						
-						//set up params, to identify the build
-						params.add(id);
-						
-						//get the result
-						HashMap<String, Object> result = (HashMap<String, Object>)client.execute("Component.get", params);
-						
-						//System.out.println(result);
-						
-						return result;
-					
-						
-					}			
-					
-					catch (Exception e)
-					{
-						e.printStackTrace();
-						return null;
-					}
-			 }
+		/**
+		 * 
+		 * @param id the ID of the component that will be returned. Null is returned 
+		 * if the component can't be found
+		 * @return the product name that corresponds the specified product ID
+		 * @throws XmlRpcException 
+		 */
+		@SuppressWarnings("unchecked")
+		public HashMap<String, Object> getComponentByID(int id) throws XmlRpcException
+		 {
+			return (HashMap<String,Object>)callXmlrpcMethod("Component.get", id);
+			
+		 }
 }
