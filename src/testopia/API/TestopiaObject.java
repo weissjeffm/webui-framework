@@ -24,21 +24,13 @@ public abstract class TestopiaObject {
 	 * the input values
 	 * @return list of matching objects
 	 */
-	public Object[] getList(Map<String, Object> values)
+	public Object[] getList(Map<String, Object> values) throws XmlRpcException
 	{
 		//some Testopia objects have no listing mechanism
 		if(listMethod == null)
 			return null;
-		try 
-		{
-			Object[] result = (Object[]) this.callXmlrpcMethod(listMethod, values);
-			return result;
-		}			
 		
-		catch (Exception e)
-		{
-			e.printStackTrace();
-			return null;
-		}
+		Object[] result = (Object[]) this.callXmlrpcMethod(listMethod, values);
+		return result;
 	}
 }
