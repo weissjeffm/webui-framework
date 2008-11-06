@@ -216,34 +216,34 @@ public class TestopiaTestCase extends TestopiaObject{
 		HashMap<String, Object> map = new HashMap<String, Object>();
 		
 		//add attributes that need to be updated to the hashmap 
-		if(isAutomated != null)
+		if(isAutomated.isDirty())
 			map.put("isautomated", isAutomated.get().intValue());
 		
-		if(priorityID != null)
+		if(priorityID.isDirty())
 			map.put("priority_id", priorityID.get().intValue());
 		
-		if(canview != null)
+		if(canview.isDirty())
 			map.put("canview", canview.get().intValue());
 		
-		if(categoryID != null)
+		if(categoryID.isDirty())
 			map.put("category_id", categoryID.get());
 		
-		if(arguments != null)
+		if(arguments.isDirty())
 			map.put("arguments", arguments.get());
 		
-		if(alias != null)
+		if(alias.isDirty())
 			map.put("alias", alias.get());
 		
-		if(requirement != null)
+		if(requirement.isDirty())
 			map.put("requirement", requirement.get());
 		
-		if(script != null)
+		if(script.isDirty())
 			map.put("script", script.get());
 		
-		if(caseStatusID != null)
+		if(caseStatusID.isDirty())
 			map.put("case_status_id", caseStatusID.get());
 		
-		if(summary != null)
+		if(summary.isDirty())
 			map.put("summary", summary.get()); 
 		
 		//update the testRunCase
