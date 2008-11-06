@@ -1,5 +1,6 @@
 package testopia.API;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -10,6 +11,7 @@ public abstract class TestopiaObject {
 
 	protected Session session;
 	protected String listMethod;
+	protected ArrayList<Attribute> attributes;
 	
 	protected Object callXmlrpcMethod(String methodName, Object... params) throws XmlRpcException{	
 		Object o = (Object) session.getClient().execute(methodName, Arrays.asList(params));	
@@ -55,9 +57,27 @@ public abstract class TestopiaObject {
 		return getList(map);
 	}
 	
+	public StringAttribute newStringAttribute(String s){
+		StringAttribute sa = new StringAttribute(s);
+		this.attributes.add(sa);
+		return sa;
+	}
+	
+	public IntegerAttribute newIntegerAttribute(Integer s){
+		IntegerAttribute ia = new IntegerAttribute(s);
+		this.attributes.add(ia);
+		return ia;
+	}
+	
+	public void cleanAllAttributes(){
+		for(int i=0;i<this.attributes.size();i++)
+			this.attributes.get(i).clean();
+	}
+	
 	abstract class Attribute {
 		Object attr = null;
 		boolean dirty = true;
+		
 		public boolean isDirty(){
 			return dirty;
 		}

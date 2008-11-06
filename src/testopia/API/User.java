@@ -55,4 +55,12 @@ public class User extends TestopiaObject{
 	 {
 		 return (Integer)this.callXmlrpcMethod("User.lookup_id_by_login", user);
 	 }
+
+
+	/**
+	 * @return the user
+	 */
+	public String getUser() {
+		return user;
+	}
 }

@@ -20,11 +20,8 @@
   */
 package testopia.API;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import org.apache.commons.httpclient.HttpState;
 import org.apache.xmlrpc.XmlRpcException;
-import org.apache.xmlrpc.client.XmlRpcClient;
 
 /**
  * 
@@ -61,6 +58,12 @@ public class TestCaseRun extends TestopiaObject{
 		this.session   = session; 
 		this.caseRunID = caseRunID; 
 		this.canUpdate = false;
+		
+		this.notes = this.newStringAttribute(null);
+		this.caseStatus = this.newIntegerAttribute(null);
+		this.assigneeID = this.newIntegerAttribute(null);
+		this.build_ID = this.newIntegerAttribute(null);
+		this.environment_ID = this.newIntegerAttribute(null);
 	}
 	
 	/**
@@ -84,9 +87,13 @@ public class TestCaseRun extends TestopiaObject{
 		this.environmentID = environmentID;
 		this.caseRunID = caseRunID;
 		this.canUpdate = true;
+		
+		this.notes = this.newStringAttribute(null);
+		this.caseStatus = this.newIntegerAttribute(null);
+		this.assigneeID = this.newIntegerAttribute(null);
+		this.build_ID = this.newIntegerAttribute(null);
+		this.environment_ID = this.newIntegerAttribute(null);
 	}
-	
-	
 	
 	/**
 	 * used to create a testRunCase
@@ -135,26 +142,16 @@ public class TestCaseRun extends TestopiaObject{
 		HashMap<String, Object> map = new HashMap<String, Object>();
 		
 		//add attributes that need to be updated to the hashmap 
-		if(this.notes.isDirty()){
+		if(this.notes.isDirty())
 			map.put("notes", this.notes.get());
-			this.notes.clean();
-		}
-		if(this.caseStatus.isDirty()){
+		if(this.caseStatus.isDirty())
 			map.put("case_run_status_id", this.caseStatus.get()); 
-			this.caseStatus.clean();
-		}
-		if(this.assigneeID.isDirty()){
+		if(this.assigneeID.isDirty())
 			map.put("assignee", this.assigneeID.get());
-			this.assigneeID.get();
-		}
-		if(this.build_ID.isDirty()){
+		if(this.build_ID.isDirty())
 			map.put("build_id", this.build_ID.get());
-			this.build_ID.clean();
-		}
-		if(this.environment_ID.isDirty()){
+		if(this.environment_ID.isDirty())
 			map.put("environment_id", environment_ID);
-			this.environment_ID.clean();
-		}
 		if (map.size() > 0)
 			callXmlrpcMethod("TestCaseRun.update",
 							 runID,
@@ -162,6 +159,7 @@ public class TestCaseRun extends TestopiaObject{
 							 buildID,
 							 environmentID,
 							 map);
+		this.cleanAllAttributes();
 	}
 	
 	/**
