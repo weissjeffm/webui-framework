@@ -61,8 +61,12 @@ public abstract class TestopiaObject {
 		public boolean isDirty(){
 			return dirty;
 		}
-		public void setDirty(boolean isDirty){
-			dirty=isDirty;
+		public void clean(){
+			dirty=false;
+		}
+		public void set(Object s){
+			attr = s;
+			dirty = true;
 		}
 	}
 	
@@ -73,6 +77,7 @@ public abstract class TestopiaObject {
 		public String get(){
 			return (String)attr;
 		}
+		
 	}
 	
 	class IntegerAttribute extends Attribute{
