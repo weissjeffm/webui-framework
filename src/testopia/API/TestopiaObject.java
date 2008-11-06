@@ -54,4 +54,33 @@ public abstract class TestopiaObject {
 		map.put(name, value);
 		return getList(map);
 	}
+	
+	abstract class Attribute {
+		Object attr = null;
+		boolean dirty = true;
+		public boolean isDirty(){
+			return dirty;
+		}
+		public void setDirty(boolean isDirty){
+			dirty=isDirty;
+		}
+	}
+	
+	class StringAttribute extends Attribute{
+		public StringAttribute(String s){
+			attr = s;
+		}
+		public String get(){
+			return (String)attr;
+		}
+	}
+	
+	class IntegerAttribute extends Attribute{
+		public IntegerAttribute(Integer s){
+			attr = s;
+		}
+		public Integer get(){
+			return (Integer)attr;
+		}
+	}
 }
