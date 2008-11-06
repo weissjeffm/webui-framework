@@ -77,6 +77,9 @@ public abstract class TestopiaObject {
 		public String get(){
 			return (String)attr;
 		}
+		public String toString(){
+			return (String)attr;
+		}
 		
 	}
 	

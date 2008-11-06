@@ -31,17 +31,17 @@ public class TestopiaTestCase extends TestopiaObject{
 	private Integer caseID; 
 	
 	//values for updates 
-	private Integer defaultTesterID = null;
-	private Integer isAutomated;
-	private Integer priorityID;
-	private Integer categoryID;
-	private Integer canview; 
-	private String arguments;
-	private String alias; 
-	private String requirement;
-	private String script; 
-	private String caseStatusID;
-	private String summary;
+	//private Integer defaultTesterID = null;
+	private IntegerAttribute isAutomated = new IntegerAttribute(null);
+	private IntegerAttribute priorityID= new IntegerAttribute(null);
+	private IntegerAttribute categoryID= new IntegerAttribute(null);
+	private IntegerAttribute canview= new IntegerAttribute(null); 
+	private StringAttribute arguments= new StringAttribute(null);
+	private StringAttribute alias= new StringAttribute(null); 
+	private StringAttribute requirement= new StringAttribute(null);
+	private StringAttribute script= new StringAttribute(null); 
+	private StringAttribute caseStatusID= new StringAttribute(null);
+	private StringAttribute summary= new StringAttribute(null);
 	
 	/** 
 	 * @param userName your bugzilla/testopia userName
@@ -60,7 +60,7 @@ public class TestopiaTestCase extends TestopiaObject{
 	 * @param alias String - the new Alias
 	 */	
 	public void setAlias(String alias) {
-		this.alias = alias;
+		this.alias.set(alias);
 	}
 
 	/**
@@ -68,7 +68,7 @@ public class TestopiaTestCase extends TestopiaObject{
 	 * @param arguments String - the new arguments
  	 */
 	public void setArguments(String arguments) {
-		this.arguments = arguments;
+		this.arguments.set(arguments);
 	}
 
 	/**
@@ -76,14 +76,7 @@ public class TestopiaTestCase extends TestopiaObject{
 	 * @param canview 
 	 */
 	public void setCanview(boolean canview) {
-		
-		//true == 1
-		if(canview)
-			this.canview = 1;
-		
-		//false ==0
-		else
-			this.canview = 0; 
+		this.canview.set(canview? 1: 0);
 	}
    
 	/**
@@ -91,7 +84,7 @@ public class TestopiaTestCase extends TestopiaObject{
 	 * @param caseStatusID String - the new case Status ID
 	 */
 	public void setCaseStatusID(String caseStatusID) {
-		this.caseStatusID = caseStatusID;
+		this.caseStatusID.set(caseStatusID);
 	}
 
 	/**
@@ -99,16 +92,16 @@ public class TestopiaTestCase extends TestopiaObject{
 	 * @param categoryID int - the new categorID
 	 */
 	public void setCategoryID(int categoryID) {
-		this.categoryID = categoryID;
+		this.categoryID.set(categoryID);
 	}
 
 	/**
 	 * 
 	 * @param defaultTesterID int - the new defaultTesterID
 	 */
-	public void setDefaultTesterID(int defaultTesterID) {
-		this.defaultTesterID = defaultTesterID;
-	}
+	/*public void setDefaultTesterID(int defaultTesterID) {
+		this.defaultTesterID.set(defaultTesterID);
+	}*/
 
 	/**
 	 * 
@@ -116,13 +109,7 @@ public class TestopiaTestCase extends TestopiaObject{
 	 * false otherwise
 	 */
 	public void setIsAutomated(boolean isAutomated) {
-		//true == 1
-		if(isAutomated)
-			this.isAutomated = 1;
-		
-		//false ==0
-		else
-			this.isAutomated = 0;
+		this.isAutomated.set(isAutomated? 1:0);
 	}
 	
 	/**
@@ -130,7 +117,7 @@ public class TestopiaTestCase extends TestopiaObject{
 	 * @param priorityID - int the new priorityID
 	 */
 	public void setPriorityID(int priorityID) {
-		this.priorityID = priorityID;
+		this.priorityID.set(priorityID);
 	}
 	
 	/**
@@ -138,7 +125,7 @@ public class TestopiaTestCase extends TestopiaObject{
 	 * @param requirement String - the new requirement 
 	 */
 	public void setRequirement(String requirement) {
-		this.requirement = requirement;
+		this.requirement.set(requirement);
 	}
 	
 	/**
@@ -146,7 +133,7 @@ public class TestopiaTestCase extends TestopiaObject{
 	 * @param script String - the new script
 	 */
 	public void setScript(String script) {
-		this.script = script;
+		this.script.set(script);
 	}
 
 	/**
@@ -154,7 +141,7 @@ public class TestopiaTestCase extends TestopiaObject{
 	 * @param summary String - the new summary
 	 */
 	public void setSummary(String summary) {
-		this.summary = summary;
+		this.summary.set(summary);
 	}
 	
 	/**
@@ -230,50 +217,50 @@ public class TestopiaTestCase extends TestopiaObject{
 		
 		//add attributes that need to be updated to the hashmap 
 		if(isAutomated != null)
-			map.put("isautomated", isAutomated.intValue());
+			map.put("isautomated", isAutomated.get().intValue());
 		
 		if(priorityID != null)
-			map.put("priority_id", priorityID.intValue());
+			map.put("priority_id", priorityID.get().intValue());
 		
 		if(canview != null)
-			map.put("canview", canview.intValue());
+			map.put("canview", canview.get().intValue());
 		
 		if(categoryID != null)
-			map.put("category_id", categoryID);
+			map.put("category_id", categoryID.get());
 		
 		if(arguments != null)
-			map.put("arguments", arguments);
+			map.put("arguments", arguments.get());
 		
 		if(alias != null)
-			map.put("alias", alias);
+			map.put("alias", alias.get());
 		
 		if(requirement != null)
-			map.put("requirement", requirement);
+			map.put("requirement", requirement.get());
 		
 		if(script != null)
-			map.put("script", script);
+			map.put("script", script.get());
 		
 		if(caseStatusID != null)
-			map.put("case_status_id", caseStatusID);
+			map.put("case_status_id", caseStatusID.get());
 		
 		if(summary != null)
-			map.put("summary", summary); 
+			map.put("summary", summary.get()); 
 		
 		//update the testRunCase
 		this.callXmlrpcMethod("TestCase.update",
 							  caseID,
 							  map);
 		//make sure multiple updates aren't called 
-		isAutomated = null;
-		priorityID = null;
-		categoryID = null;
-		canview	= null;	
-		arguments = null;
-		alias = null;
-		requirement	= null;	
-		script = null; 
-		caseStatusID = null;
-		summary = null;
+		isAutomated.clean();
+		priorityID.clean();
+		categoryID.clean();
+		canview.clean();	
+		arguments.clean();
+		alias.clean();
+		requirement.clean();	
+		script.clean(); 
+		caseStatusID.clean();
+		summary.clean();
 	}
 	
 	/**
@@ -411,4 +398,34 @@ public class TestopiaTestCase extends TestopiaObject{
 		return (Integer)this.callXmlrpcMethod("TestCase.lookup_category_id_by_name",
 											  categoryName);
 	 }
+	public Integer getIsAutomated() {
+		return isAutomated.get();
+	}
+	public Integer getPriorityID() {
+		return priorityID.get();
+	}
+	public Integer getCategoryID() {
+		return categoryID.get();
+	}
+	public Integer getCanview() {
+		return canview.get();
+	}
+	public String getArguments() {
+		return arguments.get();
+	}
+	public String getAlias() {
+		return alias.get();
+	}
+	public String getRequirement() {
+		return requirement.get();
+	}
+	public String getScript() {
+		return script.get();
+	}
+	public String getCaseStatusID() {
+		return caseStatusID.get();
+	}
+	public String getSummary() {
+		return summary.get();
+	}
 }
