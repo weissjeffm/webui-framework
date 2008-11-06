@@ -91,7 +91,8 @@ public class Environment extends TestopiaObject{
 	 * @throws XmlRpcException 
 	  */
 	 public void updateEnvironment(String name, Boolean isactive, 
-			 Integer productID, int environmentID) throws XmlRpcException
+			 Integer productID, int environmentID)
+	 throws XmlRpcException
 	 {
 		 //put values into map if they are not null 
 		HashMap<String, Object> map = new HashMap<String, Object>();
@@ -170,9 +171,11 @@ public class Environment extends TestopiaObject{
 	  * @param productId - the product id 
 	  * @param environmentName
 	  * @return
-	 * @throws XmlRpcException 
+	  * @throws XmlRpcException 
 	  */
-	 public HashMap<String, Object> listEnvironments(int productId, String environmentName) throws XmlRpcException
+	 @SuppressWarnings("unchecked")
+	public HashMap<String, Object> listEnvironments(int productId, String environmentName)
+	throws XmlRpcException
 	 {
 		 if(environmentName != null) return (HashMap<String, Object>)callXmlrpcMethod("Environment.get", productId, environmentName);
 		 else return (HashMap<String, Object>)callXmlrpcMethod("Environment.get", productId);

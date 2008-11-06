@@ -19,6 +19,7 @@
   *
   */
 package testopia.API;
+
 import java.util.Map;
 
 import org.apache.xmlrpc.XmlRpcException;
@@ -31,7 +32,6 @@ import org.apache.xmlrpc.XmlRpcException;
  */
 public class Product extends TestopiaObject{
 	
-	 
 	 /**
 	  * 
 	  * @param userName - your testopia/bugzilla username
@@ -49,9 +49,10 @@ public class Product extends TestopiaObject{
 	  * @param productName the name of the product, that the ID will be returned for. 0 Will be 
 	  * returned if the product can't be found
 	  * @return the ID of the specified product
-	 * @throws XmlRpcException 
+	  * @throws XmlRpcException 
 	  */
-	 public int getProductIDByName(String productName) throws XmlRpcException
+	 public int getProductIDByName(String productName)
+	 throws XmlRpcException
 	 {
 		 Map m = (Map)callXmlrpcMethod("Product.check_product", productName);
 		 return (Integer)m.get("product_id");		 
@@ -73,12 +74,14 @@ public class Product extends TestopiaObject{
 	 * @return the product name that corresponds the specified product ID
 	 * @throws XmlRpcException 
 	 */
-	 public String getProductNameByID(int id) throws XmlRpcException
+	 public String getProductNameByID(int id)
+	 throws XmlRpcException
 	 {
 		 return (String)callXmlrpcMethod("Product.get", id);
 	 }
 	 
-	 public Object[] getMilestones(int id) throws XmlRpcException
+	 public Object[] getMilestones(int id)
+	 throws XmlRpcException
 	 {
 		 return (Object[])callXmlrpcMethod("Product.get_milestones", id);
 	 }

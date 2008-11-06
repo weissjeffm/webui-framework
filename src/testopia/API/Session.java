@@ -40,8 +40,9 @@ public class Session {
 		this.url = url;
 	}
 
-	public Object login() throws XmlRpcException, GeneralSecurityException,
-			IOException {
+	public Object login()
+	throws XmlRpcException, GeneralSecurityException, IOException
+	{
 		TrustAllCerts();
 
 		// setup client
@@ -69,17 +70,16 @@ public class Session {
 
 	}
 
-	private void TrustAllCerts() throws GeneralSecurityException, IOException {
+	private void TrustAllCerts()
+	throws GeneralSecurityException, IOException
+	{
 		// Create a trust manager that does not validate certificate chains
-
 		ProtocolSocketFactory sf = new EasySSLProtocolSocketFactory();
 		Protocol p = new Protocol("https", sf, 443);
 		Protocol.registerProtocol("https", p);
-
 	}
 
 	public XmlRpcClient getClient() {
 		return client;
 	}
-
 }

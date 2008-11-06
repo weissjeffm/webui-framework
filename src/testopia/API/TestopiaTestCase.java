@@ -164,10 +164,11 @@ public class TestopiaTestCase extends TestopiaObject{
 	 * @throws Exception
 	 * @throws XmlRpcException
 	 */
-	public void addComponent(int componentID) throws Exception, XmlRpcException
+	public void addComponent(int componentID)
+	throws TestopiaException, XmlRpcException
 	{
 		if(caseID == null)
-			throw new Exception("CaseID cannot be null");
+			throw new TestopiaException("CaseID cannot be null");
 		
 		//add the component to the test case
 		this.callXmlrpcMethod("TestCase.add_component",
@@ -182,10 +183,11 @@ public class TestopiaTestCase extends TestopiaObject{
 	 * @throws Exception
 	 * @throws XmlRpcException
 	 */
-	public void removeComponent(int componentID) throws Exception, XmlRpcException
+	public void removeComponent(int componentID)
+	throws TestopiaException, XmlRpcException
 	{
 		if(caseID == null)
-			throw new Exception("CaseID cannot be null");
+			throw new TestopiaException("CaseID cannot be null");
 		
 		//add the component to the test case
 		this.callXmlrpcMethod("TestCase.remove_component",
@@ -199,12 +201,12 @@ public class TestopiaTestCase extends TestopiaObject{
 	 * @return an array of component hashMaps or null 
 	 * @throws Exception
 	 */
-	public Object[] getComponents() throws Exception
+	public Object[] getComponents()
+	throws TestopiaException, XmlRpcException
 	{
 		if(caseID == null)
-			throw new Exception("CaseID cannot be null");
+			throw new TestopiaException("CaseID cannot be null");
 
-		// get the hashmap
 		return (Object[]) this.callXmlrpcMethod("TestCase.get_components", 
 												caseID);	
 	}
@@ -217,10 +219,11 @@ public class TestopiaTestCase extends TestopiaObject{
 	 * @throws XmlRpcException
 	 * (you made the TestCase with a null caseID and have not created a new test plan)
 	 */
-	public void update() throws Exception, XmlRpcException
+	public void update()
+	throws TestopiaException, XmlRpcException
 	{
 		if (caseID == null) 
-			throw new Exception("caseID is null.");
+			throw new TestopiaException("caseID is null.");
 		
 		//hashmap to store attributes to be updated
 		HashMap<String, Object> map = new HashMap<String, Object>();
@@ -358,10 +361,11 @@ public class TestopiaTestCase extends TestopiaObject{
 	 * @throws XmlRpcException
 	 */
 	@SuppressWarnings("unchecked")
-	public HashMap<String, Object> getAttributes() throws Exception, XmlRpcException
+	public HashMap<String, Object> getAttributes()
+	throws TestopiaException, XmlRpcException
 	{
 		if (caseID == null)
-			throw new Exception("caseID is null.");
+			throw new TestopiaException("caseID is null.");
 		
 		//get the hashmap
 		return (HashMap<String, Object>) this.callXmlrpcMethod("TestCase.get",
@@ -369,7 +373,8 @@ public class TestopiaTestCase extends TestopiaObject{
 	}
 	
 	@Deprecated
-	public int getCategoryIdByName(String categoryName) throws XmlRpcException
+	public int getCategoryIdByName(String categoryName)
+	throws XmlRpcException
 	{
 		//get the result
 		return (Integer) this.callXmlrpcMethod("TestCase.lookup_category_id_by_name",
@@ -398,18 +403,12 @@ public class TestopiaTestCase extends TestopiaObject{
 	  * @return the ID of the specified product
 	  * @throws XmlRpcException
 	  */
-	 @Deprecated
-	public int getBuildIDByName(String categoryName) throws XmlRpcException
+	@Deprecated
+	public int getBuildIDByName(String categoryName)
+	throws XmlRpcException
 	 {
 		//get the result
 		return (Integer)this.callXmlrpcMethod("TestCase.lookup_category_id_by_name",
 											  categoryName);
 	 }
-	 
-	 
-	 
-	 
-	 
-	
-
 }

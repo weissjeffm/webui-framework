@@ -78,7 +78,8 @@ public class TestPlan extends TestopiaObject{
 	 * @throws XmlRpcException 
 	 */
 	public int makeTestPlan(String authorID, String productID, String defaultProductVersion,
-			String typeID, String name) throws XmlRpcException
+			String typeID, String name)
+	throws XmlRpcException
 	{	
 		//set the values for the test plan
 		HashMap<String, Object> map = new HashMap();
@@ -104,10 +105,11 @@ public class TestPlan extends TestopiaObject{
 	 * @throws Exception if planID is null 
 	 * (you made the TestPlan with a null planID and have not created a new test plan)
 	 */
-	public void update() throws Exception
+	public void update()
+	throws TestopiaException, XmlRpcException
 	{
 		if (planID == null) 
-			throw new Exception("planID is null.");
+			throw new TestopiaException("planID is null.");
 		
 		//hashmap to store attributes to be updated
 		HashMap<String, Object> map = new HashMap<String, Object>();
@@ -118,7 +120,6 @@ public class TestPlan extends TestopiaObject{
 		 
 		 if(isSetDefaultProductVersion == true)
 			 map.put("default_product_version", defaultProductVersion);
-		 
 		 
 		 if (isSetcreation_date == true)
 			 map.put("creation_date", creation_date); 
@@ -236,10 +237,11 @@ public class TestPlan extends TestopiaObject{
 	 * @throws XmlRpcException
 	 */
 	@SuppressWarnings("unchecked")
-	public HashMap<String, Object> getAttributes() throws Exception, XmlRpcException
+	public HashMap<String, Object> getAttributes()
+	throws TestopiaException, XmlRpcException
 	{
 		if (planID == null) 
-			throw new Exception("planID is null.");
+			throw new TestopiaException("planID is null.");
 			
 		//get the hashmap
 		return (HashMap<String, Object>) this.callXmlrpcMethod("TestPlan.get",
@@ -254,10 +256,11 @@ public class TestPlan extends TestopiaObject{
 	 * @throws XmlRpcException
 	 */
 	@SuppressWarnings("unchecked")
-	public HashMap<String, Object> getCategories() throws Exception, XmlRpcException
+	public HashMap<String, Object> getCategories()
+	throws TestopiaException, XmlRpcException
 	{
 		if (planID == null) 
-			throw new Exception("planID is null.");
+			throw new TestopiaException("planID is null.");
 		
 		//get the hashmap
 		return (HashMap<String, Object>)this.callXmlrpcMethod("TestPlan.get",
@@ -271,10 +274,11 @@ public class TestPlan extends TestopiaObject{
 	 * @throws Exception
 	 * @throws XmlRpcException
 	 */
-	public Object[] getBuilds() throws Exception
+	public Object[] getBuilds()
+	throws TestopiaException, XmlRpcException
 	{
 		if (planID == null) 
-			throw new Exception("planID is null.");
+			throw new TestopiaException("planID is null.");
 			
 		//get the hashmap
 		return (Object[])this.callXmlrpcMethod("TestPlan.get_builds",
@@ -288,10 +292,11 @@ public class TestPlan extends TestopiaObject{
 	 * @throws Exception
 	 * @throws XmlRpcException
 	 */
-	public Object[] getComponents() throws Exception
+	public Object[] getComponents()
+	throws TestopiaException, XmlRpcException
 	{
 		if (planID == null) 
-			throw new Exception("planID is null.");
+			throw new TestopiaException("planID is null.");
 			
 		//get the hashmap
 		return (Object[])this.callXmlrpcMethod("TestPlan.get_components",
@@ -305,10 +310,11 @@ public class TestPlan extends TestopiaObject{
 	 * @throws Exception
 	 * @throws XmlRpcException
 	 */
-	public Object[] getTestCases() throws Exception
+	public Object[] getTestCases()
+	throws TestopiaException, XmlRpcException
 	{
 		if (planID == null) 
-			throw new Exception("planID is null.");
+			throw new TestopiaException("planID is null.");
 			
 		//get the hashmap
 		return (Object[])this.callXmlrpcMethod("TestPlan.get_test_cases",
@@ -322,10 +328,11 @@ public class TestPlan extends TestopiaObject{
 	 * @throws Exception
 	 * @throws XmlRpcException
 	 */
-	public Object[] getTestRuns() throws Exception, XmlRpcException
+	public Object[] getTestRuns()
+	throws TestopiaException, XmlRpcException
 	{
 		if (planID == null)
-			throw new Exception("planID is null.");
+			throw new TestopiaException("planID is null.");
 			
 		//get the hashmap
 		return (Object[])this.callXmlrpcMethod("TestPlan.get_test_runs",

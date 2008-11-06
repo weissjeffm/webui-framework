@@ -130,13 +130,13 @@ public class TestCaseRun extends TestopiaObject{
 	 * to push the changes over to testopia.
 	 * @throws Exception will throw an exception if you used the 3 param constuctor. 
 	 */
-	public void update() throws Exception
+	public void update()
+	throws TestopiaException, XmlRpcException
 	{
-		if (canUpdate == false) 
-		{
-			throw new Exception(
-					"You can't update if you use the 3 parameter constructor, you must use the constuctor with 7 parameters");
-		}
+		if (canUpdate == false)
+			throw new TestopiaException(
+					"You can't update if you use the 3 parameter constructor, "+
+					"you must use the constuctor with 7 parameters");
 		
 		//hashmap to store attributes to be updated
 		HashMap<String, Object> map = new HashMap<String, Object>();
@@ -170,7 +170,9 @@ public class TestCaseRun extends TestopiaObject{
 	 * and the TestCaseRun cannot be returned
 	 * @throws XmlRpcException 
 	 */
-	public HashMap<String, Object> getAttributes() throws XmlRpcException
+	@SuppressWarnings("unchecked")
+	public HashMap<String, Object> getAttributes()
+	throws XmlRpcException
 	{
 		return (HashMap<String, Object>)callXmlrpcMethod("TestCaseRun.get", caseRunID);
 		

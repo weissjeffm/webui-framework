@@ -103,12 +103,16 @@ public class TestRun extends TestopiaObject{
 		this.newPlanID = newPlanID; 
 	}
 	
-	public void update() throws Exception
+	/**
+	 * Updates all attributes of this TestRun object via XMLRPC
+	 * @throws TestopiaException
+	 * @throws XmlRpcException
+	 */
+	public void update()
+	throws TestopiaException, XmlRpcException
 	{
 		if (runID == null) 
-		{
-			throw new Exception("runID is null.");
-		}
+			throw new TestopiaException("runID is null.");
 		
 		//hashmap to store attributes to be updated
 		HashMap<String, Object> map = new HashMap<String, Object>();
@@ -158,14 +162,15 @@ public class TestRun extends TestopiaObject{
 	 * Gets the attributes of the test run, runID must not be null
 	 * @return a hashMap of all the values found. Returns null if there is an error
 	 * and the TestRun cannot be returned
-	 * @throws Exception 
+	 * @throws TestopiaException 
 	 * @throws XmlRpcException
 	 */
 	@SuppressWarnings("unchecked")
-	public HashMap<String, Object> getAttributes() throws Exception, XmlRpcException
+	public HashMap<String, Object> getAttributes()
+	throws TestopiaException, XmlRpcException
 	{
 		if (runID == null) 
-			throw new Exception("runID is null.");
+			throw new TestopiaException("runID is null.");
 		
 		//get the hashmap
 		return (HashMap<String, Object>) this.callXmlrpcMethod("TestRun.get",
@@ -222,14 +227,15 @@ public class TestRun extends TestopiaObject{
 	 * 
 	 * @return an array of objects (Object[]) of all the testcases found. 
 	 * Returns null if there is an error and the TestRun cannot be returned
-	 * @throws Exception
+	 * @throws TestopiaException
 	 * @throws XmlRpcException
 	 */
-	public Object[] getTestCases() throws Exception, XmlRpcException
+	public Object[] getTestCases()
+	throws TestopiaException, XmlRpcException
 	{
 		if (runID == null)
-			throw new Exception("runID is null.");
-			//get the hashmap
+			throw new TestopiaException("runID is null.");
+		
 		return (Object[])this.callXmlrpcMethod("TestRun.get_test_cases",
 												runID.intValue());
 	}			
@@ -239,14 +245,15 @@ public class TestRun extends TestopiaObject{
 	 * @return an array of objects (Object[]) of all the testCaseRuns found. 
 	 * Returns null if there is an error and the TestRun cannot be found
 	 * @throws Exception
+	 * @throws XmlRpcException
 	 */
-	public Object[] getTestCaseRuns() throws Exception
+	public Object[] getTestCaseRuns()
+	throws TestopiaException, XmlRpcException
 	{
 		if (runID == null) 
-			throw new Exception("runID is null.");
+			throw new TestopiaException("runID is null.");
 			
 		return (Object[])this.callXmlrpcMethod("TestRun.get_test_case_runs",
-												runID.intValue());		
-			
+												runID.intValue());
 	}	
 }
