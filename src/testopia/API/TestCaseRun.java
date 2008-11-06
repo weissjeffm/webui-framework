@@ -41,21 +41,14 @@ public class TestCaseRun extends TestopiaObject{
 	
 	//checks which constructor is used
 	private boolean canUpdate;
-	
-	//stores if the variable needs to updated
-	private boolean isSetNotes = false; 
-	private boolean isSetStatus = false; 
-	private boolean isSetAssigneeID = false; 
-	private boolean isSetBuildID = false;
-	private boolean isSetEnvironmentID = false;  
 		
 	//stores the updated value until it's pushed to tesopia with an update
-	private String notes;
-	private int caseStatus;
-	private int assigneeID;
-	private int build_ID; 
-	private int environment_ID;
-		
+	private StringAttribute notes;
+	private IntegerAttribute caseStatus;
+	private IntegerAttribute assigneeID;
+	private IntegerAttribute build_ID; 
+	private IntegerAttribute environment_ID;
+
 	/**
 	 * Use this constructor if you just want to use gets
 	 * @param userName your bugzilla username
@@ -93,6 +86,8 @@ public class TestCaseRun extends TestopiaObject{
 		this.canUpdate = true;
 	}
 	
+	
+	
 	/**
 	 * used to create a testRunCase
 	 * @param assigneeID
@@ -102,13 +97,13 @@ public class TestCaseRun extends TestopiaObject{
 	 * @throws XmlRpcException 
 	 * @throws Exception
 	 */
-	public int makeTestCaseRun(int assigneeID, int caseTextVersion) throws XmlRpcException 
+	public int makeTestCaseRun(int assigneeID, int caseTextVersion)
+	throws TestopiaException, XmlRpcException 
 	{
 		if (canUpdate == false) 
-		{
-			throw new RuntimeException(
-					"You can't update if you use the 3 parameter constructor, you must use the constuctor with 7 parameters");
-		}
+			throw new TestopiaException(
+					"You can't update if you use the 3 parameter constructor, "+
+					"you must use the constuctor with 7 parameters");
 		
 	    //set the values for the test case
 		HashMap<String, Object> map = new HashMap<String, Object>();
@@ -118,9 +113,7 @@ public class TestCaseRun extends TestopiaObject{
 		map.put("environment_id", environmentID);
 		map.put("run_id", runID);
 		map.put("build_id", buildID);
-		
-		//System.out.println("assignee: "+assigneeID+"\ncase_id: "+caseID+"\ncase_text_version: "+caseTextVersion+"\nenvironment_id: "+environmentID+"\nrun_id: "+runID+"\nbuild_id: "+buildID);
-		
+				
 		return (Integer)callXmlrpcMethod("TestCaseRun.create", map);
 		
 	}
@@ -142,26 +135,33 @@ public class TestCaseRun extends TestopiaObject{
 		HashMap<String, Object> map = new HashMap<String, Object>();
 		
 		//add attributes that need to be updated to the hashmap 
-		if(isSetNotes)
-			map.put("notes", notes);
-		if(isSetStatus)
-			map.put("case_run_status_id", caseStatus); 
-		if(isSetAssigneeID)
-			map.put("assignee", assigneeID);
-		if(isSetBuildID)
-			map.put("build_id", build_ID);
-		if(isSetEnvironmentID)
+		if(this.notes.isDirty()){
+			map.put("notes", this.notes.get());
+			this.notes.clean();
+		}
+		if(this.caseStatus.isDirty()){
+			map.put("case_run_status_id", this.caseStatus.get()); 
+			this.caseStatus.clean();
+		}
+		if(this.assigneeID.isDirty()){
+			map.put("assignee", this.assigneeID.get());
+			this.assigneeID.get();
+		}
+		if(this.build_ID.isDirty()){
+			map.put("build_id", this.build_ID.get());
+			this.build_ID.clean();
+		}
+		if(this.environment_ID.isDirty()){
 			map.put("environment_id", environment_ID);
-		
-		callXmlrpcMethod("TestCaseRun.update", runID, caseID, buildID, environmentID, map);
-		
-		//make sure multiple updates aren't called, for one set
-		isSetAssigneeID = false;
-		isSetBuildID = false;
-		isSetEnvironmentID = false; 
-		isSetNotes = false; 
-		isSetStatus = false; 
-		
+			this.environment_ID.clean();
+		}
+		if (map.size() > 0)
+			callXmlrpcMethod("TestCaseRun.update",
+							 runID,
+							 caseID,
+							 buildID,
+							 environmentID,
+							 map);
 	}
 	
 	/**
@@ -183,9 +183,8 @@ public class TestCaseRun extends TestopiaObject{
 	 * @param notes string - the note you want entered into the testCaseRun
 	 */
 	public void setNotes(String notes)
-	{
-		isSetNotes = true;		
-		this.notes = notes;
+	{	
+		this.notes.set(notes);
 	}
 	
 	/**
@@ -194,8 +193,7 @@ public class TestCaseRun extends TestopiaObject{
 	 */
 	public void setStatus(int status)
 	{
-		isSetStatus = true;
-		this.caseStatus = status;
+		this.caseStatus.set(status);
 	}
 	
 	/**
@@ -204,8 +202,7 @@ public class TestCaseRun extends TestopiaObject{
 	 */
 	public void setBuildID(int buildID)
 	{
-		isSetBuildID = true; 
-		this.build_ID = buildID; 
+		this.build_ID.set(buildID); 
 	}
 	
 	/**
@@ -214,8 +211,7 @@ public class TestCaseRun extends TestopiaObject{
 	 */
 	public void setEnvironmentID(int environmentID)
 	{
-		isSetEnvironmentID = true;
-		this.environment_ID = environmentID;
+		this.environment_ID.set(environmentID);
 	}
 	
 	
@@ -225,8 +221,83 @@ public class TestCaseRun extends TestopiaObject{
 	 */
 	public void setAssigneeID(int assigneeID)
 	{
-		isSetAssigneeID = true; 
-		this.assigneeID = assigneeID; 
+		this.assigneeID.set(assigneeID); 
 	}
 	
+	/**
+	 * @return the caseID
+	 */
+	public int getCaseID() {
+		return caseID;
+	}
+
+	/**
+	 * @return the runID
+	 */
+	public int getRunID() {
+		return runID;
+	}
+
+	/**
+	 * @return the buildID
+	 */
+	public int getBuildID() {
+		return buildID;
+	}
+
+	/**
+	 * @return the environmentID
+	 */
+	public int getEnvironmentID() {
+		return environmentID;
+	}
+
+	/**
+	 * @return the caseRunID
+	 */
+	public Integer getCaseRunID() {
+		return caseRunID;
+	}
+
+	/**
+	 * @return the canUpdate
+	 */
+	public boolean isCanUpdate() {
+		return canUpdate;
+	}
+
+	/**
+	 * @return the notes
+	 */
+	public String getNotes() {
+		return notes.get();
+	}
+
+	/**
+	 * @return the caseStatus
+	 */
+	public int getCaseStatus() {
+		return caseStatus.get();
+	}
+
+	/**
+	 * @return the assigneeID
+	 */
+	public int getAssigneeID() {
+		return assigneeID.get();
+	}
+
+	/**
+	 * @return the build_ID
+	 */
+	public int getBuild_ID() {
+		return build_ID.get();
+	}
+
+	/**
+	 * @return the environment_ID
+	 */
+	public int getEnvironment_ID() {
+		return environment_ID.get();
+	}
 }
