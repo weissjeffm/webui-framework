@@ -19,21 +19,9 @@
   *
   */
 package testopia.API;
-import java.net.URL;
-import java.security.cert.X509Certificate;
-import java.util.ArrayList;
-import java.util.HashMap;
-
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
+import java.util.Map;
 
 import org.apache.xmlrpc.XmlRpcException;
-import org.apache.xmlrpc.client.XmlRpcClient;
-import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
 
 /**
  * Allows the user to get a productID from it's name, or it's name from the productID. It's also able to return a
@@ -65,9 +53,18 @@ public class Product extends TestopiaObject{
 	  */
 	 public int getProductIDByName(String productName) throws XmlRpcException
 	 {
-		 return (Integer)callXmlrpcMethod("Product.lookup_id_by_name", productName);
+		 Map m = (Map)callXmlrpcMethod("Product.check_product", productName);
+		 return (Integer)m.get("product_id");		 
+	 }
+	 
+	 public int getCategoryIDByName(String categoryName, String productName) throws XmlRpcException
+	 {
+		 Map m = (Map)callXmlrpcMethod("Product.check_category", categoryName, productName);
+		 return (Integer)m.get("category_id");		 
 		 
 	 }
+	 
+	 
 	 
 	/**
 	 * 
@@ -78,7 +75,7 @@ public class Product extends TestopiaObject{
 	 */
 	 public String getProductNameByID(int id) throws XmlRpcException
 	 {
-		 return (String)callXmlrpcMethod("Product.lookup_name_by_id", id);
+		 return (String)callXmlrpcMethod("Product.get", id);
 	 }
 	 
 	 public Object[] getMilestones(int id) throws XmlRpcException

@@ -21,6 +21,8 @@
 package testopia.API;
 
 import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.xmlrpc.XmlRpcException;
 
 public class TestopiaTestCase extends TestopiaObject{
@@ -314,13 +316,39 @@ public class TestopiaTestCase extends TestopiaObject{
 			map.put("priority_id", priorityID.intValue());
 		
 		//update the test case
-		int result = (Integer)this.callXmlrpcMethod("TestCase.create",
+		Map result = (Map)this.callXmlrpcMethod("TestCase.create",
 													map);
 			
-		caseID = result; 
+		caseID = (Integer)result.get("case_id"); 
 		//System.out.println(result);	
-		return result;
+		return caseID;
 	}
+	
+	public int makeTestCase(String author, String caseStatus, String category, 
+			String product, String plan, String summary,String priority) throws XmlRpcException{
+		User user = new User(session, author);
+		
+		int user_id = user.getAttributes();
+
+		
+		TestPlan tp = new TestPlan(session, null);
+		
+		Object[] results = tp.getList("name", plan);
+		//for (Object result: results) System.out.println("Found test plan:" + result.toString());
+		int tp_id = (Integer)((Map)results[0]).get("plan_id");
+		System.out.println("Found acceptance testplan id: " + tp_id);
+		
+		Product prod = new Product(session);
+		int cat_id = prod.getCategoryIDByName(category, product);
+		System.out.println("Found category id: " + cat_id);
+		
+		TestopiaTestCase tc2 = new TestopiaTestCase(session,null);
+		
+		int pri_id = tc2.getPriorityIdByName(priority);
+		int stat_id = tc2.getStatusIdByName(caseStatus);
+		return makeTestCase(user_id, stat_id, cat_id, true, tp_id, summary, pri_id);
+}
+	
 	
 	/**
 	 * Gets the attributes of the test case, caseID must not be null
@@ -340,6 +368,7 @@ public class TestopiaTestCase extends TestopiaObject{
 																caseID.intValue());	
 	}
 	
+	@Deprecated
 	public int getCategoryIdByName(String categoryName) throws XmlRpcException
 	{
 		//get the result
@@ -347,20 +376,40 @@ public class TestopiaTestCase extends TestopiaObject{
 												  categoryName);	
 	}
 	
+	public int getPriorityIdByName(String categoryName) throws XmlRpcException
+	{
+		//get the result
+		return (Integer) this.callXmlrpcMethod("TestCase.lookup_priority_id_by_name",
+												  categoryName);	
+	}
+	
+	public int getStatusIdByName(String categoryName) throws XmlRpcException
+	{
+		//get the result
+		return (Integer) this.callXmlrpcMethod("TestCase.lookup_status_id_by_name",
+												  categoryName);	
+	}
+	
 	 /**
-	  * 
+	  * Uses Deprecated API -Use Product class for this
 	  * @param categoryName the name of the category that the ID will be returned for. This will search within the
 	  * test plans that this test case belongs to and return the first category with a matching name. 0 Will be 
 	  * returned if the category can't be found
 	  * @return the ID of the specified product
 	  * @throws XmlRpcException
 	  */
-	 public int getBuildIDByName(String categoryName) throws XmlRpcException
+	 @Deprecated
+	public int getBuildIDByName(String categoryName) throws XmlRpcException
 	 {
 		//get the result
 		return (Integer)this.callXmlrpcMethod("TestCase.lookup_category_id_by_name",
 											  categoryName);
 	 }
+	 
+	 
+	 
+	 
+	 
 	
 
 }

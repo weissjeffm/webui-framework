@@ -13,10 +13,11 @@ import org.testng.ITestContext;
 import org.testng.ITestResult;
 import org.testng.internal.IResultListener;
 
+import testopia.API.Product;
 import testopia.API.Session;
+import testopia.API.TestPlan;
 import testopia.API.TestopiaTestCase;
 import testopia.API.User;
-import testopia.API.TestCaseRun;
 
 /**
  * @author jweiss
@@ -43,8 +44,7 @@ public class TestopiaTestNGListener implements IResultListener {
 	 */
 	@Override
 	public void onStart(ITestContext arg0) {
-		// TODO Auto-generated method stub
-
+		//create new test run?
 	}
 
 	/* (non-Javadoc)
@@ -87,7 +87,7 @@ public class TestopiaTestNGListener implements IResultListener {
 	 * @see org.testng.ITestListener#onTestSuccess(org.testng.ITestResult)
 	 */
 	@Override
-	public void onTestSuccess(ITestResult arg0) {
+	public void onTestSuccess(ITestResult result) {
 		//get the procedure log from the handler
 		String log = "no procedure found!";
 		Handler[] handlers = Logger.getLogger("").getHandlers();
@@ -102,9 +102,13 @@ public class TestopiaTestNGListener implements IResultListener {
 		log = tph.getLog();
 		
 		//put it in testopia
+		String testName = result.getName();
+		
 		
 		//reset the handler
 		((TestProcedureHandler)tph).reset();
+		
+		//also add the test run
 		
 
 	}
@@ -139,12 +143,7 @@ public class TestopiaTestNGListener implements IResultListener {
 	public static void main(String args[]) throws Exception{
 		Session session = new Session(TESTOPIA_USER, TESTOPIA_PW, new URL(TESTOPIA_URL));
 		session.login();
-		TestopiaTestCase tc = new TestopiaTestCase(session, null ); 
-		User user = new User(session, TESTOPIA_USER);
-		
-		int id = user.getAttributes();
-		System.out.println(id);
-		//tc.makeTestCase(id, 0, 0, true, 271, "This is a test of the testy test", 0);
+		/*//tc.makeTestCase(id, 0, 0, true, 271, "This is a test of the testy test", 0);
 		Map<String, Object> values = new HashMap<String, Object>();
 		values.put("summary", "dfdfg");
 		Object[] result = new TestopiaTestCase(session, 0).getList(values);
@@ -155,7 +154,10 @@ public class TestopiaTestNGListener implements IResultListener {
 		tcr.makeTestCaseRun(1, 1);
 		tcr.setNotes("RICK ASTLEY");
 		tcr.setStatus(2);
-		tcr.update();
+		tcr.update();*/
+		
+		TestopiaTestCase tc2 = new TestopiaTestCase(session,null);
+		tc2.makeTestCase(TESTOPIA_USER, "PROPOSED", "--default--", "JBoss ON", "Acceptance", "eat me", "P1");
 	}
 
 }

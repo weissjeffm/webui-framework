@@ -1,10 +1,10 @@
 package testopia.API;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.xmlrpc.XmlRpcException;
-import org.apache.xmlrpc.client.XmlRpcClient;
 
 public abstract class TestopiaObject {
 
@@ -12,7 +12,15 @@ public abstract class TestopiaObject {
 	protected String listMethod;
 	
 	protected Object callXmlrpcMethod(String methodName, Object... params) throws XmlRpcException{	
-		return (Object) session.getClient().execute(methodName, Arrays.asList(params));	
+		Object o = (Object) session.getClient().execute(methodName, Arrays.asList(params));	
+		//print result for debug purposes
+		if (o instanceof Object[]){
+			for (Object obj: (Object[])o){
+				System.out.println("Debug: result of '" + methodName + "' = " + obj.toString());				
+			}
+		}
+		else System.out.println("Debug: result of '" + methodName + "' = " + o.toString());
+		return o;
 	}
 
 	/**
@@ -32,5 +40,18 @@ public abstract class TestopiaObject {
 		
 		Object[] result = (Object[]) this.callXmlrpcMethod(listMethod, values);
 		return result;
+	}
+	
+	/**
+	 * A simpler method to search by a single parameter that doesn't require creation of a Map object
+	 * @param name - the name of the attribute to search on 
+	 * @param value - the value to search for
+	 * @return - list of matching objects
+	 * @throws XmlRpcException
+	 */
+	public Object[] getList(String name, Object value) throws XmlRpcException {
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put(name, value);
+		return getList(map);
 	}
 }
