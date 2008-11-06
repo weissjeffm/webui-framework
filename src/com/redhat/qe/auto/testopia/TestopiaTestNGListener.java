@@ -147,7 +147,7 @@ public class TestopiaTestNGListener implements IResultListener {
 		//tc.makeTestCase(id, 0, 0, true, 271, "This is a test of the testy test", 0);
 		Map<String, Object> values = new HashMap<String, Object>();
 		values.put("summary", "dfdfg");
-		Object[] result = TestopiaTestCase.getList(session, values);
+		Object[] result = new TestopiaTestCase(session, 0).getList(values);
 		for (Object res: result){
 			System.out.println(res.toString());
 		}

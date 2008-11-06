@@ -42,10 +42,6 @@ import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
  *
  */
 public class Product extends TestopiaObject{
-	private String userName;
-	private String password;
-	private URL url;
-	private Session session;
 	
 	 
 	 /**

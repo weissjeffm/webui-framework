@@ -30,6 +30,7 @@ import org.apache.xmlrpc.XmlRpcException;
  * Allows the user to get a buildID from it's name, or it's name from the buildID. 
  * It can also create and update a build
  * @author anelson
+ * @author weissj
  *
  */
 public class Build extends TestopiaObject{	 
