@@ -158,7 +158,7 @@ public class TestopiaTestNGListener implements IResultListener {
 		
 		TestCase tc2 = new TestCase(session,null);
 		tc2.setAction("step 1 do this\nstep 2 do that.");
-		tc2.makeTestCase(TESTOPIA_USER, "PROPOSED", "--default--", "JBoss ON", "Acceptance", "eat me", "P1");
+		//tc2.makeTestCase(TESTOPIA_USER, "PROPOSED", "--default--", "JBoss ON", "Acceptance", "eat me", "P1");
 	}
 
 }

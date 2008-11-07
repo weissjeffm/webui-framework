@@ -32,10 +32,8 @@ public class TestCase extends TestopiaObject{
 	
 	//values for updates 
 	//private Integer defaultTesterID = null;
-	private IntegerAttribute isAutomated = newIntegerAttribute("isautomated", null);
 	private StringAttribute priority = newStringAttribute("priority", null);
 	private IntegerAttribute categoryID= newIntegerAttribute("category", null);
-	private IntegerAttribute canview= newIntegerAttribute("canview", null); 
 	private StringAttribute arguments= newStringAttribute("arguments", null);
 	private StringAttribute alias= newStringAttribute("alias", null); 
 	private StringAttribute requirement= newStringAttribute("requirement", null);
@@ -44,6 +42,8 @@ public class TestCase extends TestopiaObject{
 	private StringAttribute summary= newStringAttribute("summary", null);
 	private StringAttribute action= newStringAttribute("action", null);
 	private StringAttribute status= newStringAttribute("status", null);
+	private BooleanAttribute isAutomated = newBooleanAttribute("isautomated", null);
+	private IntegerAttribute plans= newIntegerAttribute("plans", null);
 	
 	/** 
 	 * @param userName your bugzilla/testopia userName
@@ -62,6 +62,9 @@ public class TestCase extends TestopiaObject{
 		this.session = session;
 		this.listMethod = "TestCase.list";
 		this.categoryID.set(categoryId);
+		this.priority.set(priority);
+		this.summary.set(summary);
+		this.plans.set(plan);
 	}
 	/**
 	 * 
@@ -79,13 +82,6 @@ public class TestCase extends TestopiaObject{
 		this.arguments.set(arguments);
 	}
 
-	/**
-	 * 
-	 * @param canview 
-	 */
-	public void setCanview(boolean canview) {
-		this.canview.set(canview? 1: 0);
-	}
    
 	/**
 	 * 
@@ -117,7 +113,7 @@ public class TestCase extends TestopiaObject{
 	 * false otherwise
 	 */
 	public void setIsAutomated(boolean isAutomated) {
-		this.isAutomated.set(isAutomated? 1:0);
+		this.isAutomated.set(isAutomated);
 	}
 	
 	/**
@@ -210,135 +206,27 @@ public class TestCase extends TestopiaObject{
 	/**
 	 * Updates are not called when the .set is used. You must call update after all your sets
 	 * to push the changes over to testopia.
-	 * @throws Exception if planID is null 
+	 * @throws TestopiaException if planID is null 
 	 * @throws XmlRpcException
 	 * (you made the TestCase with a null caseID and have not created a new test plan)
 	 */
-	public void update()
-	throws TestopiaException, XmlRpcException
+	public Map<String,Object> update() throws TestopiaException, XmlRpcException
 	{
 		if (caseID == null) 
 			throw new TestopiaException("caseID is null.");
-		
-		//hashmap to store attributes to be updated
-		HashMap<String, Object> map = new HashMap<String, Object>();
-		
-		//add attributes that need to be updated to the hashmap 
-		if(isAutomated.isDirty())
-			map.put("isautomated", isAutomated.get().intValue());
-		
-		if(priority.isDirty())
-			map.put("priority_id", priority.get());
-		
-		if(canview.isDirty())
-			map.put("canview", canview.get().intValue());
-		
-		if(categoryID.isDirty())
-			map.put("category_id", categoryID.get());
-		
-		if(arguments.isDirty())
-			map.put("arguments", arguments.get());
-		
-		if(alias.isDirty())
-			map.put("alias", alias.get());
-		
-		if(requirement.isDirty())
-			map.put("requirement", requirement.get());
-		
-		if(script.isDirty())
-			map.put("script", script.get());
-		
-		if(caseStatusID.isDirty())
-			map.put("case_status_id", caseStatusID.get());
-		
-		if(summary.isDirty())
-			map.put("summary", summary.get()); 
-	
-		if(action.isDirty())
-			map.put("action", action.get()); 
-		
 		//update the testRunCase
-		this.callXmlrpcMethod("TestCase.update",
-							  caseID,
-							  map);
-		//make sure multiple updates aren't called 
-		this.cleanAllAttributes();
+		return super.update("TestCase.update", caseID);
 	}
-	
-	
-	
 	
 	/**
-	 * 
-	 * @param authorID the bugzilla/testopia ID of the author 
-	 * @param caseStatusID 
-	 * @param categoryID
-	 * @param isAutomated
-	 * @param planID the ID of the plan the testCase will be added to 
-	 * @param summary string - the summary of the testCase. Null allowed
-	 * @param priorityID Integer - the priority of the testCase (0-5). Null allowed
-	 * @return
+	 * Calls the create method with the attributes as-is (as set via contructors
+	 * or setters).  
+	 * @return a map of the newly created object
 	 * @throws XmlRpcException
 	 */
-	public int makeTestCase(int authorID, int caseStatusID, int categoryID,
-			boolean isAutomated, int planID, String summary,Integer priorityID)
-	throws XmlRpcException
-	{
-				
-		int isAutomatedInt = isAutomated ? 1:0; 
-		
-
-		//set the values for the test case
-		HashMap<String, Object> map = new HashMap<String, Object>();
-		map.put("author_id", authorID);
-		map.put("case_status_id", caseStatusID);
-		map.put("category_id", categoryID);
-		map.put("isautomated", isAutomatedInt);
-		map.put("plan_id", planID);
-		
-		//add the optional values if they are not null
-		if(summary != null)
-			map.put("summary", summary);
-		
-		if(priorityID != null)
-			map.put("priority_id", priorityID.intValue());
-		
-		//add attributes
-		for (Attribute attribute: attributes){
-			if (attribute.get() !=null) map.put(attribute.getName(), attribute.get());
-		}
-		
-		//update the test case
-		Map result = (Map)this.callXmlrpcMethod("TestCase.create",
-													map);
-			
-		caseID = (Integer)result.get("case_id"); 
-		//System.out.println(result);	
-		return caseID;
+	public Map<String,Object> create() throws XmlRpcException{
+		return super.create("TestCase.create");			
 	}
-	
-	public int makeTestCase(String author, String caseStatus, String category, 
-			String product, String plan, String summary,String priority) throws XmlRpcException{
-		User user = new User(session, author);
-		
-		int user_id = user.getAttributes();
-
-		
-		TestPlan tp = new TestPlan(session, null);
-		
-		int tp_id = tp.getPlanIDByName(plan);
-		System.out.println("Found acceptance testplan id: " + tp_id);
-		
-		Product prod = new Product(session);
-		int cat_id = prod.getCategoryIDByName(category, product);
-		System.out.println("Found category id: " + cat_id);
-		
-		TestCase tc2 = new TestCase(session,null);
-		
-		int pri_id = tc2.getPriorityIdByName(priority);
-		int stat_id = tc2.getStatusIdByName(caseStatus);
-		return makeTestCase(user_id, stat_id, cat_id, true, tp_id, summary, pri_id);
-}
 	
 	
 	/**
@@ -399,7 +287,7 @@ public class TestCase extends TestopiaObject{
 		return (Integer)this.callXmlrpcMethod("TestCase.lookup_category_id_by_name",
 											  categoryName);
 	 }
-	public Integer getIsAutomated() {
+	public Boolean getIsAutomated() {
 		return isAutomated.get();
 	}
 	public String getPriorityID() {
@@ -407,9 +295,6 @@ public class TestCase extends TestopiaObject{
 	}
 	public Integer getCategoryID() {
 		return categoryID.get();
-	}
-	public Integer getCanview() {
-		return canview.get();
 	}
 	public String getArguments() {
 		return arguments.get();
@@ -434,5 +319,13 @@ public class TestCase extends TestopiaObject{
 	}
 	public void setAction(String action) {
 		this.action.set(action);
+	}
+
+	public Integer getPlan() {
+		return plans.get();
+	}
+
+	public void setPlan(Integer plans) {
+		this.plans.set(plans);
 	}
 }

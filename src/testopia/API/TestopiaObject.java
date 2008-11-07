@@ -76,6 +76,8 @@ public abstract class TestopiaObject {
 				System.out.println("Warning, Got remote attribute that we don't use locally: " + name + ", " + val.toString());
 			else attr.set(val);
 		}
+		//FIXME need to check for error before cleaning attributes
+		cleanAllAttributes();
 	}
 	/**
 	 * protected method to create a new string attribute to use in 
@@ -94,10 +96,29 @@ public abstract class TestopiaObject {
 		this.attributes.add(ia);
 		return ia;
 	}
+	protected BooleanAttribute newBooleanAttribute(String name, Boolean value){
+		BooleanAttribute ba = new BooleanAttribute(name, value);
+		this.attributes.add(ba);
+		return ba;
+	}
 	
 	protected void cleanAllAttributes(){
 		for(Attribute attribute: attributes)
 			attribute.clean();
+	}
+	
+	protected Map<String,Object> update(String methodName, int id) throws XmlRpcException{
+		
+		Map<String,Object> map = (Map<String,Object>)this.callXmlrpcMethod(methodName, id,  getDirtyAttributesMap());
+		this.syncAttributes(map);
+		return map;
+	}
+	
+    protected Map<String,Object> create(String methodName) throws XmlRpcException{
+		
+		Map<String,Object> map = (Map<String,Object>)this.callXmlrpcMethod(methodName, getDirtyAttributesMap());
+		this.syncAttributes(map);
+		return map;
 	}
 	
 	abstract class Attribute {
@@ -149,6 +170,20 @@ public abstract class TestopiaObject {
 			return (Integer)value;
 		}
 		public void set(Integer s){
+			super.set(s);
+		}
+
+	}
+	
+	class BooleanAttribute extends Attribute{
+		private BooleanAttribute(String name, Boolean value){
+			this.name = name;
+			this.value = value;	
+		}
+		public Boolean get(){
+			return (Boolean)value;
+		}
+		public void set(Boolean s){
 			super.set(s);
 		}
 
