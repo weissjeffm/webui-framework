@@ -25,23 +25,25 @@ import java.util.Map;
 
 import org.apache.xmlrpc.XmlRpcException;
 
-public class TestopiaTestCase extends TestopiaObject{
+public class TestCase extends TestopiaObject{
 	
 	//inputed values to get a testCase
 	private Integer caseID; 
 	
 	//values for updates 
 	//private Integer defaultTesterID = null;
-	private IntegerAttribute isAutomated = new IntegerAttribute(null);
-	private IntegerAttribute priorityID= new IntegerAttribute(null);
-	private IntegerAttribute categoryID= new IntegerAttribute(null);
-	private IntegerAttribute canview= new IntegerAttribute(null); 
-	private StringAttribute arguments= new StringAttribute(null);
-	private StringAttribute alias= new StringAttribute(null); 
-	private StringAttribute requirement= new StringAttribute(null);
-	private StringAttribute script= new StringAttribute(null); 
-	private StringAttribute caseStatusID= new StringAttribute(null);
-	private StringAttribute summary= new StringAttribute(null);
+	private IntegerAttribute isAutomated = newIntegerAttribute("isautomated", null);
+	private StringAttribute priority = newStringAttribute("priority", null);
+	private IntegerAttribute categoryID= newIntegerAttribute("category", null);
+	private IntegerAttribute canview= newIntegerAttribute("canview", null); 
+	private StringAttribute arguments= newStringAttribute("arguments", null);
+	private StringAttribute alias= newStringAttribute("alias", null); 
+	private StringAttribute requirement= newStringAttribute("requirement", null);
+	private StringAttribute script= newStringAttribute("script", null); 
+	private StringAttribute caseStatusID= newStringAttribute("case_status_id", null);
+	private StringAttribute summary= newStringAttribute("summary", null);
+	private StringAttribute action= newStringAttribute("action", null);
+	private StringAttribute status= newStringAttribute("status", null);
 	
 	/** 
 	 * @param userName your bugzilla/testopia userName
@@ -49,11 +51,17 @@ public class TestopiaTestCase extends TestopiaObject{
 	 * @param url the url of the testopia server
 	 * @param caseID - Integer the caseID, you may enter null here if you are creating a test case
 	 */
-	public TestopiaTestCase(Session session, Integer caseID)
+	public TestCase(Session session, Integer caseID)
 	{
 		this.caseID = caseID; 
 		this.session = session;
 		this.listMethod = "TestCase.list";
+	}
+	
+	public TestCase(Session session, String status, int categoryId, String priority, String summary, Integer plan){
+		this.session = session;
+		this.listMethod = "TestCase.list";
+		this.categoryID.set(categoryId);
 	}
 	/**
 	 * 
@@ -117,7 +125,7 @@ public class TestopiaTestCase extends TestopiaObject{
 	 * @param priorityID - int the new priorityID
 	 */
 	public void setPriorityID(int priorityID) {
-		this.priorityID.set(priorityID);
+		//this.priorityID.set(priorityID);
 	}
 	
 	/**
@@ -219,8 +227,8 @@ public class TestopiaTestCase extends TestopiaObject{
 		if(isAutomated.isDirty())
 			map.put("isautomated", isAutomated.get().intValue());
 		
-		if(priorityID.isDirty())
-			map.put("priority_id", priorityID.get().intValue());
+		if(priority.isDirty())
+			map.put("priority_id", priority.get());
 		
 		if(canview.isDirty())
 			map.put("canview", canview.get().intValue());
@@ -245,23 +253,20 @@ public class TestopiaTestCase extends TestopiaObject{
 		
 		if(summary.isDirty())
 			map.put("summary", summary.get()); 
+	
+		if(action.isDirty())
+			map.put("action", action.get()); 
 		
 		//update the testRunCase
 		this.callXmlrpcMethod("TestCase.update",
 							  caseID,
 							  map);
 		//make sure multiple updates aren't called 
-		isAutomated.clean();
-		priorityID.clean();
-		categoryID.clean();
-		canview.clean();	
-		arguments.clean();
-		alias.clean();
-		requirement.clean();	
-		script.clean(); 
-		caseStatusID.clean();
-		summary.clean();
+		this.cleanAllAttributes();
 	}
+	
+	
+	
 	
 	/**
 	 * 
@@ -280,15 +285,8 @@ public class TestopiaTestCase extends TestopiaObject{
 	throws XmlRpcException
 	{
 				
-		int isAutomatedInt; 
+		int isAutomatedInt = isAutomated ? 1:0; 
 		
-		//convert to integer of 1 if isAutomated is true (1 == true)
-		if(isAutomated)
-			isAutomatedInt = 1; 
-		
-		//else convert to 0 for false (0 == false)
-		else 
-			isAutomatedInt = 0; 
 
 		//set the values for the test case
 		HashMap<String, Object> map = new HashMap<String, Object>();
@@ -304,6 +302,11 @@ public class TestopiaTestCase extends TestopiaObject{
 		
 		if(priorityID != null)
 			map.put("priority_id", priorityID.intValue());
+		
+		//add attributes
+		for (Attribute attribute: attributes){
+			if (attribute.get() !=null) map.put(attribute.getName(), attribute.get());
+		}
 		
 		//update the test case
 		Map result = (Map)this.callXmlrpcMethod("TestCase.create",
@@ -323,16 +326,14 @@ public class TestopiaTestCase extends TestopiaObject{
 		
 		TestPlan tp = new TestPlan(session, null);
 		
-		Object[] results = tp.getList("name", plan);
-		//for (Object result: results) System.out.println("Found test plan:" + result.toString());
-		int tp_id = (Integer)((Map)results[0]).get("plan_id");
+		int tp_id = tp.getPlanIDByName(plan);
 		System.out.println("Found acceptance testplan id: " + tp_id);
 		
 		Product prod = new Product(session);
 		int cat_id = prod.getCategoryIDByName(category, product);
 		System.out.println("Found category id: " + cat_id);
 		
-		TestopiaTestCase tc2 = new TestopiaTestCase(session,null);
+		TestCase tc2 = new TestCase(session,null);
 		
 		int pri_id = tc2.getPriorityIdByName(priority);
 		int stat_id = tc2.getStatusIdByName(caseStatus);
@@ -401,8 +402,8 @@ public class TestopiaTestCase extends TestopiaObject{
 	public Integer getIsAutomated() {
 		return isAutomated.get();
 	}
-	public Integer getPriorityID() {
-		return priorityID.get();
+	public String getPriorityID() {
+		return priority.get();
 	}
 	public Integer getCategoryID() {
 		return categoryID.get();
@@ -427,5 +428,11 @@ public class TestopiaTestCase extends TestopiaObject{
 	}
 	public String getSummary() {
 		return summary.get();
+	}
+	public String getAction() {
+		return action.get();
+	}
+	public void setAction(String action) {
+		this.action.set(action);
 	}
 }

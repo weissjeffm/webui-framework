@@ -22,6 +22,7 @@ package testopia.API;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.xmlrpc.XmlRpcException;
 
@@ -32,6 +33,8 @@ import org.apache.xmlrpc.XmlRpcException;
  */
 public class TestPlan extends TestopiaObject{
 	
+	private static final String PLAN_ID = "plan_id";
+
 	//inputed values to get a testPlan
 	private Integer planID; 
 	
@@ -97,6 +100,12 @@ public class TestPlan extends TestopiaObject{
 			
 		return result;
 			
+	}
+	
+	public int getPlanIDByName(String name) throws XmlRpcException{
+		Object[] results = this.getList("name", name);
+		//for (Object result: results) System.out.println("Found test plan:" + result.toString());
+		return (Integer)((Map)results[0]).get(PLAN_ID);
 	}
 	
 	/**

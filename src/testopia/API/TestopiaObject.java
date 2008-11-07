@@ -3,6 +3,7 @@ package testopia.API;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.xmlrpc.XmlRpcException;
@@ -11,7 +12,7 @@ public abstract class TestopiaObject {
 
 	protected Session session;
 	protected String listMethod;
-	protected ArrayList<Attribute> attributes;
+	protected List<Attribute> attributes = new ArrayList<Attribute>();
 	
 	protected Object callXmlrpcMethod(String methodName, Object... params) throws XmlRpcException{	
 		Object o = (Object) session.getClient().execute(methodName, Arrays.asList(params));	
@@ -57,25 +58,51 @@ public abstract class TestopiaObject {
 		return getList(map);
 	}
 	
-	public StringAttribute newStringAttribute(String s){
-		StringAttribute sa = new StringAttribute(s);
+	protected Map<String,Object> getDirtyAttributesMap(){
+		Map<String,Object> map = new HashMap<String,Object>();
+		for(Attribute attribute: attributes){
+			if (attribute.get() != null && attribute.isDirty()){
+				map.put(attribute.getName(), attribute.get());
+			}
+		}
+		return map;
+	}
+	
+	protected void syncAttributes(Map remoteMap){
+		for(Attribute attr: attributes){
+			String name = attr.getName();
+			Object val = remoteMap.get(name);
+			if (val == null) 
+				System.out.println("Warning, Got remote attribute that we don't use locally: " + name + ", " + val.toString());
+			else attr.set(val);
+		}
+	}
+	/**
+	 * protected method to create a new string attribute to use in 
+	 * Testopia objects
+	 * @param s the string attribute
+	 * @return
+	 */
+	protected StringAttribute newStringAttribute(String name, String value){
+		StringAttribute sa = new StringAttribute(name, value);
 		this.attributes.add(sa);
 		return sa;
 	}
 	
-	public IntegerAttribute newIntegerAttribute(Integer s){
-		IntegerAttribute ia = new IntegerAttribute(s);
+	protected IntegerAttribute newIntegerAttribute(String name, Integer value){
+		IntegerAttribute ia = new IntegerAttribute(name, value);
 		this.attributes.add(ia);
 		return ia;
 	}
 	
-	public void cleanAllAttributes(){
-		for(int i=0;i<this.attributes.size();i++)
-			this.attributes.get(i).clean();
+	protected void cleanAllAttributes(){
+		for(Attribute attribute: attributes)
+			attribute.clean();
 	}
 	
 	abstract class Attribute {
-		Object attr = null;
+		String name = null;
+		Object value = null;
 		boolean dirty = true;
 		
 		public boolean isDirty(){
@@ -84,31 +111,46 @@ public abstract class TestopiaObject {
 		public void clean(){
 			dirty=false;
 		}
-		public void set(Object s){
-			attr = s;
+		public Object get(){
+			return value;
+		}
+		private void set(Object s){
+			value = s;
 			dirty = true;
+		}
+		public String getName(){
+			return name;
 		}
 	}
 	
 	class StringAttribute extends Attribute{
-		public StringAttribute(String s){
-			attr = s;
+		private StringAttribute(String name, String value){
+			this.name = name;
+			this.value = value;
 		}
 		public String get(){
-			return (String)attr;
+			return (String)value;
+		}
+		public void set(String s){
+			super.set(s);
 		}
 		public String toString(){
-			return (String)attr;
+			return (String)value;
 		}
 		
 	}
 	
 	class IntegerAttribute extends Attribute{
-		public IntegerAttribute(Integer s){
-			attr = s;
+		private IntegerAttribute(String name, Integer value){
+			this.name = name;
+			this.value = value;	
 		}
 		public Integer get(){
-			return (Integer)attr;
+			return (Integer)value;
 		}
+		public void set(Integer s){
+			super.set(s);
+		}
+
 	}
 }

@@ -28,13 +28,10 @@ public class TestRun extends TestopiaObject{
 	private Integer runID;
 	
 	//variables used to update the testRun
-	private StringAttribute notes;
-	private IntegerAttribute managerID;  
-	private StringAttribute summary;  
-	private StringAttribute startDate;
-	private StringAttribute stopDate; 
-	private IntegerAttribute buildID;  
-	private IntegerAttribute environmentID; 
+	private StringAttribute notes = newStringAttribute("notes", null);
+	private StringAttribute summary = newStringAttribute("summary", null);
+	private StringAttribute build = newStringAttribute("build", null);  
+	private StringAttribute environment = newStringAttribute("environment", null); 
 	private IntegerAttribute newPlanID; 
 	
 	/**
@@ -50,13 +47,6 @@ public class TestRun extends TestopiaObject{
 		this.runID = runID; 
 		this.listMethod = "TestRun.list";
 		
-		this.notes = this.newStringAttribute(null);
-		this.managerID = this.newIntegerAttribute(null);
-		this.summary = this.newStringAttribute(null);
-		this.startDate = this.newStringAttribute(null);
-		this.stopDate = this.newStringAttribute(null);
-		this.buildID = this.newIntegerAttribute(null);
-		this.environmentID = this.newIntegerAttribute(null);
 		this.cleanAllAttributes();
 	}
 	
@@ -75,8 +65,8 @@ public class TestRun extends TestopiaObject{
 		HashMap<String, Object> map = new HashMap<String, Object>();
 		
 		//add attributes that need to be updated to the hashmap 
-		 if(this.buildID.isDirty()){
-			 map.put("build_id", this.buildID.get());
+		/* if(this.build.isDirty()){
+			 map.put("build_id", this.build.get());
 			 //this.buildID.clean();
 		 }
 		 if(this.environmentID.isDirty()){
@@ -111,7 +101,8 @@ public class TestRun extends TestopiaObject{
 			 //then update the testRunCase
 			 this.callXmlrpcMethod("TestRun.update",
 					 				runID,
-					 				map);
+					 				map);*/
+		//FIXME the code above to be replaced with a generic list of items to update.
 		 
 		 this.cleanAllAttributes();
 	}
@@ -152,9 +143,9 @@ public class TestRun extends TestopiaObject{
 	{
 		//set the values for the test plan
 		HashMap<String, Object> map = new HashMap<String, Object>();
-		map.put("build_id", this.buildID.get());
-		map.put("environment_id", this.environmentID.get());
-		map.put("manager_id", this.managerID.get());
+		map.put("build_id", this.build.get());
+		//map.put("environment_id", this.environmentID.get());
+		//map.put("manager_id", this.managerID.get());
 		map.put("plan_id", planID);
 		map.put("plan_text_version", planTextVersion);
 		map.put("summary", this.summary.get());
@@ -216,45 +207,25 @@ public class TestRun extends TestopiaObject{
 	}
 
 	/**
-	 * @return the managerID
-	 */
-	public Integer getManagerID() {
-		return managerID.get();
-	}
-
-	/**
 	 * @return the summary
 	 */
 	public String getSummary() {
 		return summary.get();
 	}
 
-	/**
-	 * @return the startDate
-	 */
-	public String getStartDate() {
-		return startDate.get();
-	}
-
-	/**
-	 * @return the stopDate
-	 */
-	public String getStopDate() {
-		return stopDate.get();
-	}
 
 	/**
 	 * @return the buildID
 	 */
-	public Integer getBuildID() {
-		return buildID.get();
+	public String getBuild() {
+		return build.get();
 	}
 
 	/**
 	 * @return the environmentID
 	 */
-	public Integer getEnvironmentID() {
-		return environmentID.get();
+	public String getEnvironment() {
+		return environment.get();
 	}
 
 	/**
@@ -268,26 +239,19 @@ public class TestRun extends TestopiaObject{
 	 * 
 	 * @param buildID int - the new builID
 	 */
-	public void setBuildID(int buildID) {
-		this.buildID.set(buildID);
+	public void setBuild(String build) {
+		this.build.set(build);
 	}
 
 	/**
 	 * 
-	 * @param environmentID int = the new environemnetID
+	 * @param environment int = the new environemnetID
 	 */
-	public void setEnvironmentID(int environmentID) {
-		this.environmentID.set(environmentID);
+	public void setEnvironment(String environment) {
+		this.environment.set(environment);
 	}
 
-	/**
-	 * 
-	 * @param managerID int - the new managerID
-	 */
-	public void setManagerID(int managerID) {
-		this.managerID.set(managerID);
-	}
-
+	
 	/**
 	 * 
 	 * @param notes String - the new notes 
@@ -296,21 +260,6 @@ public class TestRun extends TestopiaObject{
 		this.notes.set(notes);
 	}
 
-	/**
-	 * 
-	 * @param startDate String - the new startDate (Format: yyyy-mm-dd hh:mm:ss)
-	 */
-	public void setStartDate(String startDate) {
-		this.startDate.set(startDate);
-	}
-
-	/**
-	 * 
-	 * @param stopDate String - the new stopDate (Format: yyyy-mm-dd hh:mm:ss)
-	 */
-	public void setStopDate(String stopDate) {
-		this.stopDate.set(stopDate);
-	}
 	
 	/**
 	 * 

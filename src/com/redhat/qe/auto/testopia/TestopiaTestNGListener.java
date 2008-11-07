@@ -16,7 +16,7 @@ import org.testng.internal.IResultListener;
 import testopia.API.Product;
 import testopia.API.Session;
 import testopia.API.TestPlan;
-import testopia.API.TestopiaTestCase;
+import testopia.API.TestCase;
 import testopia.API.User;
 
 /**
@@ -25,8 +25,8 @@ import testopia.API.User;
  */
 public class TestopiaTestNGListener implements IResultListener {
 
-	private static final String TESTOPIA_PW = "dog8code";
-	private static final String TESTOPIA_USER = "jweiss+jonqa@redhat.com";
+	private static final String TESTOPIA_PW = "2$(w^*@&J";
+	private static final String TESTOPIA_USER = "jweiss@redhat.com";
 	private static final String TESTOPIA_URL = "https://testopia-01.lab.bos.redhat.com/bugzilla/tr_xmlrpc.cgi";
 	protected TestProcedureHandler tph = null;
 	
@@ -156,7 +156,8 @@ public class TestopiaTestNGListener implements IResultListener {
 		tcr.setStatus(2);
 		tcr.update();*/
 		
-		TestopiaTestCase tc2 = new TestopiaTestCase(session,null);
+		TestCase tc2 = new TestCase(session,null);
+		tc2.setAction("step 1 do this\nstep 2 do that.");
 		tc2.makeTestCase(TESTOPIA_USER, "PROPOSED", "--default--", "JBoss ON", "Acceptance", "eat me", "P1");
 	}
 

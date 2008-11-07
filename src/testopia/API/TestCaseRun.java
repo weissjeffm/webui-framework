@@ -21,6 +21,8 @@
 package testopia.API;
 
 import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.xmlrpc.XmlRpcException;
 
 /**
@@ -59,11 +61,12 @@ public class TestCaseRun extends TestopiaObject{
 		this.caseRunID = caseRunID; 
 		this.canUpdate = false;
 		
-		this.notes = this.newStringAttribute(null);
-		this.caseStatus = this.newIntegerAttribute(null);
-		this.assigneeID = this.newIntegerAttribute(null);
-		this.build_ID = this.newIntegerAttribute(null);
-		this.environment_ID = this.newIntegerAttribute(null);
+		this.notes = this.newStringAttribute("notes", null);
+		this.caseStatus = this.newIntegerAttribute("status", null);
+		this.assigneeID = this.newIntegerAttribute("assignee", null);
+		this.build_ID = this.newIntegerAttribute("build_id", null);
+		this.environment_ID = this.newIntegerAttribute("environment_id", null);
+	
 	}
 	
 	/**
@@ -88,11 +91,11 @@ public class TestCaseRun extends TestopiaObject{
 		this.caseRunID = caseRunID;
 		this.canUpdate = true;
 		
-		this.notes = this.newStringAttribute(null);
-		this.caseStatus = this.newIntegerAttribute(null);
-		this.assigneeID = this.newIntegerAttribute(null);
-		this.build_ID = this.newIntegerAttribute(null);
-		this.environment_ID = this.newIntegerAttribute(null);
+		this.notes = this.newStringAttribute("notes", null);
+		this.caseStatus = this.newIntegerAttribute("status", null);
+		this.assigneeID = this.newIntegerAttribute("assignee", null);
+		this.build_ID = this.newIntegerAttribute("build_id", null);
+		this.environment_ID = this.newIntegerAttribute("environment_id", null);
 	}
 	
 	/**
@@ -113,13 +116,7 @@ public class TestCaseRun extends TestopiaObject{
 					"you must use the constuctor with 7 parameters");
 		
 	    //set the values for the test case
-		HashMap<String, Object> map = new HashMap<String, Object>();
-		map.put("assignee", assigneeID);
-		map.put("case_id", caseID);
-		map.put("case_text_version", caseTextVersion);
-		map.put("environment_id", environmentID);
-		map.put("run_id", runID);
-		map.put("build_id", buildID);
+		Map<String, Object> map = getDirtyAttributesMap();
 				
 		return (Integer)callXmlrpcMethod("TestCaseRun.create", map);
 		
@@ -139,27 +136,12 @@ public class TestCaseRun extends TestopiaObject{
 					"you must use the constuctor with 7 parameters");
 		
 		//hashmap to store attributes to be updated
-		HashMap<String, Object> map = new HashMap<String, Object>();
-		
-		//add attributes that need to be updated to the hashmap 
-		if(this.notes.isDirty())
-			map.put("notes", this.notes.get());
-		if(this.caseStatus.isDirty())
-			map.put("case_run_status_id", this.caseStatus.get()); 
-		if(this.assigneeID.isDirty())
-			map.put("assignee", this.assigneeID.get());
-		if(this.build_ID.isDirty())
-			map.put("build_id", this.build_ID.get());
-		if(this.environment_ID.isDirty())
-			map.put("environment_id", environment_ID);
-		if (map.size() > 0)
-			callXmlrpcMethod("TestCaseRun.update",
-							 runID,
-							 caseID,
-							 buildID,
-							 environmentID,
-							 map);
-		this.cleanAllAttributes();
+		Map<String, Object> map = getDirtyAttributesMap();
+				
+		if (map.size() > 0) {
+			callXmlrpcMethod("TestCaseRun.update", runID, caseID, buildID, environmentID, map);
+			this.cleanAllAttributes();
+		}
 	}
 	
 	/**
@@ -169,10 +151,12 @@ public class TestCaseRun extends TestopiaObject{
 	 * @throws XmlRpcException 
 	 */
 	@SuppressWarnings("unchecked")
-	public HashMap<String, Object> getAttributes()
+	public Map<String, Object> getAttributes()
 	throws XmlRpcException
 	{
-		return (HashMap<String, Object>)callXmlrpcMethod("TestCaseRun.get", caseRunID);
+		Map m = (Map<String, Object>)callXmlrpcMethod("TestCaseRun.get", caseRunID);
+		syncAttributes(m);
+		return m;
 		
 	}
 
