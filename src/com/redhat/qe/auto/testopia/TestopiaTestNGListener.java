@@ -4,8 +4,6 @@
 package com.redhat.qe.auto.testopia;
 
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.logging.Handler;
 import java.util.logging.Logger;
 
@@ -13,11 +11,10 @@ import org.testng.ITestContext;
 import org.testng.ITestResult;
 import org.testng.internal.IResultListener;
 
-import testopia.API.Product;
+import testopia.API.Build;
 import testopia.API.Session;
-import testopia.API.TestPlan;
 import testopia.API.TestCase;
-import testopia.API.User;
+import testopia.API.TestCaseRun;
 
 /**
  * @author jweiss
@@ -156,9 +153,18 @@ public class TestopiaTestNGListener implements IResultListener {
 		tcr.setStatus(2);
 		tcr.update();*/
 		
-		TestCase tc2 = new TestCase(session,null);
-		tc2.setAction("step 1 do this\nstep 2 do that.");
-		//tc2.makeTestCase(TESTOPIA_USER, "PROPOSED", "--default--", "JBoss ON", "Acceptance", "eat me", "P1");
+		/*TestCase tc2 = new TestCase(session, "PROPOSED", "--default--", "P1", "what up dude", "Acceptance", "JBoss ON");
+		tc2.setIsAutomated(true);
+		tc2.create();
+		tc2.setPriorityID("P2");
+		tc2.update();
+		tc2.update();*/
+		
+		
+		TestCaseRun tcr = new TestCaseRun(session, 2948, "2.2 CR1", "Windows + Postgres" );
+		tcr.setStatus(TestCaseRun.Statuses.PASSED);
+		tcr.create();
+		
 	}
 
 }

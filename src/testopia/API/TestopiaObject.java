@@ -61,8 +61,8 @@ public abstract class TestopiaObject {
 	protected Map<String,Object> getDirtyAttributesMap(){
 		Map<String,Object> map = new HashMap<String,Object>();
 		for(Attribute attribute: attributes){
-			if (attribute.get() != null && attribute.isDirty()){
-				map.put(attribute.getName(), attribute.get());
+			if (attribute.getValue() != null && attribute.isDirty()){
+				map.put(attribute.getName(), attribute.getValue());
 			}
 		}
 		return map;
@@ -73,7 +73,10 @@ public abstract class TestopiaObject {
 			String name = attr.getName();
 			Object val = remoteMap.get(name);
 			if (val == null) 
-				System.out.println("Warning, Got remote attribute that we don't use locally: " + name + ", " + val.toString());
+				try {
+					System.out.println("Warning, Got remote attribute that we don't use locally: " + name + ", " + val.toString());
+				}
+				catch(NullPointerException npe) {}
 			else attr.set(val);
 		}
 		//FIXME need to check for error before cleaning attributes
@@ -108,18 +111,27 @@ public abstract class TestopiaObject {
 	}
 	
 	protected Map<String,Object> update(String methodName, int id) throws XmlRpcException{
-		
-		Map<String,Object> map = (Map<String,Object>)this.callXmlrpcMethod(methodName, id,  getDirtyAttributesMap());
+		Map<String,Object> outGoingMap =  getDirtyAttributesMap();
+		Map<String,Object> map;
+		if (outGoingMap.size() > 0)
+			map = (Map<String,Object>)this.callXmlrpcMethod(methodName, id, outGoingMap);
+		else throw new TestopiaException("There are no locally updated fields to update via xmlrpc!");
 		this.syncAttributes(map);
 		return map;
 	}
 	
-    protected Map<String,Object> create(String methodName) throws XmlRpcException{
-		
+    protected Map<String,Object> create(String methodName) throws XmlRpcException{		
 		Map<String,Object> map = (Map<String,Object>)this.callXmlrpcMethod(methodName, getDirtyAttributesMap());
 		this.syncAttributes(map);
 		return map;
 	}
+    
+    protected Map<String,Object> get(String methodName, int id) throws XmlRpcException{		
+		Map<String,Object> map = (Map<String,Object>)this.callXmlrpcMethod(methodName, id);
+		this.syncAttributes(map);
+		return map;
+	}
+    
 	
 	abstract class Attribute {
 		String name = null;
@@ -132,7 +144,7 @@ public abstract class TestopiaObject {
 		public void clean(){
 			dirty=false;
 		}
-		public Object get(){
+		public Object getValue(){
 			return value;
 		}
 		private void set(Object s){

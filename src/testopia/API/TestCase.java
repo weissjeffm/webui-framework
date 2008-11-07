@@ -60,12 +60,26 @@ public class TestCase extends TestopiaObject{
 	
 	public TestCase(Session session, String status, int categoryId, String priority, String summary, Integer plan){
 		this.session = session;
+		this.status.set(status);
 		this.listMethod = "TestCase.list";
 		this.categoryID.set(categoryId);
 		this.priority.set(priority);
 		this.summary.set(summary);
 		this.plans.set(plan);
 	}
+	
+	public TestCase(Session session, String status, String category, String priority, String summary, String plan, String product) throws XmlRpcException{
+		this.session = session;
+		this.listMethod = "TestCase.list";
+		this.status.set(status);
+	
+		this.categoryID.set(new Product(session).getCategoryIDByName(category, product));
+
+		this.priority.set(priority);
+		this.summary.set(summary);
+		this.plans.set(new TestPlan(session, null).getPlanIDByName(plan));
+	}
+
 	/**
 	 * 
 	 * @param alias String - the new Alias
@@ -120,8 +134,8 @@ public class TestCase extends TestopiaObject{
 	 * 
 	 * @param priorityID - int the new priorityID
 	 */
-	public void setPriorityID(int priorityID) {
-		//this.priorityID.set(priorityID);
+	public void setPriorityID(String priorityID) {
+		this.priority.set(priorityID);
 	}
 	
 	/**
@@ -225,7 +239,9 @@ public class TestCase extends TestopiaObject{
 	 * @throws XmlRpcException
 	 */
 	public Map<String,Object> create() throws XmlRpcException{
-		return super.create("TestCase.create");			
+		Map map = super.create("TestCase.create");		
+		caseID = (Integer)map.get("case_id");
+		return map;
 	}
 	
 	
@@ -236,27 +252,15 @@ public class TestCase extends TestopiaObject{
 	 * @throws Exception
 	 * @throws XmlRpcException
 	 */
-	@SuppressWarnings("unchecked")
-	public HashMap<String, Object> getAttributes()
-	throws TestopiaException, XmlRpcException
+	public Map<String, Object> getAttributes() throws TestopiaException, XmlRpcException
 	{
 		if (caseID == null)
 			throw new TestopiaException("caseID is null.");
 		
 		//get the hashmap
-		return (HashMap<String, Object>) this.callXmlrpcMethod("TestCase.get",
-																caseID.intValue());	
+		return get("TestCase.get", caseID);	
 	}
-	
-	@Deprecated
-	public int getCategoryIdByName(String categoryName)
-	throws XmlRpcException
-	{
-		//get the result
-		return (Integer) this.callXmlrpcMethod("TestCase.lookup_category_id_by_name",
-												  categoryName);	
-	}
-	
+		
 	public int getPriorityIdByName(String categoryName) throws XmlRpcException
 	{
 		//get the result
