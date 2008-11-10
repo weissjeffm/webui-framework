@@ -60,15 +60,25 @@ public class TestopiaTestNGListener implements IResultListener {
 	@Override
 	public void onStart(ITestContext arg0) {
 		//create new test run
+		String testname = "Run of suite " + arg0.getSuite().getName();
 		try {
 			loginTestopia();
 			retrieveContext();
+			testrun = new TestRun(session, 
+					testplan.getId(),
+					environment.getId(), 
+					build.getId(), 
+					session.getUserid(), 
+					testname);
+
 		} catch(Exception e){
 			log.severe("Could not log in to testopia!  Aborting!");
 			TestopiaException te=new TestopiaException("Failed to log in to testopia");
 			te.initCause(e);
 			throw te;
 		}
+		
+		
 		
 	}
 
@@ -104,7 +114,9 @@ public class TestopiaTestNGListener implements IResultListener {
 	 */
 	@Override
 	public void onTestStart(ITestResult arg0) {
-		// TODO Auto-generated method stub
+		//create new testcaserun
+		String testname = arg0.getMethod().getMethodName();
+		TestCaseRun testcaserun = new TestCaseRun(session, testrun.getId());
 
 	}
 
@@ -183,21 +195,18 @@ public class TestopiaTestNGListener implements IResultListener {
 	
 	protected void retrieveContext() throws XmlRpcException{
 		product = new Product(session);
-		Integer prodId = product.getProductIDByName("JBoss ON");
-		TestPlan tp = new TestPlan(session, "Acceptance");
-		Integer plan = tp.getPlanID();
-		Build bu = new Build(session, prodId);
-		Integer build = bu.getBuildIDByName("2.2 CR1");
-		Environment env = new Environment(session, prodId, null);
-		Integer envId = env.getEnvironemntIDByName("Windows+Postgres");
-		TestRun tr = new TestRun(session, plan, envId, build, session.getUserid(), "Test");
-		HashMap<String,Object> trinst= (HashMap<String, Object>) tr.create();
+		testplan = new TestPlan(session, "Acceptance");
+		build = new Build(session, product.getId());
+		Integer buildID = build.getBuildIDByName("2.2 CR1");
+		environment = new Environment(session, product.getId(), null);
+		Integer envId = environment.getEnvironemntIDByName("Windows+Postgres");
+		/*HashMap<String,Object> trinst= (HashMap<String, Object>) tr.create();
 		TestCaseRun tcr = new TestCaseRun(session,
 										  (Integer)trinst.get("run_id"),
 										  2948,
-										  build,
+										  buildID,
 										  envId);
-		tcr.create();
+		tcr.create();*/
 
 	}
 	public static void main(String args[]) throws Exception{
@@ -234,7 +243,7 @@ public class TestopiaTestNGListener implements IResultListener {
 		Product prod = new Product(session);
 		Integer prodId = prod.getProductIDByName("JBoss ON");
 		TestPlan tp = new TestPlan(session, "Acceptance");
-		Integer plan = tp.getPlanID();
+		Integer plan = tp.getId();
 		Build bu = new Build(session, prodId);
 		Integer build = bu.getBuildIDByName("2.2 CR1");
 		Environment env = new Environment(session, prodId, null);

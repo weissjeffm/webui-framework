@@ -42,9 +42,6 @@ public class Environment extends TestopiaObject{
 	private StringAttribute name = newStringAttribute("name", null);
 	private BooleanAttribute isactive = newBooleanAttribute("isactive", null);
 
-	private Integer environmentID = null;
-
-
 	/**
 	 * Constructor for Testopia Environment Object
 	 * @param session session object to facilitate XMLRPC connection
@@ -67,7 +64,7 @@ public class Environment extends TestopiaObject{
 	public Map<String,Object> update() throws TestopiaException, XmlRpcException
 	{
 		//update the testRunCase
-		return super.update("Environment.update", environmentID);
+		return super.update("Environment.update", id);
 	}
 
 	/**
@@ -78,7 +75,7 @@ public class Environment extends TestopiaObject{
 	 */
 	public Map<String,Object> create() throws XmlRpcException{
 		Map map = super.create("Environment.create");		
-		environmentID = (Integer)map.get("environment_id");
+		id = (Integer)map.get("environment_id");
 		return map;
 	}
 
@@ -167,7 +164,8 @@ public class Environment extends TestopiaObject{
 		HashMap<String, Object> ret = (HashMap<String, Object>)
 		this.callXmlrpcMethod("Environment.check_environment",
 				params);
-		return (Integer)ret.get("environment_id");
+		id= (Integer)ret.get("environment_id");
+		return id;
 	}
 
 
@@ -199,5 +197,7 @@ public class Environment extends TestopiaObject{
 	public void setIsactive(Boolean isactive) {
 		this.isactive.set(isactive);
 	}
+	
+
 
 }

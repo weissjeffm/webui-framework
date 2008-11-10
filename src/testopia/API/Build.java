@@ -35,7 +35,6 @@ import org.apache.xmlrpc.XmlRpcException;
  *
  */
 public class Build extends TestopiaObject{
-	private Integer buildID = null;
 	private IntegerAttribute productId = newIntegerAttribute("product", null);
 	private StringAttribute name = newStringAttribute("name", null);
 	private StringAttribute milestone = newStringAttribute("milestone", null);
@@ -75,7 +74,7 @@ public class Build extends TestopiaObject{
 		if (productId == null) 
 			throw new TestopiaException("productId is null.");
 		//update the testRunCase
-		return super.update("Build.update", buildID);
+		return super.update("Build.update", id);
 	}
 
 	/**
@@ -86,7 +85,7 @@ public class Build extends TestopiaObject{
 	 */
 	public Map<String,Object> create() throws XmlRpcException{
 		Map map = super.create("Build.create");		
-		buildID = (Integer)map.get("build_id");
+		id = (Integer)map.get("build_id");
 		return map;
 	}
 
@@ -138,7 +137,7 @@ public class Build extends TestopiaObject{
 		return productId.get();
 	}
 
-
+	
 
 
 	/**
@@ -155,7 +154,8 @@ public class Build extends TestopiaObject{
 		HashMap<String, Object> ret = (HashMap<String, Object>)
 		this.callXmlrpcMethod("Build.check_build",
 				params);
-		return (Integer)ret.get("build_id");
+		id = (Integer)ret.get("build_id");
+		return id;
 	}
 
 	/**

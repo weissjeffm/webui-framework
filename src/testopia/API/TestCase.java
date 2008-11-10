@@ -26,10 +26,7 @@ import java.util.Map;
 import org.apache.xmlrpc.XmlRpcException;
 
 public class TestCase extends TestopiaObject{
-	
-	//inputed values to get a testCase
-	private Integer caseID; 
-	
+		
 	//values for updates 
 	//private Integer defaultTesterID = null;
 	private StringAttribute priority = newStringAttribute("priority", null);
@@ -53,7 +50,7 @@ public class TestCase extends TestopiaObject{
 	 */
 	public TestCase(Session session, Integer caseID)
 	{
-		this.caseID = caseID; 
+		this.id = caseID; 
 		this.session = session;
 		this.listMethod = "TestCase.list";
 	}
@@ -77,7 +74,7 @@ public class TestCase extends TestopiaObject{
 
 		this.priority.set(priority);
 		this.summary.set(summary);
-		this.plans.set(new TestPlan(session,plan).getPlanID());
+		this.plans.set(new TestPlan(session,plan).getId());
 	}
 
 	/**
@@ -172,12 +169,12 @@ public class TestCase extends TestopiaObject{
 	public void addComponent(int componentID)
 	throws TestopiaException, XmlRpcException
 	{
-		if(caseID == null)
+		if(id == null)
 			throw new TestopiaException("CaseID cannot be null");
 		
 		//add the component to the test case
 		this.callXmlrpcMethod("TestCase.add_component",
-							  caseID,
+							  id,
 							  componentID);
 	}
 	
@@ -191,12 +188,12 @@ public class TestCase extends TestopiaObject{
 	public void removeComponent(int componentID)
 	throws TestopiaException, XmlRpcException
 	{
-		if(caseID == null)
+		if(id == null)
 			throw new TestopiaException("CaseID cannot be null");
 		
 		//add the component to the test case
 		this.callXmlrpcMethod("TestCase.remove_component",
-							  caseID,
+							  id,
 							  componentID);
 	}
 	
@@ -209,11 +206,11 @@ public class TestCase extends TestopiaObject{
 	public Object[] getComponents()
 	throws TestopiaException, XmlRpcException
 	{
-		if(caseID == null)
+		if(id == null)
 			throw new TestopiaException("CaseID cannot be null");
 
 		return (Object[]) this.callXmlrpcMethod("TestCase.get_components", 
-												caseID);	
+												id);	
 	}
 
 		
@@ -226,10 +223,10 @@ public class TestCase extends TestopiaObject{
 	 */
 	public Map<String,Object> update() throws TestopiaException, XmlRpcException
 	{
-		if (caseID == null) 
+		if (id == null) 
 			throw new TestopiaException("caseID is null.");
 		//update the testRunCase
-		return super.update("TestCase.update", caseID);
+		return super.update("TestCase.update", id);
 	}
 	
 	/**
@@ -240,7 +237,7 @@ public class TestCase extends TestopiaObject{
 	 */
 	public Map<String,Object> create() throws XmlRpcException{
 		Map map = super.create("TestCase.create");		
-		caseID = (Integer)map.get("case_id");
+		id = (Integer)map.get("case_id");
 		return map;
 	}
 	
@@ -254,11 +251,11 @@ public class TestCase extends TestopiaObject{
 	 */
 	public Map<String, Object> getAttributes() throws TestopiaException, XmlRpcException
 	{
-		if (caseID == null)
+		if (id == null)
 			throw new TestopiaException("caseID is null.");
 		
 		//get the hashmap
-		return get("TestCase.get", caseID);	
+		return get("TestCase.get", id);	
 	}
 		
 	public int getPriorityIdByName(String categoryName) throws XmlRpcException

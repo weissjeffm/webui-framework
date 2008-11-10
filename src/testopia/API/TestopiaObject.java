@@ -17,6 +17,7 @@ public abstract class TestopiaObject {
 	protected String listMethod;
 	protected List<Attribute> attributes = new ArrayList<Attribute>();
 	protected static Logger log = Logger.getLogger(TestopiaObject.class.getName());
+	protected Integer id = null;
 
 	protected Object callXmlrpcMethod(String methodName, Object... params) throws XmlRpcException{	
 		Object o = (Object) session.getClient().execute(methodName, Arrays.asList(params));	
@@ -138,6 +139,9 @@ public abstract class TestopiaObject {
 		return map;
 	}
     
+    public Integer getId(){
+    	return id;
+    }
 	
 	abstract class Attribute {
 		String name = null;

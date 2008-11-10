@@ -35,9 +35,6 @@ public class TestPlan extends TestopiaObject{
 	
 	private static final String PLAN_ID = "plan_id";
 
-	//inputed values to get a testPlan
-	private Integer planID; 
-	
 
 	//inputed values to update a testPlan 
 	private int authorID; 	
@@ -67,7 +64,7 @@ public class TestPlan extends TestopiaObject{
 	public TestPlan(Session session, Integer planID)
 	{
 		this.session = session;
-		this.planID = planID;
+		this.id = planID;
 		this.listMethod = "TestPlan.list";
 	}
 	
@@ -75,7 +72,7 @@ public class TestPlan extends TestopiaObject{
 	{
 		this.session = session;
 		this.listMethod = "TestPlan.list";
-		this.planID = getPlanIDByName(plan);
+		this.id = getPlanIDByName(plan);
 	}
 	
 	/**
@@ -104,7 +101,7 @@ public class TestPlan extends TestopiaObject{
 		int result = (Integer)this.callXmlrpcMethod("TestPlan.create",
 													map);
 			
-		planID = result; 
+		id = result; 
 			
 		return result;
 			
@@ -125,7 +122,7 @@ public class TestPlan extends TestopiaObject{
 	public void update()
 	throws TestopiaException, XmlRpcException
 	{
-		if (planID == null) 
+		if (id == null) 
 			throw new TestopiaException("planID is null.");
 		
 		//hashmap to store attributes to be updated
@@ -155,7 +152,7 @@ public class TestPlan extends TestopiaObject{
 		
 		//update the testRunCase
 		this.callXmlrpcMethod("TestPlan.update",
-							  planID,
+							  id,
 							  map);
 		
 		//make sure multiple updates aren't called, for one set
@@ -168,10 +165,6 @@ public class TestPlan extends TestopiaObject{
 		isSetTypeID = false;
 	}
 	
-	public Integer getPlanID() {
-		return planID;
-	}
-
 	/**
 	 * 
 	 * @param authorID int - the bugzilla authorID that the TestPlan will be changed to
@@ -261,12 +254,12 @@ public class TestPlan extends TestopiaObject{
 	public HashMap<String, Object> getAttributes()
 	throws TestopiaException, XmlRpcException
 	{
-		if (planID == null) 
+		if (id == null) 
 			throw new TestopiaException("planID is null.");
 			
 		//get the hashmap
 		return (HashMap<String, Object>) this.callXmlrpcMethod("TestPlan.get",
-											   				   planID.intValue());
+											   				   id.intValue());
 	}
 	
 	/**
@@ -280,12 +273,12 @@ public class TestPlan extends TestopiaObject{
 	public HashMap<String, Object> getCategories()
 	throws TestopiaException, XmlRpcException
 	{
-		if (planID == null) 
+		if (id == null) 
 			throw new TestopiaException("planID is null.");
 		
 		//get the hashmap
 		return (HashMap<String, Object>)this.callXmlrpcMethod("TestPlan.get",
-															  planID.intValue());
+															  id.intValue());
 	}
 	
 	/**
@@ -298,12 +291,12 @@ public class TestPlan extends TestopiaObject{
 	public Object[] getBuilds()
 	throws TestopiaException, XmlRpcException
 	{
-		if (planID == null) 
+		if (id == null) 
 			throw new TestopiaException("planID is null.");
 			
 		//get the hashmap
 		return (Object[])this.callXmlrpcMethod("TestPlan.get_builds",
-												planID.intValue());
+												id.intValue());
 	}
 	
 	/**
@@ -316,12 +309,12 @@ public class TestPlan extends TestopiaObject{
 	public Object[] getComponents()
 	throws TestopiaException, XmlRpcException
 	{
-		if (planID == null) 
+		if (id == null) 
 			throw new TestopiaException("planID is null.");
 			
 		//get the hashmap
 		return (Object[])this.callXmlrpcMethod("TestPlan.get_components",
-												planID.intValue());
+												id.intValue());
 	}
 	
 	/**
@@ -334,12 +327,12 @@ public class TestPlan extends TestopiaObject{
 	public Object[] getTestCases()
 	throws TestopiaException, XmlRpcException
 	{
-		if (planID == null) 
+		if (id == null) 
 			throw new TestopiaException("planID is null.");
 			
 		//get the hashmap
 		return (Object[])this.callXmlrpcMethod("TestPlan.get_test_cases",
-												planID.intValue());
+												id.intValue());
 	}
 	
 	/**
@@ -352,12 +345,12 @@ public class TestPlan extends TestopiaObject{
 	public Object[] getTestRuns()
 	throws TestopiaException, XmlRpcException
 	{
-		if (planID == null)
+		if (id == null)
 			throw new TestopiaException("planID is null.");
 			
 		//get the hashmap
 		return (Object[])this.callXmlrpcMethod("TestPlan.get_test_runs",
-												planID.intValue());
+												id.intValue());
 	}
 
 }

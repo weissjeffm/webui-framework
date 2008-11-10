@@ -32,9 +32,6 @@ import org.apache.xmlrpc.XmlRpcException;
  */
 public class Product extends TestopiaObject{
 
-	protected Integer productID = null;
-
-
 
 	/**
 	 * 
@@ -59,8 +56,8 @@ public class Product extends TestopiaObject{
 	throws XmlRpcException
 	{
 		Map m = (Map)callXmlrpcMethod("Product.check_product", productName);
-		this.productID = (Integer)m.get("id");		
-		return productID;
+		this.id = (Integer)m.get("id");		
+		return id;
 	}
 
 	public int getCategoryIDByName(String categoryName, String productName) throws XmlRpcException
@@ -70,9 +67,6 @@ public class Product extends TestopiaObject{
 
 	}
 
-	public Integer getProductID() {
-		return productID;
-	}
 
 	/**
 	 * 

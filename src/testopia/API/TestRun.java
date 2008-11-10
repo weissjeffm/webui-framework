@@ -27,12 +27,7 @@ import java.util.Map;
 import org.apache.xmlrpc.XmlRpcException;
 
 public class TestRun extends TestopiaObject{
-	
-
-
-	//inputed values to get a testRun
-	private Integer runID;
-	
+		
 	//variables used to update the testRun
 	private IntegerAttribute planID = newIntegerAttribute("plan_id", null);  
 	private IntegerAttribute environment = newIntegerAttribute("environment", null); 
@@ -54,7 +49,7 @@ public class TestRun extends TestopiaObject{
 	public TestRun(Session session, Integer runID)
 	{
 		this.session = session;
-		this.runID = runID; 
+		this.id = runID; 
 		this.listMethod = "TestRun.list";
 		
 		this.cleanAllAttributes();
@@ -79,10 +74,10 @@ public class TestRun extends TestopiaObject{
 	 */
 	public Map<String,Object> update() throws TestopiaException, XmlRpcException
 	{
-		if (runID == null) 
+		if (id == null) 
 			throw new TestopiaException("runID is null.");
 		//update the testRunCase
-		return super.update("TestRun.update", runID);
+		return super.update("TestRun.update", id);
 	}
 	
 	/**
@@ -126,11 +121,11 @@ public class TestRun extends TestopiaObject{
 	 */
 	public Map<String, Object> getAttributes() throws TestopiaException, XmlRpcException
 	{
-		if (runID == null) 
+		if (id == null) 
 			throw new TestopiaException("runID is null.");
 		
 		//get the hashmap
-		return get("TestRun.get", runID);
+		return get("TestRun.get", id);
 	}
 	
 	
@@ -144,11 +139,11 @@ public class TestRun extends TestopiaObject{
 	public Object[] getTestCases()
 	throws TestopiaException, XmlRpcException
 	{
-		if (runID == null)
+		if (id == null)
 			throw new TestopiaException("runID is null.");
 		
 		return (Object[])this.callXmlrpcMethod("TestRun.get_test_cases",
-												runID.intValue());
+												id.intValue());
 	}			
 		
 	/**
@@ -161,11 +156,11 @@ public class TestRun extends TestopiaObject{
 	public Object[] getTestCaseRuns()
 	throws TestopiaException, XmlRpcException
 	{
-		if (runID == null) 
+		if (id == null) 
 			throw new TestopiaException("runID is null.");
 			
 		return (Object[])this.callXmlrpcMethod("TestRun.get_test_case_runs",
-												runID.intValue());
+												id.intValue());
 	}
 	
 
