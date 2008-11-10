@@ -258,7 +258,7 @@ public class TestopiaTestNGListener implements IResultListener {
 		Integer build = bu.getBuildIDByName("2.2 CR1");
 		Environment env = new Environment(session, prodId, null);
 		Integer envId = env.getEnvironemntIDByName("Windows+Postgres");
-		TestRun tr = new TestRun(session, plan, envId, build, session.getUserid(), "Test");
+		TestRun tr = new TestRun(session, plan, envId, build, session.getUserid(), "Test" + System.currentTimeMillis());
 		HashMap<String,Object> trinst= (HashMap<String, Object>) tr.create();
 		TestCaseRun tcr = new TestCaseRun(session,
 										  (Integer)trinst.get("run_id"),

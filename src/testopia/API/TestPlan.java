@@ -54,7 +54,7 @@ public class TestPlan extends TestopiaObject{
 	public TestPlan(Session session, Integer planID)
 	{
 		this.session = session;
-		this.id = newIntegerAttribute("caserun_id", planID);
+		this.id = newIntegerAttribute(PLAN_ID, planID);
 
 		this.listMethod = "TestPlan.list";
 	}
@@ -63,7 +63,9 @@ public class TestPlan extends TestopiaObject{
 	{
 		this.session = session;
 		this.listMethod = "TestPlan.list";
-		get("TestPlan.get", plan);
+		this.id = newIntegerAttribute(PLAN_ID, null);
+
+		getPlanIDByName(plan);
 
 	}
 	
@@ -72,7 +74,8 @@ public class TestPlan extends TestopiaObject{
 	public int getPlanIDByName(String name) throws XmlRpcException{
 		Object[] results = this.getList("name", name);
 		//for (Object result: results) log.info("Found test plan:" + result.toString());
-		return (Integer)((Map)results[0]).get(PLAN_ID);
+		syncAttributes((Map)results[0]);
+		return getId();
 	}
 	
 

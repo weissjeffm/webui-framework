@@ -49,7 +49,7 @@ public class TestRun extends TestopiaObject{
 	public TestRun(Session session, Integer runID)
 	{
 		this.session = session;
-		this.id = newIntegerAttribute("caserun_id", runID);
+		this.id = newIntegerAttribute("run_id", runID);
 		this.listMethod = "TestRun.list";
 		
 	}
@@ -62,7 +62,7 @@ public class TestRun extends TestopiaObject{
 		this.manager.set(manager);
 		this.summary.set(summary);
 		this.listMethod = "TestRun.list";
-		this.id = newIntegerAttribute("caserun_id", planID);
+		this.id = newIntegerAttribute("run_id", planID);
 
 	}
 	

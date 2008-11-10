@@ -43,7 +43,7 @@ public class Product extends TestopiaObject{
 	public Product(Session session)
 	{
 		this.session = session;
-		this.id = newIntegerAttribute("prod_id", null);
+		this.id = newIntegerAttribute("id", null);
 	}
 
 	/**

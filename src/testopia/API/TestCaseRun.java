@@ -56,7 +56,7 @@ public class TestCaseRun extends TestopiaObject{
 	public TestCaseRun(Session session, int caseRunID)
 	{
 		this.session   = session; 
-		this.id = newIntegerAttribute("caserun_id", caseRunID);
+		this.id = newIntegerAttribute("case_run_id", caseRunID);
 	}
 	
 	/**
@@ -77,7 +77,7 @@ public class TestCaseRun extends TestopiaObject{
 		this.runID.set(runID); 
 		this.buildID.set(buildID); 
 		this.environmentID.set(environmentID);
-		this.id = newIntegerAttribute("caserun_id", null);
+		this.id = newIntegerAttribute("case_run_id", null);
 
 	}
 	
