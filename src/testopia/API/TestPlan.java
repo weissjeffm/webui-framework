@@ -74,8 +74,8 @@ public class TestPlan extends TestopiaObject{
 	public TestPlan(Session session, String plan) throws XmlRpcException
 	{
 		this.session = session;
-		this.planID = getPlanIDByName(plan);
 		this.listMethod = "TestPlan.list";
+		this.planID = getPlanIDByName(plan);
 	}
 	
 	/**
