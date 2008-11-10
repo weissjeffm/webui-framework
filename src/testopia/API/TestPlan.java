@@ -38,6 +38,7 @@ public class TestPlan extends TestopiaObject{
 	//inputed values to get a testPlan
 	private Integer planID; 
 	
+
 	//inputed values to update a testPlan 
 	private int authorID; 	
 	private String defaultProductVersion;  	
@@ -67,6 +68,13 @@ public class TestPlan extends TestopiaObject{
 	{
 		this.session = session;
 		this.planID = planID;
+		this.listMethod = "TestPlan.list";
+	}
+	
+	public TestPlan(Session session, String plan) throws XmlRpcException
+	{
+		this.session = session;
+		this.planID = getPlanIDByName(plan);
 		this.listMethod = "TestPlan.list";
 	}
 	
@@ -160,6 +168,10 @@ public class TestPlan extends TestopiaObject{
 		isSetTypeID = false;
 	}
 	
+	public Integer getPlanID() {
+		return planID;
+	}
+
 	/**
 	 * 
 	 * @param authorID int - the bugzilla authorID that the TestPlan will be changed to

@@ -77,7 +77,7 @@ public class TestCase extends TestopiaObject{
 
 		this.priority.set(priority);
 		this.summary.set(summary);
-		this.plans.set(new TestPlan(session, null).getPlanIDByName(plan));
+		this.plans.set(new TestPlan(session,plan).getPlanID());
 	}
 
 	/**

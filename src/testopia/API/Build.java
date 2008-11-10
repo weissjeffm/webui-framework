@@ -1,28 +1,29 @@
- /*
-  * The contents of this file are subject to the Mozilla Public
-  * License Version 1.1 (the "License"); you may not use this file
-  * except in compliance with the License. You may obtain a copy of
-  * the License at http://www.mozilla.org/MPL/
-  *
-  * Software distributed under the License is distributed on an "AS
-  * IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
-  * implied. See the License for the specific language governing
-  * rights and limitations under the License.
-  *
-  * The Original Code is the Bugzilla Testopia Java API.
-  *
-  * The Initial Developer of the Original Code is Andrew Nelson.
-  * Portions created by Andrew Nelson are Copyright (C) 2006
-  * Novell. All Rights Reserved.
-  *
-  * Contributor(s): Andrew Nelson <anelson@novell.com>
-  * 				Jason Sabin <jsabin@novell.com>
-  *
-  */
+/*
+ * The contents of this file are subject to the Mozilla Public
+ * License Version 1.1 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of
+ * the License at http://www.mozilla.org/MPL/
+ *
+ * Software distributed under the License is distributed on an "AS
+ * IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+ * implied. See the License for the specific language governing
+ * rights and limitations under the License.
+ *
+ * The Original Code is the Bugzilla Testopia Java API.
+ *
+ * The Initial Developer of the Original Code is Andrew Nelson.
+ * Portions created by Andrew Nelson are Copyright (C) 2006
+ * Novell. All Rights Reserved.
+ *
+ * Contributor(s): Andrew Nelson <anelson@novell.com>
+ * 				Jason Sabin <jsabin@novell.com>
+ *
+ */
 package testopia.API;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.xmlrpc.XmlRpcException;
 
@@ -34,109 +35,129 @@ import org.apache.xmlrpc.XmlRpcException;
  *
  */
 public class Build extends TestopiaObject{
-	 private IntegerAttribute productId = newIntegerAttribute("product", null);
-	
-	 /**
-	  * 
-	  * @param userName - your testopia/bugzilla username
-	  * @param password - the password for your account 
-	  * @param login - the user you want attributes returned for
-	  * @param url - the url of the testopia server
-	  */
-	 public Build(Session session, Integer productId)
-	 {
-		 this.session = session;
-		 this.productId.set(productId);
-	 }
-	 
-	 
-	 /**
-	  * Creates a new build and returns the buildID, 0 is returned if an error occurs
-	  * @param name
-	  * @param productID
+	private Integer buildID = null;
+	private IntegerAttribute productId = newIntegerAttribute("product", null);
+	private StringAttribute name = newStringAttribute("name", null);
+	private StringAttribute milestone = newStringAttribute("milestone", null);
+	private StringAttribute description = newStringAttribute("description", null);
+	private BooleanAttribute isactive = newBooleanAttribute("isactive", null);
+
+
+
+
+
+
+
+	/**
+	 * 
+	 * @param userName - your testopia/bugzilla username
+	 * @param password - the password for your account 
+	 * @param login - the user you want attributes returned for
+	 * @param url - the url of the testopia server
+	 */
+	public Build(Session session, Integer productId)
+	{
+		this.session = session;
+		this.productId.set(productId);
+	}
+
+
+
+	/**
+	 * Updates are not called when the .set is used. You must call update after all your sets
+	 * to push the changes over to testopia.
+	 * @throws TestopiaException if planID is null 
+	 * @throws XmlRpcException
+	 * (you made the TestCase with a null caseID and have not created a new test plan)
+	 */
+	public Map<String,Object> update() throws TestopiaException, XmlRpcException
+	{
+		if (productId == null) 
+			throw new TestopiaException("productId is null.");
+		//update the testRunCase
+		return super.update("Build.update", buildID);
+	}
+
+	/**
+	 * Calls the create method with the attributes as-is (as set via contructors
+	 * or setters).  
+	 * @return a map of the newly created object
+	 * @throws XmlRpcException
+	 */
+	public Map<String,Object> create() throws XmlRpcException{
+		Map map = super.create("Build.create");		
+		buildID = (Integer)map.get("build_id");
+		return map;
+	}
+
+
+
+
+
+	public String getName() {
+		return name.get();
+	}
+
+
+	public void setName(String name) {
+		this.name.set(name);
+	}
+
+
+	public String getMilestone() {
+		return milestone.get();
+	}
+
+
+	public void setMilestone(String milestone) {
+		this.milestone.set(milestone);
+	}
+
+
+	public String getDescription() {
+		return description.get();
+	}
+
+
+	public void setDescription(String description) {
+		this.description.set(description);
+	}
+
+
+	public Boolean getIsactive() {
+		return isactive.get();
+	}
+
+
+	public void setIsactive(Boolean isactive) {
+		this.isactive.set(isactive);
+	}
+
+
+	public Integer getProductId() {
+		return productId.get();
+	}
+
+
+
+
+	/**
+	 * 
+	 * @param BuildName the name of the build that the ID will be returned for. 0 Will be 
+	 * returned if the build can't be found
+	 * @return the ID of the specified product
 	 * @throws XmlRpcException 
-	  */
-	 public int makeBuild(String name, int productID, Boolean isactive, String milestone) throws XmlRpcException
-	 { 
-		 //Check if the build already exists. Will return a 0 if the build does not exist
-		 int buildTest = getBuildIDByName(name);
-		 
-		 if(buildTest == 0){
-			 //Build does not exist so we need to create a new build
-		 
-			 HashMap<String, Object> map = new HashMap<String, Object>();
-			 map.put("name", name);
-			 map.put("product_id", productID);
-			 map.put("milestone", milestone);
-			 
-			 //1 for true, 0 for false
-			 if(isactive)
-				 map.put("isactive", 1);
-			 else
-				 map.put("isactive", 0);
-			 
-			 //get the result
-			 return (Integer) this.callXmlrpcMethod("Build.create", map);
-		 }
-		 else{
-			 //Build already exists
-			 log.info("Build "+name+" already exists will not create build");
-			 //Make sure we don't forget to set the buildID
-			 return buildTest;
-		 }
-	 }
-	 
-	 /**
-	  * Updates builds on testopia with the specified parameters
-	  * @param name string - the name of the build. Can be null
-	  * @param milestone string - the milestone. Can be null
-	  * @param isactive Boolean - if the build is active. Can be null
- 	  * @param description String - description of the build. Can be null
-	  * @param buildID int - the buildID
-	 * @throws XmlRpcException 
-	  */
-	 public void updateBuild(String name, String milestone, Boolean isactive, 
-			 String description, int buildID) throws XmlRpcException
-	 {
-		 //put values into map if they are not null 
-		 HashMap<String, Object> map = new HashMap<String, Object>();
-		 if(name != null)
-			 map.put("name", name);
-		 if(milestone != null)
-			 map.put("milestone", milestone);
-		 if(isactive != null)
-		 {
-			 //put 1 into map if true
-			 if(isactive)
-				 map.put("isactive", 1);
-		 	//else put false
-			 else 
-				 map.put("isactive", 0);
-		 }
-		 
-		 if(description != null)
-			 map.put("description", description);
-		 
-		 this.callXmlrpcMethod("Build.update", buildID, map);
-	 }
-	 
-	 /**
-	  * 
-	  * @param BuildName the name of the build that the ID will be returned for. 0 Will be 
-	  * returned if the build can't be found
-	  * @return the ID of the specified product
-	 * @throws XmlRpcException 
-	  */
+	 */
 	@SuppressWarnings("unchecked")
 	public int getBuildIDByName(String buildName) throws XmlRpcException
-	 {
+	{
 		Object[] params = new Object[]{buildName, productId.get()};
 		HashMap<String, Object> ret = (HashMap<String, Object>)
-										this.callXmlrpcMethod("Build.check_build",
-															  params);
+		this.callXmlrpcMethod("Build.check_build",
+				params);
 		return (Integer)ret.get("build_id");
-	 }
-	 
+	}
+
 	/**
 	 * 
 	 * @param id the ID of the build name that will be returned. Null is returned 
@@ -144,9 +165,12 @@ public class Build extends TestopiaObject{
 	 * @return the product name that corresponds the specified product ID
 	 * @throws XmlRpcException 
 	 */
-	 public String getBuildNameByID(int id) throws XmlRpcException
-	 {
-		//get the result
-		return (String)this.callXmlrpcMethod("Build.lookup_id_by_name", id);
-	 }
+	public String getBuildNameByID(int id) throws XmlRpcException
+	{
+		Object[] params = new Object[]{id,};
+		HashMap<String, Object> ret = (HashMap<String, Object>)
+		this.callXmlrpcMethod("Build.get",
+				params);
+		return (String)ret.get("name");
+	}
 }

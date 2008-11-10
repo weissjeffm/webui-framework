@@ -1,28 +1,34 @@
- /*
-  * The contents of this file are subject to the Mozilla Public
-  * License Version 1.1 (the "License"); you may not use this file
-  * except in compliance with the License. You may obtain a copy of
-  * the License at http://www.mozilla.org/MPL/
-  *
-  * Software distributed under the License is distributed on an "AS
-  * IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
-  * implied. See the License for the specific language governing
-  * rights and limitations under the License.
-  *
-  * The Original Code is the Bugzilla Testopia Java API.
-  *
-  * The Initial Developer of the Original Code is Andrew Nelson.
-  * Portions created by Andrew Nelson are Copyright (C) 2006
-  * Novell. All Rights Reserved.
-  *
-  * Contributor(s): Andrew Nelson <anelson@novell.com>
-  * 				Jason Sabin <jsabin@novell.com>
-  *
-  */
+/*
+ * The contents of this file are subject to the Mozilla Public
+ * License Version 1.1 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of
+ * the License at http://www.mozilla.org/MPL/
+ *
+ * Software distributed under the License is distributed on an "AS
+ * IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+ * implied. See the License for the specific language governing
+ * rights and limitations under the License.
+ *
+ * The Original Code is the Bugzilla Testopia Java API.
+ *
+ * The Initial Developer of the Original Code is Andrew Nelson.
+ * Portions created by Andrew Nelson are Copyright (C) 2006
+ * Novell. All Rights Reserved.
+ *
+ * Contributor(s): Andrew Nelson <anelson@novell.com>
+ * 				Jason Sabin <jsabin@novell.com>
+ *
+ */
 package testopia.API;
 
 import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.xmlrpc.XmlRpcException;
+
+import testopia.API.TestopiaObject.BooleanAttribute;
+import testopia.API.TestopiaObject.IntegerAttribute;
+import testopia.API.TestopiaObject.StringAttribute;
 
 /**
  * Allows the user to get an environment from it's ID. It can also create 
@@ -31,109 +37,73 @@ import org.apache.xmlrpc.XmlRpcException;
  *
  */
 public class Environment extends TestopiaObject{
-	 
-	 /**
-	  * Constructor for Testopia Environment Object
-	  * @param session session object to facilitate XMLRPC connection
-	  */
-	 public Environment(Session session)
-	 {
-		 this.session = session;
-	 }
-	 
-	 
-	 /**
-	  * Creates a new environment and returns the environmentID, 0 is returned 
-	  * if an error occurs
-	  * @param name name of environment
-	  * @param productID product ID integer that environment is tied to
-	  * @param isActive boolean stating whether environment is active or not
+
+	private IntegerAttribute productId = newIntegerAttribute("product", null);
+	private StringAttribute name = newStringAttribute("name", null);
+	private BooleanAttribute isactive = newBooleanAttribute("isactive", null);
+
+	private Integer environmentID = null;
+
+
+	/**
+	 * Constructor for Testopia Environment Object
+	 * @param session session object to facilitate XMLRPC connection
+	 */
+	public Environment(Session session, Integer productId, String name)
+	{
+		this.session = session;
+		this.productId.set(productId);
+		this.name.set(name);
+	}
+
+
+	/**
+	 * Updates are not called when the .set is used. You must call update after all your sets
+	 * to push the changes over to testopia.
+	 * @throws TestopiaException if planID is null 
+	 * @throws XmlRpcException
+	 * (you made the TestCase with a null caseID and have not created a new test plan)
+	 */
+	public Map<String,Object> update() throws TestopiaException, XmlRpcException
+	{
+		//update the testRunCase
+		return super.update("Environment.update", environmentID);
+	}
+
+	/**
+	 * Calls the create method with the attributes as-is (as set via contructors
+	 * or setters).  
+	 * @return a map of the newly created object
+	 * @throws XmlRpcException
+	 */
+	public Map<String,Object> create() throws XmlRpcException{
+		Map map = super.create("Environment.create");		
+		environmentID = (Integer)map.get("environment_id");
+		return map;
+	}
+
+
+
+	/**
+	 * Returns the environmnet as a HashMap or null if environment can't be found
+	 * @param environmentName
+	 * @return
 	 * @throws XmlRpcException 
-	  */
-	 public int makeEnvironment(String name, int productID, boolean isActive)
-	 throws XmlRpcException
-	 { 
-		 //Check if the environment already exists. Will return a null if the environment does not exist
-		 HashMap<String, Object> environmentTest = listEnvironments(productID, name);
-		 
-		 if(environmentTest == null){
-			 //environment does not exist so we need to create a new environment
-		 
-			 HashMap<String, Object> map = new HashMap<String, Object>();
-			 
-			 //1 for true, 0 for false
-			 if(isActive)
-				 map.put("isactive", 1);
-			 else
-				 map.put("isactive", 0);
-			 
-			 map.put("name", name);
-			 map.put("product_id", productID);	
-			//get the result
-			return (Integer) this.callXmlrpcMethod("Environment.create", map);
-		 }
-		 else{
-			 //Build already exists
-			 log.info("-->Build "+name+" already exists will not create build");
-			 //Set the id correctly before returning
-			 String envIDString = environmentTest.get("environment_id").toString();
-			 return Integer.parseInt(envIDString);
-		 }
-	 }
-	 
-	 /**
-	  * Updates the environment on testopia with the specified parameters
-	  * @param name string - the name of the build. Can be null
-	  * @param milestone string - the milestone. Can be null
-	  * @param isactive Boolean - if the build is active. Can be null
- 	  * @param description String - description of the build. Can be null
-	  * @param buildID int - the buildID
-	 * @throws XmlRpcException 
-	  */
-	 public void updateEnvironment(String name, Boolean isactive, 
-			 Integer productID, int environmentID)
-	 throws XmlRpcException
-	 {
-		 //put values into map if they are not null 
-		HashMap<String, Object> map = new HashMap<String, Object>();
-		if(name != null)
-			 map.put("name", name);
-		if(productID != null)
-			 map.put("product_id", productID);
-		if(isactive != null)
-		{
-			 //put 1 into map if true
-			 if(isactive)
-				 map.put("isactive", 1);
-		 	 //else put false
-			 else 
-				 map.put("isactive", 0);
-		}
-		//get the result
-		this.callXmlrpcMethod("Environment.update",environmentID,
-												   map);
-	 }
-	 
-	 /**
-	  * Returns the environmnet as a HashMap or null if environment can't be found
-	  * @param environmentName
-	  * @return
-	 * @throws XmlRpcException 
-	  */
+	 */
 	@SuppressWarnings("unchecked")
-	public HashMap<String, Object> getEnvirnoment(int environmentID)
+	public HashMap<String, Object> getEnvironment(int environmentID)
 	throws XmlRpcException
-	 {
+	{
 		return (HashMap<String, Object>)this.callXmlrpcMethod("Environment.get", environmentID);
-	 }
-	 
-	 /**
-	  * 
-	  * @param productName - the name of the product that the 
-	  * @param environmentName
-	  * @return
+	}
+
+	/**
+	 * 
+	 * @param productName - the name of the product that the 
+	 * @param environmentName
+	 * @return
 	 * @throws XmlRpcException 
-	  */
+	 */
 	@SuppressWarnings("unchecked")
 	public HashMap<String, Object> listEnvironments(String productName, String environmentName)
 	throws XmlRpcException
@@ -145,40 +115,89 @@ public class Environment extends TestopiaObject{
 			int productId = product.getProductIDByName(productName);
 			if(environmentName != null)
 				return (HashMap<String, Object>)this.callXmlrpcMethod("Environment.get",
-																	  productId,
-																	  environmentName);
+						productId,
+						environmentName);
 			else
 				return (HashMap<String, Object>)this.callXmlrpcMethod("Environment.get",
-						  											  productId);
+						productId);
 		}
 		if(environmentName != null){
 			if(productName != null){
 				Product product = new Product(session);
 				int productId = product.getProductIDByName(productName);
 				return (HashMap<String, Object>)this.callXmlrpcMethod("Environment.get",
-						  											  productId,
-						  											  environmentName);
+						productId,
+						environmentName);
 			}
 			else
 				return (HashMap<String, Object>)this.callXmlrpcMethod("Environment.get",
-						  											  environmentName);
+						environmentName);
 		}
 		return null;
 	}
 
-	 /**
-	  * 
-	  * @param productId - the product id 
-	  * @param environmentName
-	  * @return
-	  * @throws XmlRpcException 
-	  */
-	 @SuppressWarnings("unchecked")
+	/**
+	 * 
+	 * @param productId - the product id 
+	 * @param environmentName
+	 * @return
+	 * @throws XmlRpcException 
+	 */
+	@SuppressWarnings("unchecked")
 	public HashMap<String, Object> listEnvironments(int productId, String environmentName)
 	throws XmlRpcException
-	 {
-		 if(environmentName != null) return (HashMap<String, Object>)callXmlrpcMethod("Environment.get", productId, environmentName);
-		 else return (HashMap<String, Object>)callXmlrpcMethod("Environment.get", productId);
-		 
-	 }
+	{
+		if(environmentName != null) return (HashMap<String, Object>)callXmlrpcMethod("Environment.get", productId, environmentName);
+		else return (HashMap<String, Object>)callXmlrpcMethod("Environment.get", productId);
+
+	}
+
+
+	/**
+	 * 
+	 * @param BuildName the name of the build that the ID will be returned for. 0 Will be 
+	 * returned if the build can't be found
+	 * @return the ID of the specified product
+	 * @throws XmlRpcException 
+	 */
+	@SuppressWarnings("unchecked")
+	public int getEnvironemntIDByName(String environmentName) throws XmlRpcException
+	{
+		Object[] params = new Object[]{environmentName, productId.get()};
+		HashMap<String, Object> ret = (HashMap<String, Object>)
+		this.callXmlrpcMethod("Environment.check_environment",
+				params);
+		return (Integer)ret.get("environment_id");
+	}
+
+
+	public Integer getProductId() {
+		return productId.get();
+	}
+
+
+	public void setProductId(Integer productId) {
+		this.productId.set(productId);
+	}
+
+
+	public String getName() {
+		return name.get();
+	}
+
+
+	public void setName(String name) {
+		this.name.set(name);
+	}
+
+
+	public Boolean getIsactive() {
+		return isactive.get();
+	}
+
+
+	public void setIsactive(Boolean isactive) {
+		this.isactive.set(isactive);
+	}
+
 }

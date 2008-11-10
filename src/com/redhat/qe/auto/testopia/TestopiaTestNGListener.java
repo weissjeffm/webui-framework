@@ -14,6 +14,7 @@ import org.testng.ITestResult;
 import org.testng.internal.IResultListener;
 
 import testopia.API.Build;
+import testopia.API.Environment;
 import testopia.API.Session;
 import testopia.API.TestCaseRun;
 import testopia.API.TestPlan;
@@ -182,10 +183,14 @@ public class TestopiaTestNGListener implements IResultListener {
 		//tcr.create();
 		
 		//TestCaseRun tcr = new TestCaseRun(session, 2935, )
-		TestPlan tp = new TestPlan(session, 271);
-		Build bu = new Build(session, 69);
+		
+		TestPlan tp = new TestPlan(session, "Acceptance");
+		Integer plan = tp.getPlanID();
+		Build bu = new Build(session, null);
 		Integer build = bu.getBuildIDByName("2.2 CR1");
-		TestRun tr = new TestRun(session, 271, 91, build, session.getUserid(), "Test");
+		Environment env = new Environment(session, null, null);
+		env.getEnvironemntIDByName("Windows + Postgres");
+		TestRun tr = new TestRun(session, plan, 91, build, session.getUserid(), "Test");
 		HashMap<String,Object> trinst= (HashMap<String, Object>) tr.create();
 		TestCaseRun tcr = new TestCaseRun(session,
 										  (Integer)trinst.get("run_id"),
