@@ -37,22 +37,12 @@ public class TestPlan extends TestopiaObject{
 
 
 	//inputed values to update a testPlan 
-	private int authorID; 	
-	private String defaultProductVersion;  	
-	private String creation_date;
-	private int isactive; 	
-	private String name; 		
-	private int productID;  	
-	private int typeID;  	
-	 
-	//booleans used to trigger if a value has been set
-	private boolean isSetAuthorID = false; 	
-	private boolean isSetDefaultProductVersion = false;  	
-	private boolean isSetcreation_date = false;
-	private boolean isSetIsactive = false; 	
-	private boolean isSetName = false; 		
-	private boolean isSetProductID = false;  	
-	private boolean isSetTypeID = false;
+	private IntegerAttribute product = newIntegerAttribute("product", null);  	
+	private IntegerAttribute type = newIntegerAttribute("type", null);  	
+	private BooleanAttribute isactive = newBooleanAttribute("isactive", null);  		 
+	private StringAttribute name = newStringAttribute("name", null);  	
+	private StringAttribute defaultProductVersion = newStringAttribute("default_product_version", null);  	
+
 	
 	/**
 	 * 
@@ -64,7 +54,8 @@ public class TestPlan extends TestopiaObject{
 	public TestPlan(Session session, Integer planID)
 	{
 		this.session = session;
-		this.id = planID;
+		this.id = newIntegerAttribute("caserun_id", planID);
+
 		this.listMethod = "TestPlan.list";
 	}
 	
@@ -72,40 +63,11 @@ public class TestPlan extends TestopiaObject{
 	{
 		this.session = session;
 		this.listMethod = "TestPlan.list";
-		this.id = getPlanIDByName(plan);
+		get("TestPlan.get", plan);
+
 	}
 	
-	/**
-	 * 
-	 * @param authorID the bugzilla/testopia ID of the author 
-	 * @param productID the bugzilla/testopia ID of the product 
-	 * @param defaultProductVersion 
-	 * @param typeID
-	 * @param name the name of the test plan
-	 * @return the ID of the test plan
-	 * @throws XmlRpcException 
-	 */
-	public int makeTestPlan(String authorID, String productID, String defaultProductVersion,
-			String typeID, String name)
-	throws XmlRpcException
-	{	
-		//set the values for the test plan
-		HashMap<String, Object> map = new HashMap();
-		map.put("author_id", authorID);
-		map.put("product_id", productID);
-		map.put("default_product_version", defaultProductVersion);
-		map.put("type_id", typeID);
-		map.put("name", name);
-		
-		//update the testRunCase
-		int result = (Integer)this.callXmlrpcMethod("TestPlan.create",
-													map);
-			
-		id = result; 
-			
-		return result;
-			
-	}
+
 	
 	public int getPlanIDByName(String name) throws XmlRpcException{
 		Object[] results = this.getList("name", name);
@@ -113,67 +75,9 @@ public class TestPlan extends TestopiaObject{
 		return (Integer)((Map)results[0]).get(PLAN_ID);
 	}
 	
-	/**
-	 * Updates are not called when the .set is used. You must call update after all your sets
-	 * to push the changes over to testopia.
-	 * @throws Exception if planID is null 
-	 * (you made the TestPlan with a null planID and have not created a new test plan)
-	 */
-	public void update()
-	throws TestopiaException, XmlRpcException
-	{
-		if (id == null) 
-			throw new TestopiaException("planID is null.");
-		
-		//hashmap to store attributes to be updated
-		HashMap<String, Object> map = new HashMap<String, Object>();
-		
-		//add attributes that need to be updated to the hashmap 
-		 if(isSetAuthorID == true)
-			 map.put("author_id", authorID);
-		 
-		 if(isSetDefaultProductVersion == true)
-			 map.put("default_product_version", defaultProductVersion);
-		 
-		 if (isSetcreation_date == true)
-			 map.put("creation_date", creation_date); 
-		
-		 if(isSetIsactive == true)
-			 map.put("isactive", isactive); 
-		 
-		 if(isSetName == true)
-			 map.put("name", name);
-		 
-		 if(isSetProductID == true)
-			 map.put("product_id", productID);
-		 
-		 if(isSetTypeID == true)
-			 map.put("type_id", typeID);
-		
-		//update the testRunCase
-		this.callXmlrpcMethod("TestPlan.update",
-							  id,
-							  map);
-		
-		//make sure multiple updates aren't called, for one set
-		isSetAuthorID = false;  	
-		isSetDefaultProductVersion = false;	
-		isSetcreation_date = false; 
-		isSetIsactive = false;  	
-		isSetName = false;  		
-		isSetProductID = false;   	
-		isSetTypeID = false;
-	}
+
 	
-	/**
-	 * 
-	 * @param authorID int - the bugzilla authorID that the TestPlan will be changed to
-	 */
-	public void setAuthorID(int authorID)
-	{
-		this.isSetAuthorID = true;
-		this.authorID = authorID; 
-	}
+
 	
 	/**
 	 * 
@@ -181,35 +85,17 @@ public class TestPlan extends TestopiaObject{
 	 */
 	public void setDefaultProductVersion(String defaultProductVersion)
 	{
-		this.isSetDefaultProductVersion = true;
-		this.defaultProductVersion = defaultProductVersion; 
+		this.defaultProductVersion.set(defaultProductVersion); 
 	}
 	
-	/**
-	 * 
-	 * @param creationDate String - the creation date the test plan will be changed to (Format: yyyy-mm-dd hh:mm:ss)
-	 */
-	public void setCreationDate(String creationDate)
-	{
-		this.isSetcreation_date = true; 
-		this.creation_date = creationDate; 
-	}
-	
+
 	/**
 	 * 
 	 * @param isActive boolean - change if the test plan is active or not
 	 */
 	public void setIsActive(boolean isActive)
 	{
-		this.isSetIsactive = true; 
-		
-		//convert to integer of 1 if isActive is true (1 == true)
-		if(isActive)
-			this.isactive = 1; 
-		
-		//else convert to 0 for false (0 == false)
-		else 
-			this.isactive = 0; 
+		isactive.set(isActive);
 		
 	}
 	
@@ -219,8 +105,7 @@ public class TestPlan extends TestopiaObject{
 	 */
 	public void setName(String name)
 	{
-		this.isSetName = true;
-		this.name = name; 		
+		this.name.set(name); 		
 	}
 	
 	/**
@@ -229,8 +114,7 @@ public class TestPlan extends TestopiaObject{
 	 */
 	public void setProductID(int productID)
 	{
-		this.isSetProductID = true; 
-		this.productID = productID; 
+		this.product.set(productID); 
 	}
 	
 	/**
@@ -239,28 +123,9 @@ public class TestPlan extends TestopiaObject{
 	 */
 	public void setTypeID(int typeID)
 	{
-		this.isSetTypeID = true; 
-		this.typeID = typeID; 
+		this.type.set(typeID); 
 	}
 	
-	/**
-	 * Gets the attributes of the test plan, planID must not be null
-	 * @return a hashMap of all the values found. Returns null if there is an error
-	 * and the TestPlan cannot be returned
-	 * @throws Exception
-	 * @throws XmlRpcException
-	 */
-	@SuppressWarnings("unchecked")
-	public HashMap<String, Object> getAttributes()
-	throws TestopiaException, XmlRpcException
-	{
-		if (id == null) 
-			throw new TestopiaException("planID is null.");
-			
-		//get the hashmap
-		return (HashMap<String, Object>) this.callXmlrpcMethod("TestPlan.get",
-											   				   id.intValue());
-	}
 	
 	/**
 	 * 
@@ -278,7 +143,7 @@ public class TestPlan extends TestopiaObject{
 		
 		//get the hashmap
 		return (HashMap<String, Object>)this.callXmlrpcMethod("TestPlan.get",
-															  id.intValue());
+															  id.get());
 	}
 	
 	/**
@@ -296,7 +161,7 @@ public class TestPlan extends TestopiaObject{
 			
 		//get the hashmap
 		return (Object[])this.callXmlrpcMethod("TestPlan.get_builds",
-												id.intValue());
+												id.get());
 	}
 	
 	/**
@@ -314,7 +179,7 @@ public class TestPlan extends TestopiaObject{
 			
 		//get the hashmap
 		return (Object[])this.callXmlrpcMethod("TestPlan.get_components",
-												id.intValue());
+												id.get());
 	}
 	
 	/**
@@ -332,7 +197,7 @@ public class TestPlan extends TestopiaObject{
 			
 		//get the hashmap
 		return (Object[])this.callXmlrpcMethod("TestPlan.get_test_cases",
-												id.intValue());
+												id.get());
 	}
 	
 	/**
@@ -350,7 +215,7 @@ public class TestPlan extends TestopiaObject{
 			
 		//get the hashmap
 		return (Object[])this.callXmlrpcMethod("TestPlan.get_test_runs",
-												id.intValue());
+												id.get());
 	}
 
 }

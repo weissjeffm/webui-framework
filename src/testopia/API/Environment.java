@@ -51,6 +51,7 @@ public class Environment extends TestopiaObject{
 		this.session = session;
 		this.productId.set(productId);
 		this.name.set(name);
+		this.id = newIntegerAttribute("environment_id", null);
 	}
 
 
@@ -75,7 +76,6 @@ public class Environment extends TestopiaObject{
 	 */
 	public Map<String,Object> create() throws XmlRpcException{
 		Map map = super.create("Environment.create");		
-		id = (Integer)map.get("environment_id");
 		return map;
 	}
 
@@ -160,12 +160,8 @@ public class Environment extends TestopiaObject{
 	@SuppressWarnings("unchecked")
 	public int getEnvironemntIDByName(String environmentName) throws XmlRpcException
 	{
-		Object[] params = new Object[]{environmentName, productId.get()};
-		HashMap<String, Object> ret = (HashMap<String, Object>)
-		this.callXmlrpcMethod("Environment.check_environment",
-				params);
-		id= (Integer)ret.get("environment_id");
-		return id;
+		get("Environment.check_environment",environmentName, productId.get());
+		return getId();
 	}
 
 

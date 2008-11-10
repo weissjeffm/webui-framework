@@ -56,7 +56,7 @@ public class TestCaseRun extends TestopiaObject{
 	public TestCaseRun(Session session, int caseRunID)
 	{
 		this.session   = session; 
-		this.id = caseRunID; 
+		this.id = newIntegerAttribute("caserun_id", caseRunID);
 	}
 	
 	/**
@@ -77,6 +77,8 @@ public class TestCaseRun extends TestopiaObject{
 		this.runID.set(runID); 
 		this.buildID.set(buildID); 
 		this.environmentID.set(environmentID);
+		this.id = newIntegerAttribute("caserun_id", null);
+
 	}
 	
 	/**
@@ -104,51 +106,7 @@ public class TestCaseRun extends TestopiaObject{
 		return super.create("TestCaseRun.create");			
 	}
 	
-	/**
-	 * used to create a testRunCase
-	 * @param assigneeID
-	 * @param caseRunStatusID
-	 * @param caseTextVersion
-	 * @return caseRunID
-	 * @throws XmlRpcException 
-	 * @throws Exception
-	 *//*
-	public int makeTestCaseRun(int assigneeID, int caseTextVersion)
-	throws TestopiaException, XmlRpcException 
-	{
-		if (canUpdate == false) 
-			throw new TestopiaException(
-					"You can't update if you use the 3 parameter constructor, "+
-					"you must use the constuctor with 7 parameters");
-		
-	    //set the values for the test case
-		Map<String, Object> map = getDirtyAttributesMap();
-				
-		return (Integer)callXmlrpcMethod("TestCaseRun.create", map);
-		
-	}*/
-	
-	/**
-	 * Updates are not called when the .set is used. You must call update after all your sets
-	 * to push the changes over to testopia.
-	 * @throws Exception will throw an exception if you used the 3 param constuctor. 
-	 */
-	/*public void update()
-	throws TestopiaException, XmlRpcException
-	{
-		if (canUpdate == false)
-			throw new TestopiaException(
-					"You can't update if you use the 3 parameter constructor, "+
-					"you must use the constuctor with 7 parameters");
-		
-		//hashmap to store attributes to be updated
-		Map<String, Object> map = getDirtyAttributesMap();
-				
-		if (map.size() > 0) {
-			callXmlrpcMethod("TestCaseRun.update", runID, caseID, buildID, environmentID, map);
-			this.cleanAllAttributes();
-		}
-	}*/
+
 	
 	/**
 	 * 

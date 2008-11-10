@@ -49,10 +49,9 @@ public class TestRun extends TestopiaObject{
 	public TestRun(Session session, Integer runID)
 	{
 		this.session = session;
-		this.id = runID; 
+		this.id = newIntegerAttribute("caserun_id", runID);
 		this.listMethod = "TestRun.list";
 		
-		this.cleanAllAttributes();
 	}
 	public TestRun(Session session, Integer planID, Integer environment, Integer build, Integer manager, String summary)
 	{
@@ -63,6 +62,8 @@ public class TestRun extends TestopiaObject{
 		this.manager.set(manager);
 		this.summary.set(summary);
 		this.listMethod = "TestRun.list";
+		this.id = newIntegerAttribute("caserun_id", planID);
+
 	}
 	
 	/**
@@ -143,7 +144,7 @@ public class TestRun extends TestopiaObject{
 			throw new TestopiaException("runID is null.");
 		
 		return (Object[])this.callXmlrpcMethod("TestRun.get_test_cases",
-												id.intValue());
+												id.get());
 	}			
 		
 	/**
@@ -160,7 +161,7 @@ public class TestRun extends TestopiaObject{
 			throw new TestopiaException("runID is null.");
 			
 		return (Object[])this.callXmlrpcMethod("TestRun.get_test_case_runs",
-												id.intValue());
+												id.get());
 	}
 	
 

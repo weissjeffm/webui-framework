@@ -43,6 +43,7 @@ public class Product extends TestopiaObject{
 	public Product(Session session)
 	{
 		this.session = session;
+		this.id = newIntegerAttribute("prod_id", null);
 	}
 
 	/**
@@ -55,9 +56,8 @@ public class Product extends TestopiaObject{
 	public int getProductIDByName(String productName)
 	throws XmlRpcException
 	{
-		Map m = (Map)callXmlrpcMethod("Product.check_product", productName);
-		this.id = (Integer)m.get("id");		
-		return id;
+		get("Product.check_product", productName);	
+		return getId();
 	}
 
 	public int getCategoryIDByName(String categoryName, String productName) throws XmlRpcException

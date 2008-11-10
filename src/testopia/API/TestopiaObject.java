@@ -17,7 +17,7 @@ public abstract class TestopiaObject {
 	protected String listMethod;
 	protected List<Attribute> attributes = new ArrayList<Attribute>();
 	protected static Logger log = Logger.getLogger(TestopiaObject.class.getName());
-	protected Integer id = null;
+	protected IntegerAttribute id;
 
 	protected Object callXmlrpcMethod(String methodName, Object... params) throws XmlRpcException{	
 		Object o = (Object) session.getClient().execute(methodName, Arrays.asList(params));	
@@ -117,7 +117,7 @@ public abstract class TestopiaObject {
 			attribute.clean();
 	}
 	
-	protected Map<String,Object> update(String methodName, int id) throws XmlRpcException{
+	protected Map<String,Object> update(String methodName, IntegerAttribute id) throws XmlRpcException{
 		Map<String,Object> outGoingMap =  getDirtyAttributesMap();
 		Map<String,Object> map;
 		if (outGoingMap.size() > 0)
@@ -133,14 +133,14 @@ public abstract class TestopiaObject {
 		return map;
 	}
     
-    protected Map<String,Object> get(String methodName, Object id) throws XmlRpcException{		
-		Map<String,Object> map = (Map<String,Object>)this.callXmlrpcMethod(methodName, id);
+    protected Map<String,Object> get(String methodName, Object... params) throws XmlRpcException{		
+		Map<String,Object> map = (Map<String,Object>)this.callXmlrpcMethod(methodName, params);
 		this.syncAttributes(map);
 		return map;
 	}
     
     public Integer getId(){
-    	return id;
+    	return id.get();
     }
 	
 	abstract class Attribute {

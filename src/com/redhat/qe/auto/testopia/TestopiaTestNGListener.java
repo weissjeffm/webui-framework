@@ -116,8 +116,14 @@ public class TestopiaTestNGListener implements IResultListener {
 	@Override
 	public void onTestStart(ITestResult arg0) {
 		//create new testcaserun
-		String testname = arg0.getMethod().getMethodName();
-		/*TestCase testcase = new TestCase(session, null);
+		/*String testname = arg0.getMethod().getMethodName();
+		TestCase testcase;
+		try {
+			testcase = new TestCase(session, testname);
+		}catch(Exception e){
+			log.log(Level.FINE, "Testcase retrieval failed on '" + testname + "', probably doesn't exist yet.", e);
+			testcase = new TestCase(session, "CONFIRMED", "--default--", "P1", "Automated test of " + testname, testplan. )
+		}
 		testcase.get
 		TestCaseRun testcaserun = new TestCaseRun(session, testrun.getId());*/
 		//testcaserun.

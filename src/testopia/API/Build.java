@@ -52,6 +52,7 @@ public class Build extends TestopiaObject{
 	{
 		this.session = session;
 		this.productId.set(productId);
+		this.id = newIntegerAttribute("build_id", null);
 	}
 
 	/**
@@ -77,7 +78,6 @@ public class Build extends TestopiaObject{
 	 */
 	public Map<String,Object> create() throws XmlRpcException{
 		Map map = super.create("Build.create");		
-		id = (Integer)map.get("build_id");
 		return map;
 	}
 
@@ -132,15 +132,10 @@ public class Build extends TestopiaObject{
 	 * @return the ID of the specified product
 	 * @throws XmlRpcException 
 	 */
-	@SuppressWarnings("unchecked")
 	public int getBuildIDByName(String buildName) throws XmlRpcException
 	{
-		HashMap<String, Object> ret = (HashMap<String, Object>)
-		this.callXmlrpcMethod("Build.check_build",
-							  buildName,
-							  productId.get());
-		id = (Integer)ret.get("build_id");
-		return id;
+		get("Build.check_build", buildName, productId.get());
+		return getId();
 	}
 
 	/**
@@ -153,9 +148,7 @@ public class Build extends TestopiaObject{
 	@SuppressWarnings("unchecked")
 	public String getBuildNameByID(int id) throws XmlRpcException
 	{
-		HashMap<String, Object> ret = (HashMap<String, Object>)
-		this.callXmlrpcMethod("Build.get",
-							  id);
-		return (String)ret.get("name");
+		get("Build.get", id);
+		return getName();
 	}
 }

@@ -50,15 +50,18 @@ public class TestCase extends TestopiaObject{
 	 */
 	public TestCase(Session session, Integer caseID)
 	{
-		this.id = caseID; 
+		this.id = newIntegerAttribute("prod_id", caseID);
 		this.session = session;
 		this.listMethod = "TestCase.list";
+
 	}
 	
 	public TestCase(Session session, String caseAlias) throws XmlRpcException
 	{
 		this.session = session;
 		this.listMethod = "TestCase.list";
+		this.id = newIntegerAttribute("prod_id", null);
+
 		get("TestCase.get", caseAlias);
 		
 	}
@@ -71,13 +74,16 @@ public class TestCase extends TestopiaObject{
 		this.priority.set(priority);
 		this.summary.set(summary);
 		this.plans.set(plan);
+		this.id = newIntegerAttribute("prod_id", null);
+
 	}
 	
 	public TestCase(Session session, String status, String category, String priority, String summary, String plan, String product) throws XmlRpcException{
 		this.session = session;
 		this.listMethod = "TestCase.list";
 		this.status.set(status);
-	
+		this.id = newIntegerAttribute("prod_id", null);
+
 		this.categoryID.set(new Product(session).getCategoryIDByName(category, product));
 
 		this.priority.set(priority);
@@ -246,7 +252,6 @@ public class TestCase extends TestopiaObject{
 	 */
 	public Map<String,Object> create() throws XmlRpcException{
 		Map map = super.create("TestCase.create");		
-		id = (Integer)map.get("case_id");
 		return map;
 	}
 	
