@@ -77,7 +77,7 @@ public class Build extends TestopiaObject{
 		 }
 		 else{
 			 //Build already exists
-			 System.out.println("-->Build "+name+" already exists will not create build");
+			 log.info("Build "+name+" already exists will not create build");
 			 //Make sure we don't forget to set the buildID
 			 return buildTest;
 		 }

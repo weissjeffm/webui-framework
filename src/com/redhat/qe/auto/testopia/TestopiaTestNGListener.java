@@ -4,16 +4,19 @@
 package com.redhat.qe.auto.testopia;
 
 import java.net.URL;
+import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 import org.testng.ITestContext;
 import org.testng.ITestResult;
 import org.testng.internal.IResultListener;
 
-import testopia.API.Build;
+import com.redhat.qe.auto.selenium.LogFormatter;
+
 import testopia.API.Session;
-import testopia.API.TestCase;
 import testopia.API.TestCaseRun;
 
 /**
@@ -26,6 +29,7 @@ public class TestopiaTestNGListener implements IResultListener {
 	private static final String TESTOPIA_USER = "jweiss@redhat.com";
 	private static final String TESTOPIA_URL = "https://testopia-01.lab.bos.redhat.com/bugzilla/tr_xmlrpc.cgi";
 	protected TestProcedureHandler tph = null;
+	protected static Logger log = Logger.getLogger(TestopiaTestNGListener.class.getName());
 	
 	/* (non-Javadoc)
 	 * @see org.testng.ITestListener#onFinish(org.testng.ITestContext)
@@ -137,7 +141,17 @@ public class TestopiaTestNGListener implements IResultListener {
 
 	}
 	
+	//FIXME this is just temporary for testing
+	private static void setLogConfig(){
+		Logger.getLogger("").setLevel(Level.ALL);
+		Logger.getLogger("").getHandlers()[0].setFormatter(new LogFormatter());
+		Logger.getLogger("").getHandlers()[0].setLevel(Level.ALL);
+		log.info("Hello");
+	}
+	
 	public static void main(String args[]) throws Exception{
+		setLogConfig();
+		log.finer("Testing log setting.");
 		Session session = new Session(TESTOPIA_USER, TESTOPIA_PW, new URL(TESTOPIA_URL));
 		session.login();
 		/*//tc.makeTestCase(id, 0, 0, true, 271, "This is a test of the testy test", 0);

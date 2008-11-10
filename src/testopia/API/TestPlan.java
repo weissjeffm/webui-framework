@@ -104,7 +104,7 @@ public class TestPlan extends TestopiaObject{
 	
 	public int getPlanIDByName(String name) throws XmlRpcException{
 		Object[] results = this.getList("name", name);
-		//for (Object result: results) System.out.println("Found test plan:" + result.toString());
+		//for (Object result: results) log.info("Found test plan:" + result.toString());
 		return (Integer)((Map)results[0]).get(PLAN_ID);
 	}
 	

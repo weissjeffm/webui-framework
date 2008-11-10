@@ -5,24 +5,28 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import org.apache.xmlrpc.XmlRpcException;
+
+import com.redhat.qe.auto.testopia.TestopiaTestNGListener;
 
 public abstract class TestopiaObject {
 
 	protected Session session;
 	protected String listMethod;
 	protected List<Attribute> attributes = new ArrayList<Attribute>();
-	
+	protected static Logger log = Logger.getLogger(TestopiaObject.class.getName());
+
 	protected Object callXmlrpcMethod(String methodName, Object... params) throws XmlRpcException{	
 		Object o = (Object) session.getClient().execute(methodName, Arrays.asList(params));	
 		//print result for debug purposes
 		if (o instanceof Object[]){
 			for (Object obj: (Object[])o){
-				System.out.println("Debug: result of '" + methodName + "' = " + obj.toString());				
+				log.finer("Result of '" + methodName + "' = " + obj.toString());				
 			}
 		}
-		else System.out.println("Debug: result of '" + methodName + "' = " + o.toString());
+		else log.finer("Result of '" + methodName + "' = " + o.toString());
 		return o;
 	}
 
@@ -74,7 +78,7 @@ public abstract class TestopiaObject {
 			Object val = remoteMap.get(name);
 			if (val == null) 
 				try {
-					System.out.println("Warning, Got remote attribute that we don't use locally: " + name + ", " + val.toString());
+					log.warning("Got remote attribute that we don't use locally: " + name + ", " + val.toString());
 				}
 				catch(NullPointerException npe) {}
 			else attr.set(val);

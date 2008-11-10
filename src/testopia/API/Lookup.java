@@ -29,32 +29,36 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.StringTokenizer;
 import java.util.Map.Entry;
+import java.util.logging.Logger;
+
+import com.redhat.qe.auto.testopia.TestopiaTestNGListener;
 
 public class Lookup {
 	public static URL url;
-	
+	protected static Logger log = Logger.getLogger(Lookup.class.getName());
+
 	public static void main(String args[]) throws Exception
 	{
 		//declare variables 
 		url = new URL("https://testopia-01.lab.bos.redhat.com/bugzilla/tr_xmlrpc.cgi");
 		
 		//get username and password
-		System.out.println("Welcome to Testopia Lookup tool 1.0");
+		log.info("Welcome to Testopia Lookup tool 1.0");
 		StringBuilder command = new StringBuilder();
 		StringBuilder object = new StringBuilder();
-		System.out.println("Please Eneter your bugzilla username");
+		log.info("Please Eneter your bugzilla username");
 		
 		StringBuilder userNameStringBuilder = new StringBuilder();
 		processInput(userNameStringBuilder, null, null);
 	
-		System.out.println("Please enter your bugzilla password");
+		log.info("Please enter your bugzilla password");
 		StringBuilder passwordStringBuilder = new StringBuilder();
 		processInput(passwordStringBuilder, null, null);
 		
 		
-		System.out.println("You may now enter a command query");
-		System.out.println("To see a list of supported queries, please");
-		System.out.println("read the lookupHelp.txt");		
+		log.info("You may now enter a command query");
+		log.info("To see a list of supported queries, please");
+		log.info("read the lookupHelp.txt");		
 		
 		
 		//begin query loop
@@ -73,13 +77,13 @@ public class Lookup {
 			//get input from console
 			processInput(command, object, null);
 			
-			System.out.println("Query Result:");
+			log.info("Query Result:");
 		
 			if(command.toString().equals("build"))
 			{
 				Build build = new Build(session);
 				int buildId = build.getBuildIDByName(object.toString());
-				System.out.println(buildId);
+				log.info("" + buildId);
 			}
 		
 			else if(command.toString().equals("component"))
@@ -87,7 +91,7 @@ public class Lookup {
 				TestPlan testPlan = new TestPlan(session, new Integer(object.toString()));
 				Object[] objects = testPlan.getComponents();
 				for(Object o : objects)
-					System.out.println(o.toString());				
+					log.info(o.toString());				
 			}
 			
 			else if(command.toString().equals("environmentByProduct"))
@@ -96,8 +100,8 @@ public class Lookup {
 						
 				HashMap<String, Object> map = environment.listEnvironments(object.toString(), null);
 				
-				System.out.println("Environment Name: " + map.get("name"));
-				System.out.println("Environment ID: " + map.get("environment_id"));
+				log.info("Environment Name: " + map.get("name"));
+				log.info("Environment ID: " + map.get("environment_id"));
 
 			}
 			
@@ -107,23 +111,23 @@ public class Lookup {
 						
 				HashMap<String, Object> map = environment.listEnvironments(object.toString(), null);
 				
-				System.out.println("Environment Name: " + map.get("name"));
-				System.out.println("Environment ID: " + map.get("environment_id"));
+				log.info("Environment Name: " + map.get("name"));
+				log.info("Environment ID: " + map.get("environment_id"));
 
 			}
 			
 			else if(command.toString().equals("exit"))
 			{
-				System.out.println("Thanks For Using the Lookup Tool <3 <3 <3 :-D ROFL");
+				log.info("Thanks For Using the Lookup Tool <3 <3 <3 :-D ROFL");
 				break;
 			}
 		
 			else
 			{
-				System.out.println("unrecognized command");
+				log.info("unrecognized command");
 			}
 			
-			System.out.println("You may now enter another command query, or type exit to exit");
+			log.info("You may now enter another command query, or type exit to exit");
 		}
 	}
 	

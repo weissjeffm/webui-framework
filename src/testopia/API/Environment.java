@@ -74,7 +74,7 @@ public class Environment extends TestopiaObject{
 		 }
 		 else{
 			 //Build already exists
-			 System.out.println("-->Build "+name+" already exists will not create build");
+			 log.info("-->Build "+name+" already exists will not create build");
 			 //Set the id correctly before returning
 			 String envIDString = environmentTest.get("environment_id").toString();
 			 return Integer.parseInt(envIDString);
