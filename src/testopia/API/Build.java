@@ -41,12 +41,6 @@ public class Build extends TestopiaObject{
 	private StringAttribute description = newStringAttribute("description", null);
 	private BooleanAttribute isactive = newBooleanAttribute("isactive", null);
 
-
-
-
-
-
-
 	/**
 	 * 
 	 * @param userName - your testopia/bugzilla username
@@ -59,8 +53,6 @@ public class Build extends TestopiaObject{
 		this.session = session;
 		this.productId.set(productId);
 	}
-
-
 
 	/**
 	 * Updates are not called when the .set is used. You must call update after all your sets
@@ -88,10 +80,6 @@ public class Build extends TestopiaObject{
 		id = (Integer)map.get("build_id");
 		return map;
 	}
-
-
-
-
 
 	public String getName() {
 		return name.get();
@@ -136,10 +124,7 @@ public class Build extends TestopiaObject{
 	public Integer getProductId() {
 		return productId.get();
 	}
-
 	
-
-
 	/**
 	 * 
 	 * @param BuildName the name of the build that the ID will be returned for. 0 Will be 
@@ -150,10 +135,10 @@ public class Build extends TestopiaObject{
 	@SuppressWarnings("unchecked")
 	public int getBuildIDByName(String buildName) throws XmlRpcException
 	{
-		Object[] params = new Object[]{buildName, productId.get()};
 		HashMap<String, Object> ret = (HashMap<String, Object>)
 		this.callXmlrpcMethod("Build.check_build",
-				params);
+							  buildName,
+							  productId.get());
 		id = (Integer)ret.get("build_id");
 		return id;
 	}
@@ -165,12 +150,12 @@ public class Build extends TestopiaObject{
 	 * @return the product name that corresponds the specified product ID
 	 * @throws XmlRpcException 
 	 */
+	@SuppressWarnings("unchecked")
 	public String getBuildNameByID(int id) throws XmlRpcException
 	{
-		Object[] params = new Object[]{id,};
 		HashMap<String, Object> ret = (HashMap<String, Object>)
 		this.callXmlrpcMethod("Build.get",
-				params);
+							  id);
 		return (String)ret.get("name");
 	}
 }
