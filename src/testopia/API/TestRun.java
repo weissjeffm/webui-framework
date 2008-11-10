@@ -75,7 +75,7 @@ public class TestRun extends TestopiaObject{
 	 */
 	public Map<String,Object> update() throws TestopiaException, XmlRpcException
 	{
-		if (id == null) 
+		if (id.get() == null) 
 			throw new TestopiaException("runID is null.");
 		//update the testRunCase
 		return super.update("TestRun.update");
@@ -93,8 +93,8 @@ public class TestRun extends TestopiaObject{
 	}
 	
 	public void addCases(Integer... cases) throws XmlRpcException{
-		Map params = new HashMap();
-		callXmlrpcMethod("TestRun.add_cases", params);
+		//Map params = new HashMap();
+		callXmlrpcMethod("TestRun.add_cases", cases);
 	}
 	
 	/*private int getNextTestRunID(Integer caseID) throws XmlRpcException{
@@ -122,11 +122,11 @@ public class TestRun extends TestopiaObject{
 	 */
 	public Map<String, Object> getAttributes() throws TestopiaException, XmlRpcException
 	{
-		if (id == null) 
+		if (id.get() == null) 
 			throw new TestopiaException("runID is null.");
 		
 		//get the hashmap
-		return get("TestRun.get", id);
+		return get("TestRun.get", id.get());
 	}
 	
 	
@@ -140,7 +140,7 @@ public class TestRun extends TestopiaObject{
 	public Object[] getTestCases()
 	throws TestopiaException, XmlRpcException
 	{
-		if (id == null)
+		if (id.get() == null)
 			throw new TestopiaException("runID is null.");
 		
 		return (Object[])this.callXmlrpcMethod("TestRun.get_test_cases",
@@ -157,7 +157,7 @@ public class TestRun extends TestopiaObject{
 	public Object[] getTestCaseRuns()
 	throws TestopiaException, XmlRpcException
 	{
-		if (id == null) 
+		if (id.get() == null) 
 			throw new TestopiaException("runID is null.");
 			
 		return (Object[])this.callXmlrpcMethod("TestRun.get_test_case_runs",

@@ -64,7 +64,7 @@ public class Build extends TestopiaObject{
 	 */
 	public Map<String,Object> update() throws TestopiaException, XmlRpcException
 	{
-		if (productId == null) 
+		if (productId.get() == null) 
 			throw new TestopiaException("productId is null.");
 		//update the testRunCase
 		return super.update("Build.update");

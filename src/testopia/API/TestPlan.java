@@ -141,7 +141,7 @@ public class TestPlan extends TestopiaObject{
 	public HashMap<String, Object> getCategories()
 	throws TestopiaException, XmlRpcException
 	{
-		if (id == null) 
+		if (id.get() == null) 
 			throw new TestopiaException("planID is null.");
 		
 		//get the hashmap
@@ -159,7 +159,7 @@ public class TestPlan extends TestopiaObject{
 	public Object[] getBuilds()
 	throws TestopiaException, XmlRpcException
 	{
-		if (id == null) 
+		if (id.get() == null) 
 			throw new TestopiaException("planID is null.");
 			
 		//get the hashmap
@@ -177,7 +177,7 @@ public class TestPlan extends TestopiaObject{
 	public Object[] getComponents()
 	throws TestopiaException, XmlRpcException
 	{
-		if (id == null) 
+		if (id.get() == null) 
 			throw new TestopiaException("planID is null.");
 			
 		//get the hashmap
@@ -195,7 +195,7 @@ public class TestPlan extends TestopiaObject{
 	public Object[] getTestCases()
 	throws TestopiaException, XmlRpcException
 	{
-		if (id == null) 
+		if (id.get() == null) 
 			throw new TestopiaException("planID is null.");
 			
 		//get the hashmap
@@ -213,7 +213,7 @@ public class TestPlan extends TestopiaObject{
 	public Object[] getTestRuns()
 	throws TestopiaException, XmlRpcException
 	{
-		if (id == null)
+		if (id.get() == null)
 			throw new TestopiaException("planID is null.");
 			
 		//get the hashmap

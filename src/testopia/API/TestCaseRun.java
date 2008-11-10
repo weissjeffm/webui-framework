@@ -90,7 +90,7 @@ public class TestCaseRun extends TestopiaObject{
 	 */
 	public Map<String,Object> update() throws TestopiaException, XmlRpcException
 	{
-		if (runID == null) 
+		if (runID.get() == null) 
 			throw new TestopiaException("runID is null.");
 		//update the testRunCase
 		return super.update("TestCaseRun.update");
@@ -103,7 +103,9 @@ public class TestCaseRun extends TestopiaObject{
 	 * @throws XmlRpcException
 	 */
 	public Map<String,Object> create() throws XmlRpcException{
-		return super.create("TestCaseRun.create");			
+		Map<String, Object> retval = super.create("TestCaseRun.create");
+		this.setRunID((Integer)retval.get("case_run_id"));
+		return retval;			
 	}
 	
 

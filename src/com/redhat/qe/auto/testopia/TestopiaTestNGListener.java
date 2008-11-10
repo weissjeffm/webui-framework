@@ -135,18 +135,20 @@ public class TestopiaTestNGListener implements IResultListener {
 		}
 		log.fine("Testrun is " + testrun.getId());
 		TestCaseRun tcr = null;
-		
 			
-		tcr = new TestCaseRun(session, testrun.getId());
+		tcr = new TestCaseRun(session,
+							  testrun.getId(),
+							  testcase.getId(),
+							  build.getId(),
+							  environment.getId());
 		
 		tcr.setStatus(TestCaseRun.Statuses.PASSED);
 		try {
 			tcr.create();
+			testrun.addCases(tcr.getId());
 		}catch(Exception e) {
 			throw new TestopiaException(e);
 		}
-		
-
 	}
 
 	/* (non-Javadoc)
@@ -181,7 +183,6 @@ public class TestopiaTestNGListener implements IResultListener {
 		((TestProcedureHandler)tph).reset();
 		
 		//also add the test run
-		
 
 	}
 
