@@ -66,6 +66,8 @@ public abstract class TestopiaObject {
 		Map<String,Object> map = new HashMap<String,Object>();
 		for(Attribute attribute: attributes){
 			if (attribute.getValue() != null && attribute.isDirty()){
+				log.fine("Found dirty attribute:"+attribute.getName());
+				log.fine("Dirty attribute value:"+attribute.getValue());
 				map.put(attribute.getName(), attribute.getValue());
 			}
 		}

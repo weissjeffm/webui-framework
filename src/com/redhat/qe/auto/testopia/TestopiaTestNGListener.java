@@ -4,20 +4,22 @@
 package com.redhat.qe.auto.testopia;
 
 import java.net.URL;
-import java.util.logging.ConsoleHandler;
+import java.util.HashMap;
 import java.util.logging.Handler;
 import java.util.logging.Level;
-import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 import org.testng.ITestContext;
 import org.testng.ITestResult;
 import org.testng.internal.IResultListener;
 
-import com.redhat.qe.auto.selenium.LogFormatter;
-
+import testopia.API.Build;
 import testopia.API.Session;
+import testopia.API.TestCaseRun;
+import testopia.API.TestPlan;
 import testopia.API.TestRun;
+
+import com.redhat.qe.auto.selenium.LogFormatter;
 
 /**
  * @author jweiss
@@ -179,6 +181,18 @@ public class TestopiaTestNGListener implements IResultListener {
 		
 		//tcr.create();
 		
+		//TestCaseRun tcr = new TestCaseRun(session, 2935, )
+		TestPlan tp = new TestPlan(session, 271);
+		Build bu = new Build(session, 69);
+		Integer build = bu.getBuildIDByName("2.2 CR1");
+		TestRun tr = new TestRun(session, 271, 91, build, session.getUserid(), "Test");
+		HashMap<String,Object> trinst= (HashMap<String, Object>) tr.create();
+		TestCaseRun tcr = new TestCaseRun(session,
+										  (Integer)trinst.get("run_id"),
+										  2948,
+										  build,
+										  91);
+		tcr.create();
 	}
 
 }

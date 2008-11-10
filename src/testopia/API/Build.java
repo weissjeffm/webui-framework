@@ -33,7 +33,9 @@ import org.apache.xmlrpc.XmlRpcException;
  * @author weissj
  *
  */
-public class Build extends TestopiaObject{	 
+public class Build extends TestopiaObject{
+	 private IntegerAttribute productId = newIntegerAttribute("product", null);
+	
 	 /**
 	  * 
 	  * @param userName - your testopia/bugzilla username
@@ -41,9 +43,10 @@ public class Build extends TestopiaObject{
 	  * @param login - the user you want attributes returned for
 	  * @param url - the url of the testopia server
 	  */
-	 public Build(Session session)
+	 public Build(Session session, Integer productId)
 	 {
 		 this.session = session;
+		 this.productId.set(productId);
 	 }
 	 
 	 
@@ -124,10 +127,14 @@ public class Build extends TestopiaObject{
 	  * @return the ID of the specified product
 	 * @throws XmlRpcException 
 	  */
-	 public int getBuildIDByName(String buildName) throws XmlRpcException
+	@SuppressWarnings("unchecked")
+	public int getBuildIDByName(String buildName) throws XmlRpcException
 	 {
-		//get the result
-		return (Integer)this.callXmlrpcMethod("Build.lookup_id_by_name", buildName);
+		Object[] params = new Object[]{buildName, productId.get()};
+		HashMap<String, Object> ret = (HashMap<String, Object>)
+										this.callXmlrpcMethod("Build.check_build",
+															  params);
+		return (Integer)ret.get("build_id");
 	 }
 	 
 	/**

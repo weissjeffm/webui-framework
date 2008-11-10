@@ -68,8 +68,6 @@ public class TestRun extends TestopiaObject{
 		this.manager.set(manager);
 		this.summary.set(summary);
 		this.listMethod = "TestRun.list";
-		
-		this.cleanAllAttributes();
 	}
 	
 	/**

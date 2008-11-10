@@ -32,6 +32,7 @@ public class Session {
 	protected String password;
 	protected URL url;
 	protected HttpState httpState = null;
+	protected Integer userid;
 	XmlRpcClient client;
 
 	public Session(String userName, String password, URL url) {
@@ -66,8 +67,12 @@ public class Session {
 		ArrayList<Object> params = new ArrayList<Object>();
 		params.add(map);
 
-		return client.execute("User.login", params);
-
+		HashMap<String, Object>hash = (HashMap<String, Object>)
+										client.execute("User.login", params);
+		
+		this.userid = (Integer) hash.get("id");
+		return hash;
+		
 	}
 
 	private void TrustAllCerts()
@@ -81,5 +86,12 @@ public class Session {
 
 	public XmlRpcClient getClient() {
 		return client;
+	}
+
+	/**
+	 * @return the userid
+	 */
+	public Integer getUserid() {
+		return userid;
 	}
 }
