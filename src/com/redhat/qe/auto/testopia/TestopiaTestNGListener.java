@@ -177,7 +177,7 @@ public class TestopiaTestNGListener implements IResultListener {
 		
 		//TestRun tcr = new TestRun(session, 2948, "2.2 CR1", "Windows + Postgres" );
 		
-		tcr.create();
+		//tcr.create();
 		
 	}
 
