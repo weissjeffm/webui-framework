@@ -17,7 +17,7 @@ import org.testng.internal.IResultListener;
 import com.redhat.qe.auto.selenium.LogFormatter;
 
 import testopia.API.Session;
-import testopia.API.TestCaseRun;
+import testopia.API.TestRun;
 
 /**
  * @author jweiss
@@ -175,8 +175,8 @@ public class TestopiaTestNGListener implements IResultListener {
 		tc2.update();*/
 		
 		
-		TestCaseRun tcr = new TestCaseRun(session, 2948, "2.2 CR1", "Windows + Postgres" );
-		tcr.setStatus(TestCaseRun.Statuses.PASSED);
+		//TestRun tcr = new TestRun(session, 2948, "2.2 CR1", "Windows + Postgres" );
+		
 		tcr.create();
 		
 	}

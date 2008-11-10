@@ -39,7 +39,7 @@ public class MyTestopiaClient {
 
 	}*/
 	
-	private int getNextTestRunID(String caseID) throws XmlRpcException{
+	/*private int getNextTestRunID(String caseID) throws XmlRpcException{
 		Object[] params = new Object[]{caseID};
 		Object[] result;
 		
@@ -59,5 +59,5 @@ public class MyTestopiaClient {
 			   highest = id;
 		}
 		return (highest + 1);
-	}
+	}*/
 }
