@@ -50,7 +50,7 @@ public class TestCase extends TestopiaObject{
 	 */
 	public TestCase(Session session, Integer caseID)
 	{
-		this.id = newIntegerAttribute("prod_id", caseID);
+		this.id = newIntegerAttribute("case_id", caseID);
 		this.session = session;
 		this.listMethod = "TestCase.list";
 
@@ -60,13 +60,13 @@ public class TestCase extends TestopiaObject{
 	{
 		this.session = session;
 		this.listMethod = "TestCase.list";
-		this.id = newIntegerAttribute("prod_id", null);
+		this.id = newIntegerAttribute("case_id", null);
 
 		get("TestCase.get", caseAlias);
 		
 	}
 	
-	public TestCase(Session session, String status, int categoryId, String priority, String summary, Integer plan){
+	public TestCase(Session session, String status, Integer categoryId, String priority, String summary, Integer plan){
 		this.session = session;
 		this.status.set(status);
 		this.listMethod = "TestCase.list";
@@ -74,7 +74,7 @@ public class TestCase extends TestopiaObject{
 		this.priority.set(priority);
 		this.summary.set(summary);
 		this.plans.set(plan);
-		this.id = newIntegerAttribute("prod_id", null);
+		this.id = newIntegerAttribute("case_id", null);
 
 	}
 	
@@ -82,7 +82,7 @@ public class TestCase extends TestopiaObject{
 		this.session = session;
 		this.listMethod = "TestCase.list";
 		this.status.set(status);
-		this.id = newIntegerAttribute("prod_id", null);
+		this.id = newIntegerAttribute("case_id", null);
 
 		this.categoryID.set(new Product(session).getCategoryIDByName(category, product));
 
@@ -238,10 +238,10 @@ public class TestCase extends TestopiaObject{
 	 */
 	public Map<String,Object> update() throws TestopiaException, XmlRpcException
 	{
-		if (id == null) 
+		if (id.get() == null) 
 			throw new TestopiaException("caseID is null.");
 		//update the testRunCase
-		return super.update("TestCase.update", id);
+		return super.update("TestCase.update");
 	}
 	
 	/**

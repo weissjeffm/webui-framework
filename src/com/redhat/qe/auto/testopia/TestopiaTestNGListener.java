@@ -39,12 +39,13 @@ public class TestopiaTestNGListener implements IResultListener {
 	private static final String TESTOPIA_URL = "https://testopia-01.lab.bos.redhat.com/bugzilla/tr_xmlrpc.cgi";
 	protected TestProcedureHandler tph = null;
 	protected static Logger log = Logger.getLogger(TestopiaTestNGListener.class.getName());
-	protected static TestRun testrun;
-	protected static Product product;
-	protected static Build build;
-	protected static Environment environment;
-	protected static TestPlan testplan;
-	protected static Session session;
+	protected TestRun testrun;
+	protected  Product product;
+	protected  Build build;
+	protected  Environment environment;
+	protected  TestPlan testplan;
+	protected  TestCase testcase;
+	protected  Session session;
 	
 	/* (non-Javadoc)
 	 * @see org.testng.ITestListener#onFinish(org.testng.ITestContext)
@@ -71,6 +72,7 @@ public class TestopiaTestNGListener implements IResultListener {
 					build.getId(), 
 					session.getUserid(), 
 					testname);
+			testrun.create();
 
 		} catch(Exception e){
 			log.severe("Could not log in to testopia!  Aborting!");
@@ -116,17 +118,34 @@ public class TestopiaTestNGListener implements IResultListener {
 	@Override
 	public void onTestStart(ITestResult arg0) {
 		//create new testcaserun
-		/*String testname = arg0.getMethod().getMethodName();
-		TestCase testcase;
+		String testname =  "Automated test of " + arg0.getMethod().getMethodName();
 		try {
 			testcase = new TestCase(session, testname);
 		}catch(Exception e){
 			log.log(Level.FINE, "Testcase retrieval failed on '" + testname + "', probably doesn't exist yet.", e);
-			testcase = new TestCase(session, "CONFIRMED", "--default--", "P1", "Automated test of " + testname, testplan. )
+			try {
+				log.info("Creating new testcase.");
+				testcase = new TestCase(session, "CONFIRMED", "--default--", "P1",  testname, "Acceptance", "JBoss ON");
+
+				testcase.create();
+			}
+			catch(Exception e2){
+				throw new TestopiaException(e2);
+			}
 		}
-		testcase.get
-		TestCaseRun testcaserun = new TestCaseRun(session, testrun.getId());*/
-		//testcaserun.
+		log.fine("Testrun is " + testrun.getId());
+		TestCaseRun tcr = null;
+		
+			
+		tcr = new TestCaseRun(session, testrun.getId());
+		
+		tcr.setStatus(TestCaseRun.Statuses.PASSED);
+		try {
+			tcr.create();
+		}catch(Exception e) {
+			throw new TestopiaException(e);
+		}
+		
 
 	}
 
@@ -149,7 +168,13 @@ public class TestopiaTestNGListener implements IResultListener {
 		log = tph.getLog();
 		
 		//put it in testopia
-		String testName = result.getName();
+		testcase.setAction(log);
+		
+		try {
+			testcase.update();
+		}catch(Exception e){
+			throw new TestopiaException(e);
+		}
 		
 		
 		//reset the handler
@@ -204,7 +229,7 @@ public class TestopiaTestNGListener implements IResultListener {
 	}
 	
 	protected void retrieveContext() throws XmlRpcException{
-		product = new Product(session);
+		product = new Product(session, "JBoss ON");
 		testplan = new TestPlan(session, "Acceptance");
 		build = new Build(session, product.getId());
 		Integer buildID = build.getBuildIDByName("2.2 CR1");

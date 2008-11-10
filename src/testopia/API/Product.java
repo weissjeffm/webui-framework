@@ -45,6 +45,13 @@ public class Product extends TestopiaObject{
 		this.session = session;
 		this.id = newIntegerAttribute("id", null);
 	}
+	
+	public Product(Session session, String productName) throws XmlRpcException
+	{
+		this.session = session;
+		this.id = newIntegerAttribute("id", null);
+		this.getProductIDByName(productName);
+	}
 
 	/**
 	 * 

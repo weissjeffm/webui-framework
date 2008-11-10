@@ -117,11 +117,11 @@ public abstract class TestopiaObject {
 			attribute.clean();
 	}
 	
-	protected Map<String,Object> update(String methodName, IntegerAttribute id) throws XmlRpcException{
+	protected Map<String,Object> update(String methodName) throws XmlRpcException{
 		Map<String,Object> outGoingMap =  getDirtyAttributesMap();
 		Map<String,Object> map;
 		if (outGoingMap.size() > 0)
-			map = (Map<String,Object>)this.callXmlrpcMethod(methodName, id, outGoingMap);
+			map = (Map<String,Object>)this.callXmlrpcMethod(methodName, id.get(), outGoingMap);
 		else throw new TestopiaException("There are no locally updated fields to update via xmlrpc!");
 		this.syncAttributes(map);
 		return map;

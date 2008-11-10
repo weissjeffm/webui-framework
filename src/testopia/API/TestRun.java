@@ -62,7 +62,7 @@ public class TestRun extends TestopiaObject{
 		this.manager.set(manager);
 		this.summary.set(summary);
 		this.listMethod = "TestRun.list";
-		this.id = newIntegerAttribute("run_id", planID);
+		this.id = newIntegerAttribute("run_id", null);
 
 	}
 	
@@ -78,7 +78,7 @@ public class TestRun extends TestopiaObject{
 		if (id == null) 
 			throw new TestopiaException("runID is null.");
 		//update the testRunCase
-		return super.update("TestRun.update", id);
+		return super.update("TestRun.update");
 	}
 	
 	/**
