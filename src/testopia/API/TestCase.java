@@ -55,6 +55,14 @@ public class TestCase extends TestopiaObject{
 		this.listMethod = "TestCase.list";
 	}
 	
+	public TestCase(Session session, String caseAlias) throws XmlRpcException
+	{
+		this.session = session;
+		this.listMethod = "TestCase.list";
+		get("TestCase.get", caseAlias);
+		
+	}
+	
 	public TestCase(Session session, String status, int categoryId, String priority, String summary, Integer plan){
 		this.session = session;
 		this.status.set(status);
@@ -77,6 +85,7 @@ public class TestCase extends TestopiaObject{
 		this.plans.set(new TestPlan(session,plan).getId());
 	}
 
+	
 	/**
 	 * 
 	 * @param alias String - the new Alias

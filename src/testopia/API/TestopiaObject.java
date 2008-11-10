@@ -133,7 +133,7 @@ public abstract class TestopiaObject {
 		return map;
 	}
     
-    protected Map<String,Object> get(String methodName, int id) throws XmlRpcException{		
+    protected Map<String,Object> get(String methodName, Object id) throws XmlRpcException{		
 		Map<String,Object> map = (Map<String,Object>)this.callXmlrpcMethod(methodName, id);
 		this.syncAttributes(map);
 		return map;

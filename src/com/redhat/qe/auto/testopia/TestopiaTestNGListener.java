@@ -20,6 +20,7 @@ import testopia.API.Build;
 import testopia.API.Environment;
 import testopia.API.Product;
 import testopia.API.Session;
+import testopia.API.TestCase;
 import testopia.API.TestCaseRun;
 import testopia.API.TestPlan;
 import testopia.API.TestRun;
@@ -116,7 +117,10 @@ public class TestopiaTestNGListener implements IResultListener {
 	public void onTestStart(ITestResult arg0) {
 		//create new testcaserun
 		String testname = arg0.getMethod().getMethodName();
-		TestCaseRun testcaserun = new TestCaseRun(session, testrun.getId());
+		/*TestCase testcase = new TestCase(session, null);
+		testcase.get
+		TestCaseRun testcaserun = new TestCaseRun(session, testrun.getId());*/
+		//testcaserun.
 
 	}
 
