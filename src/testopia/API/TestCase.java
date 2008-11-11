@@ -244,6 +244,14 @@ public class TestCase extends TestopiaObject{
 		return super.update("TestCase.update");
 	}
 	
+	public Integer storeText() throws TestopiaException, XmlRpcException
+	{
+		if (id.get() == null) 
+			throw new TestopiaException("caseID is null.");
+		//update the testRunCase
+		return (Integer)super.callXmlrpcMethod("TestCase.store_text", getAction(), "", "", "");
+	}
+	
 	/**
 	 * Calls the create method with the attributes as-is (as set via contructors
 	 * or setters).  

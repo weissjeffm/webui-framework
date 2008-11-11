@@ -53,8 +53,6 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 	protected  Session session;
 	protected TestCaseRun testcaserun = null;
 	static {
-		//Logger.getLogger("org.apache.commons").setLevel( Level.INFO);
-
 	}
 	
 	@Override
@@ -65,6 +63,9 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 
 	@Override
 	public void onStart(ISuite suite) {
+		//Logger.getLogger("org.apache.commons").setLevel( Level.INFO);
+		log.warning("Found httpclient log level: " + Logger.getLogger("org.apache.commons.httpclient").getParent().getLevel().toString());
+
 		//create new test run
 		String testname = suite.getName();
 		try {
@@ -182,7 +183,7 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 	@Override
 	public void onTestSuccess(ITestResult result) {
 		//get the procedure log from the handler
-		String log = "no procedure found!";
+		String action = "no procedure found!";
 		Handler[] handlers = Logger.getLogger("").getHandlers();
 		
 		if (tph == null) {
@@ -192,13 +193,13 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 					tph = ((TestProcedureHandler)handler);
 			}
 		}
-		log = tph.getLog();
-		
+		action = tph.getLog();
+		log.fine("Updating testcase " + testcase.getAlias() + " with successful action log: \n" + action);
 		//put it in testopia
-		testcase.setAction(log);
+		testcase.setAction(action);
 		
 		try {
-			testcase.update();
+			testcase.storeText();
 		}catch(Exception e){
 			throw new TestopiaException(e);
 		}
