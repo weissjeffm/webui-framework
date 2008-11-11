@@ -211,14 +211,16 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 		}
 		
 		
-		//reset the handler
-		((TestProcedureHandler)tph).reset();
+		
 		
 		//also update the test run
 		markTestRunComplete(result);
 	}
 
 	protected void markTestRunComplete(ITestResult result){
+		//reset the handler
+		((TestProcedureHandler)tph).reset();
+		
 		if (result.getStatus() == ITestResult.SKIP) testcaserun.setStatus(TestCaseRun.Statuses.BLOCKED);
 		else {
 			if (!result.isSuccess() && result.getThrowable() != null){				
