@@ -143,8 +143,12 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 	@Override
 	public void onTestStart(ITestResult result) {
 		//create new testcaserun
-		String summary = result.getMethod().getMethodName();
-		String alias = result.getTestClass().getName() + "." + result.getMethod().getMethodName();
+		int iteration = result.getMethod().getCurrentInvocationCount();
+		log.fine("Got getCurrentInvocationCount()=" + iteration  + ", total=" + result.getMethod().getInvocationCount());
+		String count = "";
+		if (iteration > 0) count = new Integer(iteration+1).toString();
+		String alias = result.getTestClass().getName() + "." + result.getMethod().getMethodName() + count;
+		String summary = result.getMethod().getMethodName() + count;
 		try {
 			testcase = new TestCase(session, alias);
 			
