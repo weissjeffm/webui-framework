@@ -39,53 +39,36 @@ import com.redhat.qe.auto.selenium.LogFormatter;
  */
 public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 
-	private static final String TESTOPIA_PW = "2$(w^*@&J";
-	private static final String TESTOPIA_USER = "jweiss@redhat.com";
-	private static final String TESTOPIA_URL = "https://testopia-01.lab.bos.redhat.com/bugzilla/tr_xmlrpc.cgi";
+	private static String TESTOPIA_PW = "";
+	private static String TESTOPIA_USER = "";
+	private static String TESTOPIA_URL = "";
+	private static String TESTOPIA_TESTRUN_TESTPLAN = "";
+	private static String TESTOPIA_TESTRUN_PRODUCT = "";
+	
 	protected TestProcedureHandler tph = null;
 	protected static Logger log = Logger.getLogger(TestopiaTestNGListener.class.getName());
 	protected TestRun testrun;
-	protected  Product product;
-	protected  Build build;
-	protected  Environment environment;
-	protected  TestPlan testplan;
-	protected  TestCase testcase;
-	protected  Session session;
+	protected Product product;
+	protected Build build;
+	protected Environment environment;
+	protected TestPlan testplan;
+	protected TestCase testcase;
+	protected Session session;
 	protected TestCaseRun testcaserun = null;
 	static {
+		System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.SimpleLog");
+		System.setProperty("org.apache.commons.logging.simplelog.showdatetime", "true");
+		System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.commons.httpclient", "debug");
 	}
 	
 	@Override
 	public void onFinish(ISuite suite) {
 		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void onStart(ISuite suite) {
-		//Logger.getLogger("org.apache.commons").setLevel( Level.INFO);
-		log.warning("Found httpclient log level: " + Logger.getLogger("org.apache.commons.httpclient").getParent().getLevel().toString());
-
-		//create new test run
-		String testname = suite.getName();
-		try {
-			loginTestopia();
-			retrieveContext();
-			testrun = new TestRun(session, 
-					testplan.getId(),
-					environment.getId(), 
-					build.getId(), 
-					session.getUserid(), 
-					testname);
-			testrun.create();
-			
-
-		} catch(Exception e){
-			log.severe("Could not log in to testopia!  Aborting!");
-			TestopiaException te=new TestopiaException("Failed to log in to testopia");
-			te.initCause(e);
-			throw te;
-		}
+	
 		
 		
 	}
@@ -104,7 +87,26 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 	 */
 	@Override
 	public void onStart(ITestContext context) {
-		
+		//create new test run
+		String testname = context.getName();
+		try {
+			loginTestopia();
+			retrieveContext();
+			testrun = new TestRun(session, 
+					testplan.getId(),
+					environment.getId(), 
+					build.getId(), 
+					session.getUserid(), 
+					testname);
+			testrun.create();
+			
+
+		} catch(Exception e){
+			log.severe("Could not log in to testopia!  Aborting!");
+			TestopiaException te=new TestopiaException("Failed to log in to testopia");
+			te.initCause(e);
+			throw te;
+		}
 		
 	}
 
@@ -141,7 +143,7 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 	@Override
 	public void onTestStart(ITestResult result) {
 		//create new testcaserun
-		String summary =  "Automated test of " + result.getMethod().getMethodName();
+		String summary = result.getMethod().getMethodName();
 		String alias = result.getTestClass().getName() + "." + result.getMethod().getMethodName();
 		try {
 			testcase = new TestCase(session, alias);
@@ -150,7 +152,8 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 			log.log(Level.FINE, "Testcase retrieval failed on '" + summary + "', probably doesn't exist yet.", e);
 			try {
 				log.info("Creating new testcase.");
-				testcase = new TestCase(session, "CONFIRMED", "--default--", "P1",  summary, "Acceptance", "JBoss ON");
+				testcase = new TestCase(session, "CONFIRMED", "--default--", "P1",
+						summary, TESTOPIA_TESTRUN_TESTPLAN, TESTOPIA_TESTRUN_PRODUCT);
 				testcase.setAlias(alias);
 				testcase.setIsAutomated(true);
 				testcase.create();
@@ -200,6 +203,9 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 		
 		try {
 			testcase.storeText();
+			//FIXME remove the following lines later when all records are updated
+			testcase.setIsAutomated(true);
+			testcase.update();
 		}catch(Exception e){
 			throw new TestopiaException(e);
 		}
@@ -239,7 +245,7 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 	 */
 	@Override
 	public void onConfigurationFailure(ITestResult result) {
-		markTestRunComplete(result);
+		//markTestRunComplete(result);
 
 	}
 
@@ -248,7 +254,7 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 	 */
 	@Override
 	public void onConfigurationSkip(ITestResult result) {
-		markTestRunComplete(result);
+		//markTestRunComplete(result);
 
 	}
 
@@ -270,16 +276,19 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 	}
 	
 	protected void loginTestopia() throws XmlRpcException, GeneralSecurityException, IOException{
-		//setLogConfig();
-		log.finer("Testing log setting.");
+		TESTOPIA_URL = System.getProperty("testopia.url");
+		TESTOPIA_USER = System.getProperty("testopia.login");
+		TESTOPIA_PW = System.getProperty("testopia.password");
+		TESTOPIA_TESTRUN_PRODUCT = System.getProperty("testopia.testrun.product");
+		TESTOPIA_TESTRUN_TESTPLAN = System.getProperty("testopia.testrun.testplan");
+		log.fine("Logging in to testopia as " + TESTOPIA_USER);
 		session = new Session(TESTOPIA_USER, TESTOPIA_PW, new URL(TESTOPIA_URL));
 		session.login();
-
 	}
 	
 	protected void retrieveContext() throws XmlRpcException{
-		product = new Product(session, "JBoss ON");
-		testplan = new TestPlan(session, "Acceptance");
+		product = new Product(session, System.getProperty("testopia.testrun.product"));
+		testplan = new TestPlan(session, System.getProperty("testopia.testrun.testplan"));
 		build = new Build(session, product.getId());
 		Integer buildID = build.getBuildIDByName("2.2 CR1");
 		environment = new Environment(session, product.getId(), null);

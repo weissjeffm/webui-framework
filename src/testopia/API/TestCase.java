@@ -138,7 +138,7 @@ public class TestCase extends TestopiaObject{
 	 * @param isAutomated boolean - true if it's to be set automated, 
 	 * false otherwise
 	 */
-	public void setIsAutomated(boolean isAutomated) {
+	public void setIsAutomated(Boolean isAutomated) {
 		this.isAutomated.set(isAutomated);
 	}
 	
@@ -249,7 +249,7 @@ public class TestCase extends TestopiaObject{
 		if (id.get() == null) 
 			throw new TestopiaException("caseID is null.");
 		//update the testRunCase
-		return (Integer)super.callXmlrpcMethod("TestCase.store_text", getAction(), "", "", "");
+		return (Integer)super.callXmlrpcMethod("TestCase.store_text", getId(), getAction(), "", "", "");
 	}
 	
 	/**

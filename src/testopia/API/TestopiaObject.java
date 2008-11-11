@@ -67,8 +67,7 @@ public abstract class TestopiaObject {
 		Map<String,Object> map = new HashMap<String,Object>();
 		for(Attribute attribute: attributes){
 			if (attribute.getValue() != null && attribute.isDirty()){
-				log.fine("Found dirty attribute:"+attribute.getName());
-				log.fine("Dirty attribute value:"+attribute.getValue());
+				log.fine("Found dirty attribute: "+attribute.getName() + ", value=" + attribute.getValue());
 				map.put(attribute.getName(), attribute.getValue());
 			}
 		}
@@ -81,13 +80,14 @@ public abstract class TestopiaObject {
 			Object val = remoteMap.get(name);
 			if (val == null) 
 				try {
-					log.warning("Got remote attribute that we don't use locally: " + name + ", " + val.toString());
+					log.fine("Did not get attribute " + attr.getName() + " in response.");
 				}
 				catch(NullPointerException npe) {}
-			else attr.set(val);
+			else {
+				attr.set(val);
+				attr.clean();
+			}
 		}
-		//FIXME need to check for error before cleaning attributes
-		cleanAllAttributes();
 	}
 	/**
 	 * protected method to create a new string attribute to use in 
@@ -128,7 +128,11 @@ public abstract class TestopiaObject {
 	}
 	
     protected Map<String,Object> create(String methodName) throws XmlRpcException{		
-		Map<String,Object> map = (Map<String,Object>)this.callXmlrpcMethod(methodName, getDirtyAttributesMap());
+    	Map<String,Object> outGoingMap =  getDirtyAttributesMap();
+		Map<String,Object> map;
+		if (outGoingMap.size() > 0)
+			map = (Map<String,Object>)this.callXmlrpcMethod(methodName, outGoingMap);
+		else throw new TestopiaException("There are no locally updated fields to update via xmlrpc!");
 		this.syncAttributes(map);
 		return map;
 	}

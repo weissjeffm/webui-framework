@@ -13,7 +13,7 @@ public class TestProcedureFormatter extends LogFormatter {
 		else {
 			String throwable = "";
 			if (record.getThrown() != null) throwable = throwableToString(record.getThrown())  + "\n";
-			return record.getMessage() + "\n" + throwable;
+			return record.getMessage() + "<br>\n" + throwable;
 		}
 	}
 	

@@ -1,5 +1,6 @@
 package com.redhat.qe.auto.testopia;
 
+import java.lang.reflect.Type;
 import java.util.logging.Handler;
 import java.util.logging.LogRecord;
 
@@ -24,7 +25,7 @@ public class TestProcedureHandler extends Handler {
 	
 	@Override
 	public void publish(LogRecord record) {
-		// TODO Auto-generated method stub
+		
 		if (isLoggable(record)) 
 			sb.append(getFormatter().format(record));
 	}
