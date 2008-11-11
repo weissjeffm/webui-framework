@@ -222,6 +222,10 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 	}
 
 	protected void markTestRunComplete(ITestResult result){
+
+		if(testcaserun == null)
+			return;
+		
 		//reset the handler
 		((TestProcedureHandler)tph).reset();
 		
