@@ -4,14 +4,19 @@
 package com.redhat.qe.auto.testopia;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.URL;
 import java.security.GeneralSecurityException;
 import java.util.HashMap;
 import java.util.logging.Handler;
 import java.util.logging.Level;
+import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 import org.apache.xmlrpc.XmlRpcException;
+import org.testng.ISuite;
+import org.testng.ISuiteListener;
 import org.testng.ITestContext;
 import org.testng.ITestResult;
 import org.testng.internal.IResultListener;
@@ -32,7 +37,7 @@ import com.redhat.qe.auto.selenium.LogFormatter;
  * @author jweiss
  *
  */
-public class TestopiaTestNGListener implements IResultListener {
+public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 
 	private static final String TESTOPIA_PW = "2$(w^*@&J";
 	private static final String TESTOPIA_USER = "jweiss@redhat.com";
@@ -46,23 +51,22 @@ public class TestopiaTestNGListener implements IResultListener {
 	protected  TestPlan testplan;
 	protected  TestCase testcase;
 	protected  Session session;
-	
-	/* (non-Javadoc)
-	 * @see org.testng.ITestListener#onFinish(org.testng.ITestContext)
-	 */
-	@Override
-	public void onFinish(ITestContext arg0) {
-		// TODO Auto-generated method stub
+	protected TestCaseRun testcaserun = null;
+	static {
+		//Logger.getLogger("org.apache.commons").setLevel( Level.INFO);
 
 	}
-
-	/* (non-Javadoc)
-	 * @see org.testng.ITestListener#onStart(org.testng.ITestContext)
-	 */
+	
 	@Override
-	public void onStart(ITestContext arg0) {
+	public void onFinish(ISuite suite) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onStart(ISuite suite) {
 		//create new test run
-		String testname = "Run of suite " + arg0.getSuite().getName();
+		String testname = suite.getName();
 		try {
 			loginTestopia();
 			retrieveContext();
@@ -73,6 +77,7 @@ public class TestopiaTestNGListener implements IResultListener {
 					session.getUserid(), 
 					testname);
 			testrun.create();
+			
 
 		} catch(Exception e){
 			log.severe("Could not log in to testopia!  Aborting!");
@@ -82,6 +87,23 @@ public class TestopiaTestNGListener implements IResultListener {
 		}
 		
 		
+	}
+
+	/* (non-Javadoc)
+	 * @see org.testng.ITestListener#onFinish(org.testng.ITestContext)
+	 */
+	@Override
+	public void onFinish(ITestContext context) {
+		// TODO Auto-generated method stub
+
+	}
+
+	/* (non-Javadoc)
+	 * @see org.testng.ITestListener#onStart(org.testng.ITestContext)
+	 */
+	@Override
+	public void onStart(ITestContext context) {
+		
 		
 	}
 
@@ -89,7 +111,7 @@ public class TestopiaTestNGListener implements IResultListener {
 	 * @see org.testng.ITestListener#onTestFailedButWithinSuccessPercentage(org.testng.ITestResult)
 	 */
 	@Override
-	public void onTestFailedButWithinSuccessPercentage(ITestResult arg0) {
+	public void onTestFailedButWithinSuccessPercentage(ITestResult result) {
 		// TODO Auto-generated method stub
 
 	}
@@ -98,17 +120,17 @@ public class TestopiaTestNGListener implements IResultListener {
 	 * @see org.testng.ITestListener#onTestFailure(org.testng.ITestResult)
 	 */
 	@Override
-	public void onTestFailure(ITestResult arg0) {
-		// TODO Auto-generated method stub
-
+	public void onTestFailure(ITestResult result) {
+		//also update the test run
+		markTestRunComplete(result);
 	}
 
 	/* (non-Javadoc)
 	 * @see org.testng.ITestListener#onTestSkipped(org.testng.ITestResult)
 	 */
 	@Override
-	public void onTestSkipped(ITestResult arg0) {
-		// TODO Auto-generated method stub
+	public void onTestSkipped(ITestResult result) {
+		markTestRunComplete(result);
 
 	}
 
@@ -116,17 +138,20 @@ public class TestopiaTestNGListener implements IResultListener {
 	 * @see org.testng.ITestListener#onTestStart(org.testng.ITestResult)
 	 */
 	@Override
-	public void onTestStart(ITestResult arg0) {
+	public void onTestStart(ITestResult result) {
 		//create new testcaserun
-		String testname =  "Automated test of " + arg0.getMethod().getMethodName();
+		String summary =  "Automated test of " + result.getMethod().getMethodName();
+		String alias = result.getTestClass().getName() + "." + result.getMethod().getMethodName();
 		try {
-			testcase = new TestCase(session, testname);
+			testcase = new TestCase(session, alias);
+			
 		}catch(Exception e){
-			log.log(Level.FINE, "Testcase retrieval failed on '" + testname + "', probably doesn't exist yet.", e);
+			log.log(Level.FINE, "Testcase retrieval failed on '" + summary + "', probably doesn't exist yet.", e);
 			try {
 				log.info("Creating new testcase.");
-				testcase = new TestCase(session, "CONFIRMED", "--default--", "P1",  testname, "Acceptance", "JBoss ON");
-
+				testcase = new TestCase(session, "CONFIRMED", "--default--", "P1",  summary, "Acceptance", "JBoss ON");
+				testcase.setAlias(alias);
+				testcase.setIsAutomated(true);
 				testcase.create();
 			}
 			catch(Exception e2){
@@ -134,18 +159,18 @@ public class TestopiaTestNGListener implements IResultListener {
 			}
 		}
 		log.fine("Testrun is " + testrun.getId());
-		TestCaseRun tcr = null;
+		
 			
-		tcr = new TestCaseRun(session,
+		testcaserun = new TestCaseRun(session,
 							  testrun.getId(),
 							  testcase.getId(),
 							  build.getId(),
 							  environment.getId());
 		
-		tcr.setStatus(TestCaseRun.Statuses.PASSED);
+		testcaserun.setStatus(TestCaseRun.Statuses.RUNNING);
 		try {
-			tcr.create();
-			testrun.addCases(tcr.getId());
+			testcaserun.create();
+			testrun.addCases(testcaserun.getId());
 		}catch(Exception e) {
 			throw new TestopiaException(e);
 		}
@@ -182,16 +207,38 @@ public class TestopiaTestNGListener implements IResultListener {
 		//reset the handler
 		((TestProcedureHandler)tph).reset();
 		
-		//also add the test run
-
+		//also update the test run
+		markTestRunComplete(result);
 	}
 
+	protected void markTestRunComplete(ITestResult result){
+		if (result.getStatus() == ITestResult.SKIP) testcaserun.setStatus(TestCaseRun.Statuses.BLOCKED);
+		else {
+			if (!result.isSuccess() && result.getThrowable() != null){				
+				testcaserun.setNotes(throwableToString(result.getThrowable()));				
+			}
+			testcaserun.setStatus(result.isSuccess() ? TestCaseRun.Statuses.PASSED : TestCaseRun.Statuses.FAILED);
+		}
+		try {
+			testcaserun.update();
+		}catch(Exception e){
+			throw new TestopiaException(e);
+		}
+	}
+	
+	protected String throwableToString(Throwable t){
+		StringWriter sw = new StringWriter();
+		PrintWriter pw = new PrintWriter(sw);
+		t.printStackTrace(pw);
+		return sw.toString();
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.testng.internal.IConfigurationListener#onConfigurationFailure(org.testng.ITestResult)
 	 */
 	@Override
-	public void onConfigurationFailure(ITestResult arg0) {
-		// TODO Auto-generated method stub
+	public void onConfigurationFailure(ITestResult result) {
+		markTestRunComplete(result);
 
 	}
 
@@ -199,8 +246,8 @@ public class TestopiaTestNGListener implements IResultListener {
 	 * @see org.testng.internal.IConfigurationListener#onConfigurationSkip(org.testng.ITestResult)
 	 */
 	@Override
-	public void onConfigurationSkip(ITestResult arg0) {
-		// TODO Auto-generated method stub
+	public void onConfigurationSkip(ITestResult result) {
+		markTestRunComplete(result);
 
 	}
 
@@ -208,8 +255,8 @@ public class TestopiaTestNGListener implements IResultListener {
 	 * @see org.testng.internal.IConfigurationListener#onConfigurationSuccess(org.testng.ITestResult)
 	 */
 	@Override
-	public void onConfigurationSuccess(ITestResult arg0) {
-		// TODO Auto-generated method stub
+	public void onConfigurationSuccess(ITestResult result) {
+		//markTestRunComplete(result);
 
 	}
 	
@@ -222,7 +269,7 @@ public class TestopiaTestNGListener implements IResultListener {
 	}
 	
 	protected void loginTestopia() throws XmlRpcException, GeneralSecurityException, IOException{
-		setLogConfig();
+		//setLogConfig();
 		log.finer("Testing log setting.");
 		session = new Session(TESTOPIA_USER, TESTOPIA_PW, new URL(TESTOPIA_URL));
 		session.login();
