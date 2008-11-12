@@ -55,11 +55,22 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 	protected TestCase testcase;
 	protected Session session;
 	protected TestCaseRun testcaserun = null;
+	protected static String buildName = "2.2 CR1";
+	protected static String environmentName = "Windows+Postgres";
+	
 	static {
 		System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.SimpleLog");
 		System.setProperty("org.apache.commons.logging.simplelog.showdatetime", "true");
 		System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.commons.httpclient", "debug");
 	}
+	
+	public static void setBuild(String buildName){
+		TestopiaTestNGListener.buildName = buildName;
+	}
+	public static void setEnvironment(String environmentName){
+		TestopiaTestNGListener.environmentName = environmentName;
+	}
+	
 	
 	@Override
 	public void onFinish(ISuite suite) {
@@ -155,7 +166,7 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 		}catch(Exception e){
 			log.log(Level.FINE, "Testcase retrieval failed on '" + summary + "', probably doesn't exist yet.", e);
 			try {
-				log.info("Creating new testcase.");
+				log.info("Creating new testcase: " + alias);
 				testcase = new TestCase(session, "CONFIRMED", "--default--", "P1",
 						summary, TESTOPIA_TESTRUN_TESTPLAN, TESTOPIA_TESTRUN_PRODUCT);
 				testcase.setAlias(alias);
@@ -300,9 +311,17 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 		product = new Product(session, System.getProperty("testopia.testrun.product"));
 		testplan = new TestPlan(session, System.getProperty("testopia.testrun.testplan"));
 		build = new Build(session, product.getId());
-		Integer buildID = build.getBuildIDByName("2.2 CR1");
+		try {
+			build.getBuildIDByName(buildName);
+		}
+		catch(Exception e){
+			log.log(Level.FINER, "Couldn't find build " + buildName + ", creating new.", e);
+			build.setName(buildName);
+			build.create();
+			
+		}
 		environment = new Environment(session, product.getId(), null);
-		Integer envId = environment.getEnvironemntIDByName("Windows+Postgres");
+		Integer envId = environment.getEnvironemntIDByName(environmentName);
 		/*HashMap<String,Object> trinst= (HashMap<String, Object>) tr.create();
 		TestCaseRun tcr = new TestCaseRun(session,
 										  (Integer)trinst.get("run_id"),
