@@ -91,6 +91,19 @@ public class TestCase extends TestopiaObject{
 		this.plans.set(new TestPlan(session,plan).getId());
 	}
 
+	public TestCase(Session session, String status, String category, String priority, String summary, String plan, String product, String version) throws XmlRpcException{
+		this.session = session;
+		this.listMethod = "TestCase.list";
+		this.status.set(status);
+		this.id = newIntegerAttribute("case_id", null);
+
+		this.categoryID.set(new Product(session).getCategoryIDByName(category, product));
+
+		this.priority.set(priority);
+		this.summary.set(summary);
+		this.plans.set(new TestPlan(session,plan, version).getId());
+	}
+
 	
 	/**
 	 * 

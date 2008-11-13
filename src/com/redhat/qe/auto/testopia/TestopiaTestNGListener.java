@@ -60,7 +60,7 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 	protected TestCaseRun testcaserun = null;
 	protected static String buildName = "2.2 CR1";
 	protected static String environmentName = "Windows+Postgres";
-	protected static String version = "";
+	protected static String version = "none";
 	
 	static {
 		System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.SimpleLog");
@@ -73,6 +73,9 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 	}
 	public static void setEnvironment(String environmentName){
 		TestopiaTestNGListener.environmentName = environmentName;
+	}
+	public static void setVersion(String version){
+		TestopiaTestNGListener.version = version;
 	}
 	
 	
@@ -228,6 +231,13 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 		}
 		return components;
 	}
+	
+	private String getPackagelessTestClass(ITestResult result){
+		String pkg_class = result.getTestClass().getName();
+		log.finest("Got test class of " + pkg_class);
+		String[] pkgs=  pkg_class.split("\\.");
+		return pkgs[pkgs.length-1];
+	}
 
 	/* (non-Javadoc)
 	 * @see org.testng.ITestListener#onTestStart(org.testng.ITestResult)
@@ -239,7 +249,7 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 		log.fine("Got getCurrentInvocationCount()=" + iteration  + ", total=" + result.getMethod().getInvocationCount());
 		String count = "";
 		if (iteration > 0) count = new Integer(iteration+1).toString();
-		String alias = result.getTestClass().getName() + "." + result.getMethod().getMethodName() + count;
+		String alias = version + "." + getPackagelessTestClass(result) + "." + result.getMethod().getMethodName() + count;
 		String summary = result.getMethod().getMethodName() + count;
 		try {
 			testcase = new TestCase(session, alias);
@@ -249,7 +259,7 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 			try {
 				log.info("Creating new testcase: " + alias);
 				testcase = new TestCase(session, "CONFIRMED", "--default--", "P1",
-						summary, TESTOPIA_TESTRUN_TESTPLAN, TESTOPIA_TESTRUN_PRODUCT);
+						summary, TESTOPIA_TESTRUN_TESTPLAN, TESTOPIA_TESTRUN_PRODUCT, version);
 				testcase.setAlias(alias);
 				testcase.setIsAutomated(true);
 				testcase.create();
@@ -397,7 +407,9 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 	
 	protected void retrieveContext() throws XmlRpcException{
 		product = new Product(session, System.getProperty("testopia.testrun.product"));
-		testplan = new TestPlan(session, System.getProperty("testopia.testrun.testplan"));
+		testplan = new TestPlan(session, System.getProperty("testopia.testrun.testplan"), version);
+		
+		
 		build = new Build(session, product.getId());
 		try {
 			build.getBuildIDByName(buildName);
@@ -424,6 +436,11 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 		log.finer("Testing log setting.");
 		String test = "component-Hi There";
 		System.out.println(test.split("component-")[1]);
+		
+		String pkg_class = "com.jboss.qa.jon20.tests.DynaGroups";
+		//log.finer("Got test class of " + pkg_class);
+		String[] pkgs=  pkg_class.split("\\.");
+		System.out.println("Found class" +  pkgs[pkgs.length-1]);
 		/*Session session = new Session(TESTOPIA_USER, TESTOPIA_PW, new URL(TESTOPIA_URL));
 		session.login();*/
 		/*//tc.makeTestCase(id, 0, 0, true, 271, "This is a test of the testy test", 0);

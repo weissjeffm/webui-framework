@@ -69,10 +69,32 @@ public class TestPlan extends TestopiaObject{
 
 	}
 	
+	public TestPlan(Session session, String plan, String defaultProductVersion) throws XmlRpcException
+	{
+		this.session = session;
+		this.listMethod = "TestPlan.list";
+		this.id = newIntegerAttribute(PLAN_ID, null);
+		this.defaultProductVersion.set(defaultProductVersion);
+		this.name.set(plan);
+		getPlanIdByCurrentAttributes();
+
+	}
+	
+	public int getPlanIdByCurrentAttributes() throws XmlRpcException{
+		Object[] results = this.getList(getAttributesMap());
+		if (results.length > 1) throw new RuntimeException("Multiple matches on testplan name='" + name + "'.  Please use a more specific query.");
+		if (results.length == 0) throw new RuntimeException("No matches on testplan with attributes " + getAttributesMap());
+		//for (Object result: results) log.info("Found test plan:" + result.toString());
+		syncAttributes((Map)results[0]);
+		return getId();
+	}
+	
 
 	
 	public int getPlanIDByName(String name) throws XmlRpcException{
 		Object[] results = this.getList("name", name);
+		if (results.length > 1) throw new RuntimeException("Multiple matches on testplan name='" + name + "'.  Please use a more specific query.");
+		
 		//for (Object result: results) log.info("Found test plan:" + result.toString());
 		syncAttributes((Map)results[0]);
 		return getId();
@@ -91,6 +113,9 @@ public class TestPlan extends TestopiaObject{
 		this.defaultProductVersion.set(defaultProductVersion); 
 	}
 	
+	public String getDefaultProductVersion(){
+		return this.defaultProductVersion.get();
+	}
 
 	/**
 	 * 

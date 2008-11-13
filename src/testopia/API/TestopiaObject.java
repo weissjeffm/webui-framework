@@ -80,6 +80,17 @@ public abstract class TestopiaObject {
 		return map;
 	}
 	
+	protected Map<String,Object> getAttributesMap(){
+		Map<String,Object> map = new HashMap<String,Object>();
+		for(Attribute attribute: attributes){
+			if (attribute.getValue() != null){
+				log.fine("Found attribute: "+attribute.getName() + ", value=" + attribute.getValue());
+				map.put(attribute.getName(), attribute.getValue());
+			}
+		}
+		return map;
+	}
+	
 	protected void syncAttributes(Map remoteMap){
 		for(Attribute attr: attributes){
 			String name = attr.getName();
