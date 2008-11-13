@@ -28,6 +28,8 @@ import org.apache.xmlrpc.XmlRpcException;
 
 public class TestRun extends TestopiaObject{
 		
+	public enum Status{ Running, Stopped }
+	
 	//variables used to update the testRun
 	private IntegerAttribute planID = newIntegerAttribute("plan_id", null);  
 	private IntegerAttribute environment = newIntegerAttribute("environment", null); 
@@ -36,9 +38,10 @@ public class TestRun extends TestopiaObject{
 	private StringAttribute summary = newStringAttribute("summary", null);
 
 	private StringAttribute notes = newStringAttribute("notes", null);
-	private StringAttribute status = newStringAttribute("status", null); 
+	private IntegerAttribute status = newIntegerAttribute("status", null); 
 	private StringAttribute productVersion = newStringAttribute("product_version", null); 
 	
+
 	/**
 	 * 
 	 * @param userName your bugzilla/testopia userName
@@ -164,6 +167,11 @@ public class TestRun extends TestopiaObject{
 												id.get());
 	}
 	
-
+	public Status getStatus() {
+		return status.get()==1 ? Status.Running : Status.Stopped;
+	}
+	public void setStatus(Status status) {
+		this.status.set(status.equals(Status.Running) ? 1:0);
+	}
 
 }

@@ -8,10 +8,12 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URL;
 import java.security.GeneralSecurityException;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Handler;
 import java.util.logging.Level;
-import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 import org.apache.xmlrpc.XmlRpcException;
@@ -39,6 +41,7 @@ import com.redhat.qe.auto.selenium.LogFormatter;
  */
 public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 
+	private static final String TESTNG_COMPONENT_MARKER = "component-";
 	private static String TESTOPIA_PW = "";
 	private static String TESTOPIA_USER = "";
 	private static String TESTOPIA_URL = "";
@@ -57,6 +60,7 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 	protected TestCaseRun testcaserun = null;
 	protected static String buildName = "2.2 CR1";
 	protected static String environmentName = "Windows+Postgres";
+	protected static String version = "";
 	
 	static {
 		System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.SimpleLog");
@@ -89,7 +93,14 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 	 */
 	@Override
 	public void onFinish(ITestContext context) {
-		// TODO Auto-generated method stub
+		testrun.setStatus(TestRun.Status.Stopped);
+		try{
+			//this currently may not affect the status (will still say running) due to testopia bug
+			testrun.update();
+			
+		}catch(Exception e){
+			throw new TestopiaException(e);
+		}
 
 	}
 
@@ -148,6 +159,76 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 
 	}
 
+	/**
+	 *  Take component names from testng annotation - convention is if you 
+	 * mark a test with groups="component-Xyz" then the testcase in testopia
+	 * will be created with a component "Xyz" added. If the component
+	 * can't be found in testopia, it'll be skipped.  Can add multiple components
+	 * in this manner (with multiple groups that start with "component-".  Will also
+	 * remove components that are not in the annotation.
+	 * -jweiss
+	 *
+	 * @param result
+	 */
+	private void syncComponents(ITestResult result){
+		List<String> existingComponents = new ArrayList<String>();
+		try {
+			Object[] components = testcase.getComponents();
+			for (Object component: components){
+				String componentName = (String)((Map<String,Object>)component).get("name");
+				existingComponents.add(componentName);
+			}
+		}catch(Exception e){
+			log.log(Level.FINE, "Unable to retrieve existing components for testcase " + testcase.getId() + ".", e);
+		}
+		List<String> newComponents = getComponentsFromGroupAnnotations(result);
+		for (String component: newComponents){
+			if (existingComponents.contains(component)) {
+				log.fine("Component is already in testcase.");
+			}
+			else {
+				try {
+					Integer componentID = product.getComponentIDByName(component, TESTOPIA_TESTRUN_PRODUCT);
+					testcase.addComponent(componentID);
+				}
+				catch(Exception e){
+					log.log(Level.FINE, "Unable to add component '" + component + "' in product '" +
+							TESTOPIA_TESTRUN_PRODUCT + "' to testcase.", e);
+					continue;
+				}
+			}
+		}
+		
+		//remove old components
+		for (String component: existingComponents){
+			if (!newComponents.contains(component)){
+				try {
+					Integer componentID = product.getComponentIDByName(component, TESTOPIA_TESTRUN_PRODUCT);
+					testcase.removeComponent(componentID);
+				}
+				catch(Exception e){
+					log.log(Level.FINE, "Unable to remove component '" + component + "' in product '" +
+							TESTOPIA_TESTRUN_PRODUCT + "' to testcase.", e);
+					continue;
+				}
+			}
+		}
+	}
+	
+	
+	private List<String> getComponentsFromGroupAnnotations(ITestResult result){
+		List<String> groups = Arrays.asList(result.getMethod().getGroups());
+		List<String> components= new ArrayList<String>();
+		for (String group: groups){
+			if (group.startsWith(TESTNG_COMPONENT_MARKER)) {
+				String component = group.split(TESTNG_COMPONENT_MARKER)[1];
+				log.fine("Found component: " + component);
+				components.add(component);		
+			}
+		}
+		return components;
+	}
+
 	/* (non-Javadoc)
 	 * @see org.testng.ITestListener#onTestStart(org.testng.ITestResult)
 	 */
@@ -172,11 +253,17 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 				testcase.setAlias(alias);
 				testcase.setIsAutomated(true);
 				testcase.create();
+				
+				
+				
 			}
 			catch(Exception e2){
 				throw new TestopiaException(e2);
 			}
 		}
+
+		syncComponents(result);
+
 		log.fine("Testrun is " + testrun.getId());
 		
 			
@@ -220,6 +307,7 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 			testcase.storeText();
 			//FIXME remove the following lines later when all records are updated
 			testcase.setIsAutomated(true);
+
 			testcase.update();
 		}catch(Exception e){
 			throw new TestopiaException(e);
@@ -334,8 +422,10 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 	public static void main(String args[]) throws Exception{
 		setLogConfig();
 		log.finer("Testing log setting.");
-		Session session = new Session(TESTOPIA_USER, TESTOPIA_PW, new URL(TESTOPIA_URL));
-		session.login();
+		String test = "component-Hi There";
+		System.out.println(test.split("component-")[1]);
+		/*Session session = new Session(TESTOPIA_USER, TESTOPIA_PW, new URL(TESTOPIA_URL));
+		session.login();*/
 		/*//tc.makeTestCase(id, 0, 0, true, 271, "This is a test of the testy test", 0);
 		Map<String, Object> values = new HashMap<String, Object>();
 		values.put("summary", "dfdfg");
@@ -362,7 +452,7 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 		//tcr.create();
 		
 		//TestCaseRun tcr = new TestCaseRun(session, 2935, )
-		Product prod = new Product(session);
+		/*Product prod = new Product(session);
 		Integer prodId = prod.getProductIDByName("JBoss ON");
 		TestPlan tp = new TestPlan(session, "Acceptance");
 		Integer plan = tp.getId();
@@ -377,7 +467,7 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 										  2948,
 										  build,
 										  envId);
-		tcr.create();
+		tcr.create();*/
 	}
 
 }

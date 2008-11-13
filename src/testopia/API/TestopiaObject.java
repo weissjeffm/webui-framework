@@ -19,15 +19,21 @@ public abstract class TestopiaObject {
 	protected static Logger log = Logger.getLogger(TestopiaObject.class.getName());
 	protected IntegerAttribute id;
 
-	protected Object callXmlrpcMethod(String methodName, Object... params) throws XmlRpcException{	
+	protected Object callXmlrpcMethod(String methodName, Object... params) throws XmlRpcException{
+		StringBuffer sb = new StringBuffer();
+		for (Object param:params){
+			sb.append(param.toString());
+			sb.append((param==params[params.length-1]?"":","));
+		}
+		log.fine("Calling xmlrpc method '" + methodName + "', with params (" + sb.toString() + ")");
 		Object o = (Object) session.getClient().execute(methodName, Arrays.asList(params));	
 		//print result for debug purposes
 		if (o instanceof Object[]){
 			for (Object obj: (Object[])o){
-				log.finer("Result of '" + methodName + "' = " + obj.toString());				
+				log.fine("Result of '" + methodName + "' = " + obj.toString());				
 			}
 		}
-		else log.finer("Result of '" + methodName + "' = " + o.toString());
+		else log.fine("Result of '" + methodName + "' = " + o.toString());
 		return o;
 	}
 
@@ -85,8 +91,9 @@ public abstract class TestopiaObject {
 				catch(NullPointerException npe) {}
 			else {
 				attr.set(val);
-				attr.clean();
+				
 			}
+			attr.clean();
 		}
 	}
 	/**

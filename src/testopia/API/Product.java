@@ -74,6 +74,13 @@ public class Product extends TestopiaObject{
 
 	}
 
+	public int getComponentIDByName(String componentName, String productName) throws XmlRpcException
+	{
+		Map m = (Map)callXmlrpcMethod("Product.check_component", componentName, productName);
+		return (Integer)m.get("id");		 
+
+	}
+
 
 	/**
 	 * 
