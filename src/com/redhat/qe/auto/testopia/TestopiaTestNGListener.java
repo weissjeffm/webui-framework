@@ -248,11 +248,15 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 		int iteration = result.getMethod().getCurrentInvocationCount();
 		log.fine("Got getCurrentInvocationCount()=" + iteration  + ", total=" + result.getMethod().getInvocationCount());
 		String count = "";
+		String className = getPackagelessTestClass(result);
 		if (iteration > 0) count = new Integer(iteration+1).toString();
-		String alias = version + "." + getPackagelessTestClass(result) + "." + result.getMethod().getMethodName() + count;
-		String summary = result.getMethod().getMethodName() + count;
+		String alias = version + "." + className + "." + result.getMethod().getMethodName() + count;
+		String summary = className + "." + result.getMethod().getMethodName() + count;
 		try {
 			testcase = new TestCase(session, alias);
+			//FIXME temporary to fix testcase names
+			testcase.setSummary(summary);
+			testcase.update();
 			
 		}catch(Exception e){
 			log.log(Level.FINE, "Testcase retrieval failed on '" + summary + "', probably doesn't exist yet.", e);
