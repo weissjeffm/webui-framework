@@ -97,7 +97,7 @@ public class TestRun extends TestopiaObject{
 	
 	public void addCases(Integer... cases) throws XmlRpcException{
 		//Map params = new HashMap();
-		callXmlrpcMethod("TestRun.add_cases", cases);
+		callXmlrpcMethod("TestRun.add_cases", (Object)cases);
 	}
 	
 	/*private int getNextTestRunID(Integer caseID) throws XmlRpcException{
