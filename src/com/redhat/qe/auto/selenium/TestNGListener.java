@@ -45,12 +45,13 @@ public class TestNGListener implements IResultListener {
 	public void onTestFailure(ITestResult result) {
 		try {
 			sc.screenCapture();
+			log.fine("GOT SCREENSHOT");
 		}
 		catch(NullPointerException npe){
-			log.log(Level.ALL, "Unable to capture screenshot, the capture utility has not been set up yet.");
+			log.log(Level.FINE, "Unable to capture screenshot, the capture utility has not been set up yet.");
 		}
 		catch(Exception e){
-			log.log(Level.ALL, "Unable to capture screenshot.", e);
+			log.log(Level.FINE, "Unable to capture screenshot.", e);
 		}
 		log.log(Level.SEVERE, "Test failed: "+ result.getName(), result.getThrowable());
 	}
