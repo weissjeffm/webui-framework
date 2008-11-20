@@ -1,11 +1,15 @@
 package com.redhat.qe.auto.selenium;
 
+import java.io.File;
+import java.net.InetAddress;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.testng.ITestContext;
 import org.testng.ITestResult;
 import org.testng.internal.IResultListener;
+
+import com.redhat.qe.tools.ExecCommands;
 
 /**
  * This class listens for TestNG events, and logs them using the 
@@ -21,6 +25,7 @@ public class TestNGListener implements IResultListener {
 
 	private static Logger log = Logger.getLogger(TestNGListener.class.getName());
 	private static IScreenCapture sc = null;
+	ExecCommands ex = new ExecCommands();
 	
 	public static void setScreenCaptureUtility(IScreenCapture sc){
 		TestNGListener.sc = sc;
@@ -43,17 +48,35 @@ public class TestNGListener implements IResultListener {
 	}	
 	
 	public void onTestFailure(ITestResult result) {
+		String screenShotPath = null;
+		InetAddress addr = null;
+		String host = null;
 		try {
-			sc.screenCapture();
-			log.log(Level.SEVERE, "GOT SCREENSHOT");
+			addr = InetAddress.getLocalHost();
+		} catch (java.net.UnknownHostException e1) {
+			e1.printStackTrace();
+		}
+		host = addr.getHostName();
+		
+		try {
+			screenShotPath = sc.screenCapture().trim();
+			try{
+				ex.submitCommandToLocal("mv ", screenShotPath + " /var/www/html/screenshots");
+				String dirName = System.getProperty("user.dir") + File.separator+ "screenshots";
+				log.log(Level.SEVERE, "Captured ScreenShot to http://"+host+"/screenshots"+screenShotPath.substring(dirName.length()));
+				}
+				catch(Exception e){
+					String dirName = "/tmp";
+					log.log(Level.SEVERE, "Captured ScreenShot to http://"+host+"/screenshots"+screenShotPath.substring(dirName.length()));
+					//log.log(Level.FINE, "moving the screenshot failed, screenshot may be found @ "+screenShotPath);
+				}			
+			//log.log(Level.SEVERE, "GOT SCREENSHOT");
 		}
 		catch(NullPointerException npe){
-			log.log(Level.FINE, "Unable to capture screenshot, the capture utility has not been set up yet.");
-			log.log(Level.SEVERE, "NO SCREENSHOT");
+			log.log(Level.SEVERE, "Unable to capture screenshot, the capture utility has not been set up yet.");
 		}
 		catch(Exception e){
-			log.log(Level.FINE, "Unable to capture screenshot.", e);
-			log.log(Level.SEVERE, "NO SCREENSHOT");
+			log.log(Level.SEVERE, "Unable to capture screenshot.", e);
 		}
 		log.log(Level.SEVERE, "Test failed: "+ result.getName(), result.getThrowable());
 	}
