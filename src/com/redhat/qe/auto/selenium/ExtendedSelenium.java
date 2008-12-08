@@ -59,7 +59,10 @@ public class ExtendedSelenium extends DefaultSelenium implements IScreenCapture 
 		//added this as part of a fix to guarantee that only instance of selenium
 		//is running.  So be sure that there is only one browser session up at a time
 		killInstance();
-		log.finest("Selenium stopped.");
+		
+		//debugging this, because screenshots are getting taken too late on hudson wdh
+		//log.fine("Selenium stopped.");
+		log.log(MyLevel.ACTION,"Selenium stopped, wes");
 
 	}
 	
