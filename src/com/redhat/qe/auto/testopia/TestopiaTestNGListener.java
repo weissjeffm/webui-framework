@@ -58,9 +58,9 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 	protected TestCase testcase;
 	protected Session session;
 	protected TestCaseRun testcaserun = null;
-	protected static String buildName = "2.2 CR1";
-	protected static String environmentName = "Windows+Postgres";
-	protected static String version = "none";
+	protected static String buildName = "";
+	protected static String environmentName = "";
+	protected static String version = "";
 	
 	static {
 		System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.SimpleLog");
@@ -79,12 +79,10 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 	}
 	
 	
-	@Override
 	public void onFinish(ISuite suite) {
 		// TODO Auto-generated method stub
 	}
 
-	@Override
 	public void onStart(ISuite suite) {
 	
 		
@@ -94,11 +92,9 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 	/* (non-Javadoc)
 	 * @see org.testng.ITestListener#onFinish(org.testng.ITestContext)
 	 */
-	@Override
 	public void onFinish(ITestContext context) {
 		testrun.setStatus(TestRun.Status.Stopped);
 		try{
-			//this currently may not affect the status (will still say running) due to testopia bug
 			testrun.update();
 			
 		}catch(Exception e){
@@ -110,7 +106,6 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 	/* (non-Javadoc)
 	 * @see org.testng.ITestListener#onStart(org.testng.ITestContext)
 	 */
-	@Override
 	public void onStart(ITestContext context) {
 		//create new test run
 		String testname = context.getName();
@@ -138,7 +133,6 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 	/* (non-Javadoc)
 	 * @see org.testng.ITestListener#onTestFailedButWithinSuccessPercentage(org.testng.ITestResult)
 	 */
-	@Override
 	public void onTestFailedButWithinSuccessPercentage(ITestResult result) {
 		// TODO Auto-generated method stub
 
@@ -147,7 +141,6 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 	/* (non-Javadoc)
 	 * @see org.testng.ITestListener#onTestFailure(org.testng.ITestResult)
 	 */
-	@Override
 	public void onTestFailure(ITestResult result) {
 		//also update the test run
 		markTestRunComplete(result);
@@ -156,7 +149,6 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 	/* (non-Javadoc)
 	 * @see org.testng.ITestListener#onTestSkipped(org.testng.ITestResult)
 	 */
-	@Override
 	public void onTestSkipped(ITestResult result) {
 		markTestRunComplete(result);
 
@@ -242,7 +234,6 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 	/* (non-Javadoc)
 	 * @see org.testng.ITestListener#onTestStart(org.testng.ITestResult)
 	 */
-	@Override
 	public void onTestStart(ITestResult result) {
 		//create new testcaserun
 		int iteration = result.getMethod().getCurrentInvocationCount();
@@ -299,19 +290,18 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 	/* (non-Javadoc)
 	 * @see org.testng.ITestListener#onTestSuccess(org.testng.ITestResult)
 	 */
-	@Override
 	public void onTestSuccess(ITestResult result) {
 		//get the procedure log from the handler
 		String action = "no procedure found!";
 		Handler[] handlers = Logger.getLogger("").getHandlers();
 		
-		if (tph == null) {
+		//if (tph == null) {
 			//find the right handler (and save for later)
 			for (Handler handler: handlers){
 				if (handler instanceof TestProcedureHandler)
 					tph = ((TestProcedureHandler)handler);
 			}
-		}
+		//}
 		action = tph.getLog();
 		log.fine("Updating testcase " + testcase.getAlias() + " with successful action log: \n" + action);
 		//put it in testopia
@@ -366,7 +356,6 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 	/* (non-Javadoc)
 	 * @see org.testng.internal.IConfigurationListener#onConfigurationFailure(org.testng.ITestResult)
 	 */
-	@Override
 	public void onConfigurationFailure(ITestResult result) {
 		//markTestRunComplete(result);
 
@@ -375,7 +364,6 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 	/* (non-Javadoc)
 	 * @see org.testng.internal.IConfigurationListener#onConfigurationSkip(org.testng.ITestResult)
 	 */
-	@Override
 	public void onConfigurationSkip(ITestResult result) {
 		//markTestRunComplete(result);
 
@@ -384,7 +372,6 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 	/* (non-Javadoc)
 	 * @see org.testng.internal.IConfigurationListener#onConfigurationSuccess(org.testng.ITestResult)
 	 */
-	@Override
 	public void onConfigurationSuccess(ITestResult result) {
 		//markTestRunComplete(result);
 
