@@ -62,7 +62,8 @@ public class ExtendedSelenium extends DefaultSelenium implements IScreenCapture 
 		
 		//debugging this, because screenshots are getting taken too late on hudson wdh
 		//log.fine("Selenium stopped.");
-		log.log(MyLevel.FINER,"Selenium stopped");
+		//log.log(MyLevel.FINER,"Selenium stopped");
+		log.info("Selenium stopped");
 
 	}
 	
