@@ -49,7 +49,7 @@ public class VersionedInstantiator {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public Object getVersionedClass(Class baseClass) {
+	public Object getVersionedInstance(Class baseClass) {
 		List<String> validVersions = getValidVersionList(packageMap.get(runningVersion));
 		Iterator<String> it = validVersions.iterator();
 		Object o = null;
@@ -93,12 +93,18 @@ public class VersionedInstantiator {
 		return name;
 	}
 	
-	protected List<String> getValidVersionList(String latestVer){
+	protected List<String> getValidVersionList(String runningVersion){
 		List<String> list = new ArrayList<String>(packageMap.values());
 		List<String> newList = new ArrayList<String>();
 		int i =0;
-		while(!list.get(i).equals(latestVer)) i++;
+		try {
+			while(!list.get(i).equals(runningVersion)) i++;
+		}
+		catch(IndexOutOfBoundsException ioobe){
+			throw new RuntimeException("The running product version '" + runningVersion +  "' was not found in the map!", ioobe);
+		}
 		newList = list.subList(0, i+1);
+		Collections.reverse(newList);
 		return newList;
 	}
 	
