@@ -62,7 +62,7 @@ public class ExtendedSelenium extends DefaultSelenium implements IScreenCapture 
 		
 		//debugging this, because screenshots are getting taken too late on hudson wdh
 		//log.fine("Selenium stopped.");
-		log.log(MyLevel.ACTION,"Selenium stopped, wes");
+		log.log(MyLevel.FINER,"Selenium stopped");
 
 	}
 	
@@ -377,11 +377,10 @@ public class ExtendedSelenium extends DefaultSelenium implements IScreenCapture 
 			
 		}
 		catch(Exception e ){
-			log.log(Level.FINER, "Couldn't capture screenshot.", e);
+			log.finer("Couldn't capture screenshot.");
 			//if this failed, try the temp dir
 			screenshotDir = new File("/tmp");
-			super.captureScreenshot("/tmp"
-					+ File.separator + outFileName);
+			super.captureScreenshot("/tmp"+ File.separator + outFileName);
 			//log.log(Level.FINE, "Captured ScreenShot to "+"/tmp"+ File.separator + outFileName);
 			fullPathtoFile = "/tmp"+ File.separator + outFileName;
 			
@@ -390,6 +389,43 @@ public class ExtendedSelenium extends DefaultSelenium implements IScreenCapture 
 		return fullPathtoFile;
 		
 	}
+	
+	public String screenCapture(String dirName) throws Exception {
+		String fullPathtoFile = null;
+		if (screenshotDir == null) {
+			 dirName = dirName + File.separator;
+			screenshotDir = new File(dirName);
+		}
+		if (!(screenshotDir.exists() && screenshotDir.isDirectory())) {
+			screenshotDir.mkdirs();
+		}
+		
+
+		Date rightNow = new Date();
+		String outFileName = dateFormat.format(rightNow) + ".png";
+		try {
+			writeHtmlOnError(screenshotDir);
+			super.captureScreenshot(screenshotDir.getCanonicalPath()
+					+ File.separator + outFileName);
+			//log.log(Level.FINE, "Captured ScreenShot to "+screenshotDir.getCanonicalPath()+ File.separator + outFileName);
+			fullPathtoFile = screenshotDir.getCanonicalPath()+ File.separator + outFileName;
+			
+		}
+		catch(Exception e ){
+			log.finer("Couldn't capture screenshot.");
+			//if this failed, try the temp dir
+			screenshotDir = new File("/tmp");
+			super.captureScreenshot("/tmp"+ File.separator + outFileName);
+			//log.log(Level.FINE, "Captured ScreenShot to "+"/tmp"+ File.separator + outFileName);
+			fullPathtoFile = "/tmp"+ File.separator + outFileName;
+			
+			//writeHtmlOnError(screenshotDir);		
+		}
+		return fullPathtoFile;
+		
+	}
+	
+	
 	
 	protected void writeHtmlOnError(File dir) throws Exception{
 
