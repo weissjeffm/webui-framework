@@ -1,17 +1,14 @@
 package com.redhat.qe.auto.instantiate;
 
-import java.io.File;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import testopia.API.TestopiaObject;
 
 
 
@@ -21,6 +18,7 @@ public class VersionedInstantiator {
 	protected LinkedHashMap<String,String> packageMap = new LinkedHashMap<String,String>();
 	protected Integer versionedPackageIndex = 1;
 	protected String runningVersion = "";
+	protected static Map<Class,Object> instances = new HashMap<Class,Object>();
 	
 	/**
 	 * @param packageMap - a map of version strings to package names.  For example, a product version 2.2.0 might have 
@@ -50,17 +48,23 @@ public class VersionedInstantiator {
 	 */
 	@SuppressWarnings("unchecked")
 	public Object getVersionedInstance(Class baseClass) {
+		log.finer("Product version currently running is '" + runningVersion + "'.");
 		List<String> validVersions = getValidVersionList(packageMap.get(runningVersion));
 		Iterator<String> it = validVersions.iterator();
 		Object o = null;
+		Class clazz = null;
 		while (it.hasNext() && o==null) {
-			String ver = it.next();		
+			String ver = it.next();	
+			 
 			try {
 				 String className = getClassName(baseClass, ver);
 				 log.finer("Trying to instantiate: " + className);
 
-				 Class clazz = Class.forName(className);
-				 o = clazz.newInstance();
+				 clazz = Class.forName(className);
+				 //see if we already have an instance
+				 o = instances.get(clazz);
+				 //if not, create a new one
+				 if (o == null) o = clazz.newInstance();
 			}
 			catch(ClassNotFoundException cnfe){
 				log.log(Level.FINEST, "Couldn't instantiate: " + ver, cnfe);
@@ -77,7 +81,10 @@ public class VersionedInstantiator {
 		}
 		if (o==null)throw new RuntimeException("Couldn't find any valid instance of " + baseClass.getName());
 		
-		if (baseClass.isAssignableFrom(o.getClass())) return o;
+		if (baseClass.isAssignableFrom(o.getClass())) {
+			instances.put(clazz, o);
+			return o;
+		}
 		else throw new RuntimeException ("The versioned class of " + baseClass.getName() + ", '" + o.getClass().getName() + "', don't have a parent/subclass relationship.");
 		
 	}
