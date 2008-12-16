@@ -26,6 +26,7 @@ public class ExtendedSelenium extends DefaultSelenium implements IScreenCapture 
 	
 	private static Logger log = Logger.getLogger(ExtendedSelenium.class.getName());
 	private static File screenshotDir = null;
+	private static File localHtmlDir = null;
 	private static final DecimalFormat numFormat = new DecimalFormat("##0.#");
 	protected static final String DEFAULT_WAITFORPAGE_TIMEOUT = "60000";
 	protected static String WAITFORPAGE_TIMEOUT = DEFAULT_WAITFORPAGE_TIMEOUT;
@@ -356,56 +357,24 @@ public class ExtendedSelenium extends DefaultSelenium implements IScreenCapture 
 	
 	
 	public String screenCapture() throws Exception {
-		String fullPathtoFile = null;
-		if (screenshotDir == null) {
-			String dirName = System.getProperty("user.dir") + File.separator
-					+ "screenshots";
-			screenshotDir = new File(dirName);
-		}
-		if (!(screenshotDir.exists() && screenshotDir.isDirectory())) {
-			screenshotDir.mkdirs();
-		}
-		
-
-		Date rightNow = new Date();
-		String outFileName = dateFormat.format(rightNow) + ".png";
-		try {
-			writeHtmlOnError(screenshotDir);
-			super.captureScreenshot(screenshotDir.getCanonicalPath()
-					+ File.separator + outFileName);
-			//log.log(Level.FINE, "Captured ScreenShot to "+screenshotDir.getCanonicalPath()+ File.separator + outFileName);
-			fullPathtoFile = screenshotDir.getCanonicalPath()+ File.separator + outFileName;
-			
-		}
-		catch(Exception e ){
-			log.finer("Couldn't capture screenshot.");
-			//if this failed, try the temp dir
-			screenshotDir = new File("/tmp");
-			super.captureScreenshot("/tmp"+ File.separator + outFileName);
-			//log.log(Level.FINE, "Captured ScreenShot to "+"/tmp"+ File.separator + outFileName);
-			fullPathtoFile = "/tmp"+ File.separator + outFileName;
-			
-			//writeHtmlOnError(screenshotDir);		
-		}
-		return fullPathtoFile;
-		
+		String dirName = System.getProperty("user.dir") + File.separator
+		+ "screenshots";
+		return screenCapture(dirName);
 	}
 	
 	public String screenCapture(String dirName) throws Exception {
 		String fullPathtoFile = null;
-		if (screenshotDir == null) {
-			 dirName = dirName + File.separator;
-			screenshotDir = new File(dirName);
-		}
-		if (!(screenshotDir.exists() && screenshotDir.isDirectory())) {
-			screenshotDir.mkdirs();
-		}
+		mkdir(dirName);
 		
 
 		Date rightNow = new Date();
 		String outFileName = dateFormat.format(rightNow) + ".png";
 		try {
-			writeHtmlOnError(screenshotDir);
+			File htmlDir = localHtmlDir != null? localHtmlDir : screenshotDir;
+			writeHtmlOnError(htmlDir);
+			//if success use that next time
+			localHtmlDir = htmlDir;
+			
 			super.captureScreenshot(screenshotDir.getCanonicalPath()
 					+ File.separator + outFileName);
 			//log.log(Level.FINE, "Captured ScreenShot to "+screenshotDir.getCanonicalPath()+ File.separator + outFileName);
@@ -424,6 +393,15 @@ public class ExtendedSelenium extends DefaultSelenium implements IScreenCapture 
 		}
 		return fullPathtoFile;
 		
+	}
+	
+	protected void mkdir(String dirName){
+		if (screenshotDir == null) {
+			screenshotDir = new File(dirName);
+		}
+		if (!(screenshotDir.exists() && screenshotDir.isDirectory())) {
+			screenshotDir.mkdirs();
+		}
 	}
 	
 	
