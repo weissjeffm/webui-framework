@@ -65,7 +65,7 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 	static {
 		System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.SimpleLog");
 		System.setProperty("org.apache.commons.logging.simplelog.showdatetime", "true");
-		System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.commons.httpclient", "debug");
+		System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.commons.httpclient", "info");
 	}
 	
 	public static void setBuild(String buildName){
@@ -253,7 +253,7 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 			log.log(Level.FINE, "Testcase retrieval failed on '" + summary + "', probably doesn't exist yet.", e);
 			try {
 				log.info("Creating new testcase: " + alias);
-				testcase = new TestCase(session, "CONFIRMED", "--default--", "P1",
+				testcase = new TestCase(session, "PROPOSED", "--default--", "P1",
 						summary, TESTOPIA_TESTRUN_TESTPLAN, TESTOPIA_TESTRUN_PRODUCT, version);
 				testcase.setAlias(alias);
 				testcase.setIsAutomated(true);
