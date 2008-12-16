@@ -413,7 +413,7 @@ public class ExtendedSelenium extends DefaultSelenium implements IScreenCapture 
 			
 		}
 		catch(Exception e ){
-			log.finer("Couldn't capture screenshot.");
+			log.fine("Couldn't capture screenshot, trying to write to tmp dir instead.");
 			//if this failed, try the temp dir
 			screenshotDir = new File("/tmp");
 			super.captureScreenshot("/tmp"+ File.separator + outFileName);
