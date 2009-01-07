@@ -62,11 +62,15 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 	protected static String environmentName = "";
 	protected static String version = "";
 	
+	protected static boolean isInUse = false;
+	
 	static {
 		System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.SimpleLog");
 		System.setProperty("org.apache.commons.logging.simplelog.showdatetime", "true");
 		System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.commons.httpclient", "info");
 	}
+	
+	
 	
 	public static void setBuild(String buildName){
 		TestopiaTestNGListener.buildName = buildName;
@@ -78,13 +82,17 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 		TestopiaTestNGListener.version = version;
 	}
 	
+	public static boolean isInUse(){
+		return isInUse;
+	}
+	
 	
 	public void onFinish(ISuite suite) {
 		// TODO Auto-generated method stub
 	}
 
 	public void onStart(ISuite suite) {
-	
+		isInUse = true;
 		
 		
 	}
@@ -122,8 +130,8 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 			
 
 		} catch(Exception e){
-			log.severe("Could not log in to testopia!  Aborting!");
-			TestopiaException te=new TestopiaException("Failed to log in to testopia");
+			//log.severe("Could not create new test run in testopia!  Aborting!");
+			TestopiaException te=new TestopiaException("Could not create new test run in testopia.");
 			te.initCause(e);
 			throw te;
 		}
@@ -398,7 +406,7 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 	
 	protected void retrieveContext() throws XmlRpcException{
 		product = new Product(session, System.getProperty("testopia.testrun.product"));
-		testplan = new TestPlan(session, System.getProperty("testopia.testrun.testplan"), version);
+		testplan = new TestPlan(session, product.getId(), System.getProperty("testopia.testrun.testplan"), version);
 		
 		
 		build = new Build(session, product.getId());

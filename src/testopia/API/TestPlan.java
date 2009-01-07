@@ -42,6 +42,7 @@ public class TestPlan extends TestopiaObject{
 	private BooleanAttribute isactive = newBooleanAttribute("isactive", null);  		 
 	private StringAttribute name = newStringAttribute("name", null);  	
 	private StringAttribute defaultProductVersion = newStringAttribute("default_product_version", null);  	
+	private StringAttribute version = newStringAttribute("version", null);  	
 
 	
 	/**
@@ -69,12 +70,13 @@ public class TestPlan extends TestopiaObject{
 
 	}
 	
-	public TestPlan(Session session, String plan, String defaultProductVersion) throws XmlRpcException
+	public TestPlan(Session session, Integer product, String plan, String version) throws XmlRpcException
 	{
 		this.session = session;
 		this.listMethod = "TestPlan.list";
 		this.id = newIntegerAttribute(PLAN_ID, null);
-		this.defaultProductVersion.set(defaultProductVersion);
+		this.product.set(product);
+		this.version.set(version);
 		this.name.set(plan);
 		getPlanIdByCurrentAttributes();
 

@@ -97,11 +97,12 @@ public class TestCase extends TestopiaObject{
 		this.status.set(status);
 		this.id = newIntegerAttribute("case_id", null);
 
-		this.categoryID.set(new Product(session).getCategoryIDByName(category, product));
+		Product prod = new Product(session, product);
+		this.categoryID.set(prod.getCategoryIDByName(category, product));
 
 		this.priority.set(priority);
 		this.summary.set(summary);
-		this.plans.set(new TestPlan(session,plan, version).getId());
+		this.plans.set(new TestPlan(session, prod.getId(), plan, version).getId());
 	}
 
 	
