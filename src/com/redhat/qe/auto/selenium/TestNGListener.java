@@ -30,13 +30,13 @@ public class TestNGListener implements IResultListener {
 	//TestNG's Test Listener methods so Selenium can log and screenshot properly
 
 	public void onFinish(ITestContext context){
-		log.info("=========  TestNG Finishing: " + context.getName()+ " ============================================");
+		log.fine("=========  TestNG Finishing: " + context.getName()+ " ============================================");
 		
 	}
 	
 	public void onStart(ITestContext context) {
 		
-		log.info("=========  TestNG Starting:" + context.getName()+ " =============================================");
+		log.fine("=========  TestNG Starting:" + context.getName()+ " =============================================");
 	}
 	
 	public void onTestFailedButWithinSuccessPercentage(ITestResult result) {
@@ -60,15 +60,15 @@ public class TestNGListener implements IResultListener {
 		log.log(Level.SEVERE, "Test failed: "+ result.getName(), result.getThrowable());
 	}
 	public void onTestSkipped(ITestResult result) {
-		log.info("========= Skipping test: " + result.getName()+ " ============================================");
+		log.fine("========= Skipping test: " + result.getName()+ " ============================================");
 
 	}
 	public  void onTestStart(ITestResult result) {
-		log.info("========= Starting test: " + result.getName()+ " ============================================");
+		log.fine("========= Starting test: " + result.getName()+ " ============================================");
 		
 	}
 	public  void onTestSuccess(ITestResult result) {
-		log.info("========= Test Passed: " + result.getName()+ " ============================================");
+		log.fine("========= Test Passed: " + result.getName()+ " ============================================");
 		
 		
 	}
