@@ -45,7 +45,7 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 	private static String TESTOPIA_PW = "";
 	private static String TESTOPIA_USER = "";
 	private static String TESTOPIA_URL = "";
-	private static String TESTOPIA_TESTRUN_TESTPLAN = "";
+	protected static String TESTOPIA_TESTRUN_TESTPLAN = "";
 	private static String TESTOPIA_TESTRUN_PRODUCT = "";
 	
 	protected TestProcedureHandler tph = null;
