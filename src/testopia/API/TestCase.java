@@ -40,7 +40,7 @@ public class TestCase extends TestopiaObject{
 	private StringAttribute action= newStringAttribute("action", null);
 	private StringAttribute status= newStringAttribute("status", null);
 	private BooleanAttribute isAutomated = newBooleanAttribute("isautomated", null);
-	private IntegerAttribute plans= newIntegerAttribute("plans", null);
+	private StringAttribute plans= newStringAttribute("plans", null);
 	
 	/** 
 	 * @param userName your bugzilla/testopia userName
@@ -73,7 +73,7 @@ public class TestCase extends TestopiaObject{
 		this.categoryID.set(categoryId);
 		this.priority.set(priority);
 		this.summary.set(summary);
-		this.plans.set(plan);
+		this.plans.set(Integer.toString(plan));
 		this.id = newIntegerAttribute("case_id", null);
 
 	}
@@ -88,7 +88,7 @@ public class TestCase extends TestopiaObject{
 
 		this.priority.set(priority);
 		this.summary.set(summary);
-		this.plans.set(new TestPlan(session,plan).getId());
+		this.plans.set(Integer.toString(new TestPlan(session,plan).getId()));
 	}
 
 	public TestCase(Session session, String status, String category, String priority, String summary, String plan, String product, String version) throws XmlRpcException{
@@ -102,7 +102,7 @@ public class TestCase extends TestopiaObject{
 
 		this.priority.set(priority);
 		this.summary.set(summary);
-		this.plans.set(new TestPlan(session, prod.getId(), plan, version).getId());
+		this.plans.set(Integer.toString(new TestPlan(session, prod.getId(), plan, version).getId()));
 	}
 
 	
@@ -241,6 +241,57 @@ public class TestCase extends TestopiaObject{
 		return (Object[]) this.callXmlrpcMethod("TestCase.get_components", 
 												id.get());	
 	}
+	
+	/**
+	 * Adds a testplan to the testCase
+	 * @param componentID the ID of the component that will be added to the
+	 * testCase
+	 * @throws Exception
+	 * @throws XmlRpcException
+	 */
+	public void addTestPlan(int testPlanID)
+	throws TestopiaException, XmlRpcException
+	{
+		if(id.get() == null)
+			throw new TestopiaException("CaseID cannot be null");
+
+		this.callXmlrpcMethod("TestCase.link_plan", 
+							  id.get(),
+							  testPlanID);	
+	}
+	
+	/**
+	 * Removes an associated testplan applied to the testCase
+	 * @param componentID the ID of the component that will be removed from the
+	 * testCase
+	 * @throws Exception
+	 * @throws XmlRpcException
+	 */
+	public void removeTestPlan(int testPlanID)
+	throws TestopiaException, XmlRpcException
+	{
+		if(id.get() == null)
+			throw new TestopiaException("CaseID cannot be null");
+
+		this.callXmlrpcMethod("TestCase.unlink_plan", 
+							  id.get(),
+							  testPlanID);	
+	}
+	/**
+	 * Gets the test plans as an array of hashMaps or null if 
+	 * an error occurs
+	 * @return an array of test plan hashMaps or null 
+	 * @throws Exception
+	 */
+	public Object[] getTestPlans()
+	throws TestopiaException, XmlRpcException
+	{
+		if(id.get() == null)
+			throw new TestopiaException("CaseID cannot be null");
+
+		return (Object[]) this.callXmlrpcMethod("TestCase.get_plans", 
+												id.get());	
+	}
 
 		
 	/**
@@ -358,11 +409,11 @@ public class TestCase extends TestopiaObject{
 		this.action.set(action);
 	}
 
-	public Integer getPlan() {
+	public String getPlan() {
 		return plans.get();
 	}
 
 	public void setPlan(Integer plans) {
-		this.plans.set(plans);
+		this.plans.set(Integer.toString(plans));
 	}
 }

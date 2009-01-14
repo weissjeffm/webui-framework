@@ -173,5 +173,13 @@ public class TestRun extends TestopiaObject{
 	public void setStatus(Status status) {
 		this.status.set(status.equals(Status.Running) ? 1:0);
 	}
+	
+	public String getNotes() {
+		return this.notes.get();
+	}
+	
+	public void setNotes(String notes) {
+		this.notes.set(notes);
+	}
 
 }

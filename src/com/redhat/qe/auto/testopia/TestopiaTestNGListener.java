@@ -17,6 +17,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.xmlrpc.XmlRpcException;
+import org.testng.IResultMap;
 import org.testng.ISuite;
 import org.testng.ISuiteListener;
 import org.testng.ITestContext;
@@ -42,11 +43,12 @@ import com.redhat.qe.auto.selenium.LogFormatter;
 public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 
 	private static final String TESTNG_COMPONENT_MARKER = "component-";
+	protected static final String TESTNG_TESTPLAN_MARKER = "testplan-";
 	private static String TESTOPIA_PW = "";
 	private static String TESTOPIA_USER = "";
 	private static String TESTOPIA_URL = "";
 	protected static String TESTOPIA_TESTRUN_TESTPLAN = "";
-	private static String TESTOPIA_TESTRUN_PRODUCT = "";
+	protected static String TESTOPIA_TESTRUN_PRODUCT = "";
 	
 	protected TestProcedureHandler tph = null;
 	protected static Logger log = Logger.getLogger(TestopiaTestNGListener.class.getName());
@@ -67,7 +69,7 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 	static {
 		System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.SimpleLog");
 		System.setProperty("org.apache.commons.logging.simplelog.showdatetime", "true");
-		System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.commons.httpclient", "info");
+		System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.commons.httpclient", "severe");
 	}
 	
 	
@@ -102,6 +104,11 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 	 */
 	public void onFinish(ITestContext context) {
 		testrun.setStatus(TestRun.Status.Stopped);
+		String notes = String.format("RESULTS: %d Passed, %d Failed, %d Skipped",
+				                     context.getPassedTests().size(),
+				                     context.getFailedTests().size(),
+				                     context.getSkippedTests().size());
+		testrun.setNotes(notes);
 		try{
 			testrun.update();
 			
@@ -173,7 +180,7 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 	 *
 	 * @param result
 	 */
-	private void syncComponents(ITestResult result){
+	protected void syncComponents(ITestResult result){
 		List<String> existingComponents = new ArrayList<String>();
 		try {
 			Object[] components = testcase.getComponents();
@@ -217,7 +224,49 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 			}
 		}
 	}
-	
+
+	protected void syncTestPlans(ITestResult result){
+		List<Integer> existingTestPlans = new ArrayList<Integer>();
+		try {
+			Object[] testplans = testcase.getTestPlans();
+			for (Object testplan: testplans){
+				String testPlanName = (String)((Map<String,Object>)testplan).get("name");
+				existingTestPlans.add(new TestPlan(session, product.getId(), testPlanName, version).getId());
+			}
+		}
+		catch(Exception e){
+			log.log(Level.FINE, "Unable to retrieve associated test plans for testcase " + testcase.getId() + ".", e);
+		}
+		List<Integer> newTestPlans = getTestPlansFromGroupAnnotations(result);
+		for (Integer testplan: newTestPlans){
+			if (existingTestPlans.contains(testplan))
+				log.fine("Testcase is already assigned to test plan.");
+			else {
+				try {
+					testcase.addTestPlan(testplan);
+				}
+				catch (Exception e){
+					log.log(Level.FINE, "Unable to add test plan '" + testplan + "' in product '" +
+							TESTOPIA_TESTRUN_PRODUCT + "' to testcase.", e);
+					continue;
+				}
+			}
+		}
+		
+		//remove old test plans
+		for (Integer testplan: existingTestPlans){
+			if (!newTestPlans.contains(testplan)){
+				try {
+					testcase.removeTestPlan(testplan);
+				}
+				catch(Exception e){
+					log.log(Level.FINE, "Unable to remove test plan '" + testplan + "' in product '" +
+							TESTOPIA_TESTRUN_PRODUCT + "' to testcase.", e);
+					continue;
+				}
+			}
+		}
+	}
 	
 	private List<String> getComponentsFromGroupAnnotations(ITestResult result){
 		List<String> groups = Arrays.asList(result.getMethod().getGroups());
@@ -232,7 +281,28 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 		return components;
 	}
 	
-	private String getPackagelessTestClass(ITestResult result){
+	protected List<Integer> getTestPlansFromGroupAnnotations(ITestResult result){
+		List<String> groups = Arrays.asList(result.getMethod().getGroups());
+		List<Integer> testplans= new ArrayList<Integer>();
+		for (String group: groups){
+			if (group.startsWith(TESTNG_TESTPLAN_MARKER)) {
+				String testplan = group.split(TESTNG_TESTPLAN_MARKER)[1];
+				log.fine("Found test plan: " + testplan);
+				try{
+					Integer testplanid = new TestPlan(session, product.getId(), testplan, version).getId();
+					log.fine("with plan ID: " + testplanid);
+					testplans.add(testplanid);
+				}
+				catch(Exception e){
+					log.fine("Test plan \"" + testplan + "\" not found on Testopia, skipping...");
+					continue;
+				}
+			}
+		}
+		return testplans;
+	}
+	
+	protected String getPackagelessTestClass(ITestResult result){
 		String pkg_class = result.getTestClass().getName();
 		log.finest("Got test class of " + pkg_class);
 		String[] pkgs=  pkg_class.split("\\.");
@@ -243,6 +313,7 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 	 * @see org.testng.ITestListener#onTestStart(org.testng.ITestResult)
 	 */
 	public void onTestStart(ITestResult result) {
+		
 		//create new testcaserun
 		int iteration = result.getMethod().getCurrentInvocationCount();
 		log.fine("Got getCurrentInvocationCount()=" + iteration  + ", total=" + result.getMethod().getInvocationCount());
@@ -276,6 +347,7 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 		}
 
 		syncComponents(result);
+		syncTestPlans(result);
 
 		log.fine("Testrun is " + testrun.getId());
 		
@@ -362,7 +434,7 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 	}
 	
 	/* (non-Javadoc)
-	 * @see org.testng.internal.IConfigurationListener#onConfigurationFailure(org.testng.ITestResult)
+	 * @see org.testng.internal.IConfihttps://testopia.devel.redhat.com/bugzilla/tr_show_plan.cgi?plan_id=425gurationListener#onConfigurationFailure(org.testng.ITestResult)
 	 */
 	public void onConfigurationFailure(ITestResult result) {
 		//markTestRunComplete(result);

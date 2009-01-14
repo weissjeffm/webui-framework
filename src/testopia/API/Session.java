@@ -79,6 +79,7 @@ public class Session {
 	throws GeneralSecurityException, IOException
 	{
 		// Create a trust manager that does not validate certificate chains
+		System.out.println("JHOME="+System.getProperty("java.home"));
 		ProtocolSocketFactory sf = new EasySSLProtocolSocketFactory();
 		Protocol p = new Protocol("https", sf, 443);
 		Protocol.registerProtocol("https", p);
