@@ -3,16 +3,8 @@ package testopia.API;
 import java.io.IOException;
 import java.net.URL;
 import java.security.GeneralSecurityException;
-import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.HashMap;
-
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpState;
