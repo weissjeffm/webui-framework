@@ -120,6 +120,13 @@ public class ExtendedSelenium extends DefaultSelenium implements IScreenCapture 
 		click(locator, true);
 	}
 	
+	@Override
+	public void mouseOver(String locator) {
+		super.mouseOver(locator);
+		log.log(MyLevel.ACTION, "Hovered over locator: " + locator);
+
+	}
+	
 	/**
 	 * @param locator
 	 * @param highlight - if true, highlight the element for a fraction of a second before clicking it.

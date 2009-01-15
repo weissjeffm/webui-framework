@@ -37,7 +37,7 @@ public class TestPlan extends TestopiaObject{
 
 
 	//inputed values to update a testPlan 
-	private IntegerAttribute product = newIntegerAttribute("product", null);  	
+	private IntegerAttribute productId = newIntegerAttribute("product_id", null);  	
 	private IntegerAttribute type = newIntegerAttribute("type", null);  	
 	private BooleanAttribute isactive = newBooleanAttribute("isactive", null);  		 
 	private StringAttribute name = newStringAttribute("name", null);  	
@@ -75,7 +75,7 @@ public class TestPlan extends TestopiaObject{
 		this.session = session;
 		this.listMethod = "TestPlan.list";
 		this.id = newIntegerAttribute(PLAN_ID, null);
-		this.product.set(product);
+		this.productId.set(product);
 		this.version.set(version);
 		this.name.set(plan);
 		getPlanIdByCurrentAttributes();
@@ -144,7 +144,7 @@ public class TestPlan extends TestopiaObject{
 	 */
 	public void setProductID(int productID)
 	{
-		this.product.set(productID); 
+		this.productId.set(productID); 
 	}
 	
 	/**
