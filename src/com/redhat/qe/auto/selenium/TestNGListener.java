@@ -93,7 +93,7 @@ public class TestNGListener implements IResultListener {
 
 	
 	public void onConfigurationSuccess(ITestResult result) {
-		log.fine("========= Configuration passed: " + result.getName()+ " ============================================");
+		log.finer("========= Configuration passed: " + result.getName()+ " ============================================");
 		
 	}
 	
