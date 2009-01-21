@@ -17,7 +17,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.xmlrpc.XmlRpcException;
-import org.testng.IResultMap;
 import org.testng.ISuite;
 import org.testng.ISuiteListener;
 import org.testng.ITestContext;
@@ -318,14 +317,19 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 		int iteration = result.getMethod().getCurrentInvocationCount();
 		log.fine("Got getCurrentInvocationCount()=" + iteration  + ", total=" + result.getMethod().getInvocationCount());
 		String count = "";
+		
 		String className = getPackagelessTestClass(result);
 		if (iteration > 0) count = new Integer(iteration+1).toString();
 		String alias = version + "." + className + "." + result.getMethod().getMethodName() + count;
-		String summary = className + "." + result.getMethod().getMethodName() + count;
+		String script = className + "." + result.getMethod().getMethodName();
+		String description = result.getMethod().getDescription();
+		String summary = description.length()>0 ? description : (script + count);
+		
 		try {
 			testcase = new TestCase(session, alias);
 			//FIXME temporary to fix testcase names
 			testcase.setSummary(summary);
+			testcase.setArguments(Arrays.deepToString(result.getParameters()));
 			testcase.update();
 			
 		}catch(Exception e){
@@ -502,7 +506,12 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 		tcr.create();*/
 
 	}
+	
+	
+	
 	public static void main(String args[]) throws Exception{
+		
+		//System.out.println(Arrays.deepToString(new Object[]{new Integer(4), "hi"}));
 		setLogConfig();
 		log.finer("Testing log setting.");
 		String test = "component-Hi There";
