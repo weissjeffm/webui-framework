@@ -5,8 +5,12 @@ import java.net.InetAddress;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.testng.ISuite;
+import org.testng.ISuiteListener;
 import org.testng.ITestContext;
+import org.testng.ITestListener;
 import org.testng.ITestResult;
+import org.testng.internal.IConfigurationListener;
 import org.testng.internal.IResultListener;
 
 /**
@@ -19,7 +23,7 @@ import org.testng.internal.IResultListener;
  * @author jweiss
  *
  */
-public class TestNGListener implements IResultListener {
+public class TestNGListener implements IResultListener, ISuiteListener {
 
 	private static Logger log = Logger.getLogger(TestNGListener.class.getName());
 	private static IScreenCapture sc = null;
@@ -30,13 +34,13 @@ public class TestNGListener implements IResultListener {
 	//TestNG's Test Listener methods so Selenium can log and screenshot properly
 
 	public void onFinish(ITestContext context){
-		log.fine("=========  TestNG Finishing: " + context.getName()+ " ============================================");
+		log.fine("=========  TestNG Finishing Test: " + context.getName()+ " ============================================");
 		
 	}
 	
 	public void onStart(ITestContext context) {
 		
-		log.fine("=========  TestNG Starting:" + context.getName()+ " =============================================");
+		log.fine("=========  TestNG Starting Test: " + context.getName()+ " =============================================");
 	}
 	
 	public void onTestFailedButWithinSuccessPercentage(ITestResult result) {
@@ -47,15 +51,12 @@ public class TestNGListener implements IResultListener {
 	public void onTestFailure(ITestResult result) {
 		try {
 			sc.screenCapture();
-			log.log(Level.SEVERE, "GOT SCREENSHOT");
 		}
 		catch(NullPointerException npe){
 			log.log(Level.FINE, "Unable to capture screenshot, the capture utility has not been set up yet.");
-			log.log(Level.SEVERE, "NO SCREENSHOT");
 		}
 		catch(Exception e){
 			log.log(Level.FINE, "Unable to capture screenshot.", e);
-			log.log(Level.SEVERE, "NO SCREENSHOT");
 		}
 		log.log(Level.SEVERE, "Test failed: "+ result.getName(), result.getThrowable());
 	}
@@ -95,6 +96,16 @@ public class TestNGListener implements IResultListener {
 	public void onConfigurationSuccess(ITestResult result) {
 		log.finer("========= Configuration passed: " + result.getName()+ " ============================================");
 		
+	}
+
+	@Override
+	public void onFinish(ISuite suite) {
+		log.fine("=========  TestNG Finishing Suite:" + suite.getName()+ " =============================================");
+	}
+
+	@Override
+	public void onStart(ISuite suite) {
+		log.fine("=========  TestNG Starting Suite:" + suite.getName()+ " =============================================");
 	}
 	
 	

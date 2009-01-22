@@ -381,11 +381,9 @@ public class ExtendedSelenium extends DefaultSelenium implements IScreenCapture 
 			writeHtmlOnError(htmlDir);
 			//if success use that next time
 			localHtmlDir = htmlDir;
-			
-			super.captureScreenshot(screenshotDir.getCanonicalPath()
-					+ File.separator + outFileName);
-			//log.log(Level.FINE, "Captured ScreenShot to "+screenshotDir.getCanonicalPath()+ File.separator + outFileName);
 			fullPathtoFile = screenshotDir.getCanonicalPath()+ File.separator + outFileName;
+			super.captureScreenshot(fullPathtoFile);
+			log.log(Level.FINE, "Captured screenshot to "+ fullPathtoFile);
 			
 		}
 		catch(Exception e ){
