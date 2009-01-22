@@ -136,7 +136,7 @@ public class ExecCommands {
 		String result ="";
 		String fullCommand;
         fullCommand = command + " " + arguments;
-        log.fine("Executing " + fullCommand);
+        log.info("Executing " + fullCommand);
 
        Process child = Runtime.getRuntime().exec(fullCommand);
        //Process child = new ProcessBuilder().start();
@@ -151,14 +151,14 @@ public class ExecCommands {
     	   		if(showLogResults){
     	       	  while ((s2 = buffer2.readLine()) != null) {
     	                 result+=(s2) + '\n';
-    	                 log.fine("Command Output: " + (s2));
+    	                 log.info("Command Output: " + (s2));
     	               }
     	   		}
     	   		//Cant think of another way to log the while loop when I want to or not..
     	   		else{
     	   			while ((s2 = buffer2.readLine()) != null) {
    	                 result+=(s2) + '\n';
-   	              log.fine("Error Output: " + (s2));
+   	              log.info("Error Output: " + (s2));
     	   			}
     	   		}
 
@@ -167,14 +167,14 @@ public class ExecCommands {
 		    	   while (((s = buffer.readLine()) != null))  {
 		           //result=("<li> Output: " + s);
 		    		 result+=(s) + '\n';
-		    		 log.fine("Output: " + (s));
+		    		 log.info("Output: " + (s));
 		    	   	}
     	   		}
     	   		else{
     	   			while (((s = buffer.readLine()) != null))  {
     			           //result=("<li> Output: " + s);
     			    		 result+=(s) + '\n';
-    			    		 log.fine("Output: " + (s));
+    			    		 log.info("Output: " + (s));
     	   					}
     	   			}
 
