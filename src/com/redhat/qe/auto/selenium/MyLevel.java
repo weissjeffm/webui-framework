@@ -8,8 +8,7 @@ public class MyLevel extends Level {
 
 	static final long serialVersionUID = 3945372834L;
 	// Create the new level
-	public static final Level ACTION = new MyLevel("ACTION", Level.INFO
-			.intValue() + 1);
+	public static final Level ACTION = new MyLevel("ACTION", Level.INFO.intValue() + 1);
 
 	public MyLevel(String name, int value) {
 		super(name, value);
