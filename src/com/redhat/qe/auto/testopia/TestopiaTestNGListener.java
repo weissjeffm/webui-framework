@@ -329,7 +329,8 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 			testcase = new TestCase(session, alias);
 			//FIXME temporary to fix testcase names
 			testcase.setSummary(summary);
-			testcase.setArguments(Arrays.deepToString(result.getParameters()));
+			String args =Arrays.deepToString(result.getParameters()); 
+			testcase.setArguments(args);
 			testcase.update();
 			
 		}catch(Exception e){
