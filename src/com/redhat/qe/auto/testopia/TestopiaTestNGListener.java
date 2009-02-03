@@ -414,20 +414,24 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 		if(testcaserun == null)
 			return;
 		
-		//reset the handler
-		((TestProcedureHandler)tph).reset();
 		
 		if (result.getStatus() == ITestResult.SKIP) testcaserun.setStatus(TestCaseRun.Statuses.BLOCKED);
 		else {
 			if (!result.isSuccess() && result.getThrowable() != null){				
-				testcaserun.setNotes(throwableToString(result.getThrowable()));				
+				//testcaserun.setNotes(throwableToString(result.getThrowable()));		
+				//put the whole log instead
+				testcaserun.setNotes(tph.getLog());
 			}
 			testcaserun.setStatus(result.isSuccess() ? TestCaseRun.Statuses.PASSED : TestCaseRun.Statuses.FAILED);
 		}
+		
 		try {
 			testcaserun.update();
 		}catch(Exception e){
 			throw new TestopiaException(e);
+		}finally{
+			//reset the handler so that our log for the next testcase run starts fresh.
+			((TestProcedureHandler)tph).reset();
 		}
 	}
 	
