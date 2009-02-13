@@ -45,7 +45,7 @@ import com.redhat.qe.auto.selenium.LogFormatter;
  */
 public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
  
-	private static Properties properties;
+	private static Properties properties_other;
 	private static final String TESTNG_COMPONENT_MARKER = "component-";
 	protected static final String TESTNG_TESTPLAN_MARKER = "testplan-";
 	private static String TESTOPIA_PW = "";
@@ -594,15 +594,15 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 	}
 
 	private static String getProperty(String key, String defaultValue) {
-		if (properties == null) {
+		if (properties_other == null) {
 			loadProperties();
 		}
-		return properties.getProperty(key, System
+		return properties_other.getProperty(key, System
 				.getProperty(key, defaultValue));
 	}
 	
 	private static void loadProperties() {
-		properties = new Properties();
+		properties_other = new Properties();
 		String path = "/"
 				+ System.getProperty("harness.environment", "localhost")
 				+ "-settings.properties";
@@ -616,7 +616,7 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 					in = new FileInputStream(file);
 			}
 			if (in != null) {
-				properties.load(in);
+				properties_other.load(in);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -633,7 +633,7 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 		
 		
 		
-		HUDSON_TEST_NAME = getProperty("hudson.test.name");
+		HUDSON_TEST_NAME = getProperty("hudson.testopia.testrun.testplan");
 		
 		
 		if (HUDSON_TEST_NAME.isEmpty()){
