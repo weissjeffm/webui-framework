@@ -36,7 +36,7 @@ public class Session {
 	public Object login()
 	throws XmlRpcException, GeneralSecurityException, IOException
 	{
-		TrustAllCerts();
+		//TrustAllCerts();
 
 		// setup client
 		XmlRpcClientConfigImpl config = new XmlRpcClientConfigImpl();
