@@ -486,7 +486,7 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 		TESTOPIA_USER = System.getProperty("testopia.login");
 		TESTOPIA_PW = System.getProperty("testopia.password");
 		TESTOPIA_TESTRUN_PRODUCT = System.getProperty("testopia.testrun.product");
-		TESTOPIA_TESTRUN_TESTPLAN = getProperty("hudson.test.name");
+		TESTOPIA_TESTRUN_TESTPLAN = getProperty("hudson.testopia.testrun.testplan");
 		if(TESTOPIA_TESTRUN_TESTPLAN.isEmpty()){
 			log.log(Level.FINE,"not using hudson");
 			TESTOPIA_TESTRUN_TESTPLAN = System.getProperty("testopia.testrun.testplan");
