@@ -51,10 +51,11 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 	private static String TESTOPIA_PW = "";
 	private static String TESTOPIA_USER = "";
 	private static String TESTOPIA_URL = "";
-	protected static String TESTOPIA_TESTRUN_TESTPLAN = "";
-	protected static String TESTOPIA_TESTRUN_PRODUCT = "";
 	static String HUDSON_TEST_NAME;
 	static String TEST_NAME_tmp;
+	protected static String TESTOPIA_TESTRUN_TESTPLAN;
+	protected static String TESTOPIA_TESTRUN_PRODUCT;
+	
 	
 	protected TestProcedureHandler tph = null;
 	protected static Logger log = Logger.getLogger(TestopiaTestNGListener.class.getName());
@@ -489,6 +490,7 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 		//dont remove, ugly for now, will fix
 		String fake = getProperty("fake");
 		TESTOPIA_TESTRUN_TESTPLAN = TEST_NAME_tmp;
+		System.out.println("TESTOPIA_TESTRUN_TESTPLAN line 493 ="+TESTOPIA_TESTRUN_TESTPLAN);
 		log.fine("Logging in to testopia as " + TESTOPIA_USER);
 		session = new Session(TESTOPIA_USER, TESTOPIA_PW, new URL(TESTOPIA_URL));
 		session.login();
@@ -636,7 +638,7 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 			 TEST_NAME_tmp = getProperty("testopia.testrun.testplan");
 		}
 		else{
-			 
+			System.out.println("HUDSON GOT THE NAME");
 			 TEST_NAME_tmp = HUDSON_TEST_NAME;
 			
 		}
