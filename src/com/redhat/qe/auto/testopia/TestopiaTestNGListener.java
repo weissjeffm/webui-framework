@@ -499,8 +499,9 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 	
 	
 	protected void retrieveContext() throws XmlRpcException{
+		String fake = getProperty("fake");
 		product = new Product(session, System.getProperty("testopia.testrun.product"));
-		testplan = new TestPlan(session, product.getId(), System.getProperty("testopia.testrun.testplan"), version);
+		testplan = new TestPlan(session, product.getId(), TEST_NAME_tmp, version);
 		
 		
 		build = new Build(session, product.getId());
