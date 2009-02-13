@@ -486,14 +486,9 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 		TESTOPIA_USER = System.getProperty("testopia.login");
 		TESTOPIA_PW = System.getProperty("testopia.password");
 		TESTOPIA_TESTRUN_PRODUCT = System.getProperty("testopia.testrun.product");
-		TESTOPIA_TESTRUN_TESTPLAN = getProperty("hudson.testopia.testrun.testplan");
-		if(TESTOPIA_TESTRUN_TESTPLAN.isEmpty()){
-			log.log(Level.FINE,"not using hudson");
-			TESTOPIA_TESTRUN_TESTPLAN = System.getProperty("testopia.testrun.testplan");
-			
-			log.log(Level.FINE,"Testplan name =" + TESTOPIA_TESTRUN_TESTPLAN);
-		}
-		
+		//dont remove, ugly for now, will fix
+		String fake = getProperty("fake");
+		TESTOPIA_TESTRUN_TESTPLAN = TEST_NAME_tmp;
 		log.fine("Logging in to testopia as " + TESTOPIA_USER);
 		session = new Session(TESTOPIA_USER, TESTOPIA_PW, new URL(TESTOPIA_URL));
 		session.login();
@@ -637,6 +632,7 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 		
 		
 		if (HUDSON_TEST_NAME.isEmpty()){
+			System.out.println("HUDSON NAME IS EMPTY");
 			 TEST_NAME_tmp = getProperty("testopia.testrun.testplan");
 		}
 		else{
