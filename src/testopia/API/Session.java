@@ -8,7 +8,7 @@ import java.util.HashMap;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpState;
-import org.apache.commons.httpclient.contrib.ssl.EasySSLProtocolSocketFactory;
+//import org.apache.commons.httpclient.contrib.ssl.EasySSLProtocolSocketFactory;
 import org.apache.commons.httpclient.protocol.Protocol;
 import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
 import org.apache.xmlrpc.XmlRpcException;
@@ -67,8 +67,8 @@ public class Session {
 		
 	}
 
-	private void TrustAllCerts()
-	//throws GeneralSecurityException, IOException
+	/*private void TrustAllCerts()
+	throws GeneralSecurityException, IOException
 	{
 		try{
 			// Create a trust manager that does not validate certificate chains
@@ -81,7 +81,7 @@ public class Session {
 		catch(Exception e){
 			System.out.println("Couldn't trust all certificates, things may break...");
 		}
-	}
+	}*/
 
 	public XmlRpcClient getClient() {
 		return client;
