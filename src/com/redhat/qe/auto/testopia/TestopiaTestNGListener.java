@@ -52,7 +52,7 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 	private static String TESTOPIA_USER = "";
 	private static String TESTOPIA_URL = "";
 	static String HUDSON_TEST_NAME;
-	static String TEST_NAME_tmp;
+	protected static String TEST_NAME_tmp;
 	protected static String TESTOPIA_TESTRUN_TESTPLAN;
 	protected static String TESTOPIA_TESTRUN_PRODUCT;
 	
@@ -77,6 +77,19 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 		System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.SimpleLog");
 		System.setProperty("org.apache.commons.logging.simplelog.showdatetime", "true");
 		System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.commons.httpclient", "severe");
+		
+		HUDSON_TEST_NAME = getProperty("hudson.testopia.testrun.testplan");
+		if (HUDSON_TEST_NAME.isEmpty()){
+			System.out.println("HUDSON NAME IS EMPTY");
+			 TEST_NAME_tmp = getProperty("testopia.testrun.testplan");
+		}
+		else{
+			System.out.println("HUDSON GOT THE NAME");
+			 TEST_NAME_tmp = HUDSON_TEST_NAME;
+			
+		}
+		
+		System.out.println("TEST PLAN NAME ="+ TEST_NAME_tmp);
 	}
 	
 	
@@ -346,7 +359,7 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 			try {
 				log.info("Creating new testcase: " + alias);
 				testcase = new TestCase(session, "PROPOSED", "--default--", "P1",
-						summary, TESTOPIA_TESTRUN_TESTPLAN, TESTOPIA_TESTRUN_PRODUCT, version);
+						summary, TEST_NAME_tmp, TESTOPIA_TESTRUN_PRODUCT, version);
 				testcase.setAlias(alias);
 				testcase.setIsAutomated(true);
 				testcase.create();
@@ -487,8 +500,6 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 		TESTOPIA_USER = System.getProperty("testopia.login");
 		TESTOPIA_PW = System.getProperty("testopia.password");
 		TESTOPIA_TESTRUN_PRODUCT = System.getProperty("testopia.testrun.product");
-		//dont remove, ugly for now, will fix
-		String fake = getProperty("fake");
 		TESTOPIA_TESTRUN_TESTPLAN = TEST_NAME_tmp;
 		System.out.println("TESTOPIA_TESTRUN_TESTPLAN line 493 ="+TESTOPIA_TESTRUN_TESTPLAN);
 		log.fine("Logging in to testopia as " + TESTOPIA_USER);
@@ -499,7 +510,6 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 	
 	
 	protected void retrieveContext() throws XmlRpcException{
-		String fake = getProperty("fake");
 		product = new Product(session, System.getProperty("testopia.testrun.product"));
 		testplan = new TestPlan(session, product.getId(), TEST_NAME_tmp, version);
 		
@@ -630,7 +640,7 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 		
 		
 		
-		
+	/*	
 		HUDSON_TEST_NAME = getProperty("hudson.testopia.testrun.testplan");
 		
 		
@@ -644,7 +654,7 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 			
 		}
 		
-		System.out.println("TEST PLAN NAME ="+ TEST_NAME_tmp);
+		System.out.println("TEST PLAN NAME ="+ TEST_NAME_tmp);*/
 	}
 	//end my garbage
 	
