@@ -3,10 +3,7 @@
  */
 package com.redhat.qe.auto.testopia;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URL;
@@ -15,7 +12,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -44,18 +40,14 @@ import com.redhat.qe.auto.selenium.LogFormatter;
  *
  */
 public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
- 
-	private static Properties properties_other;
-	private static final String TESTNG_COMPONENT_MARKER = "component-";
+
+	protected static final String TESTNG_COMPONENT_MARKER = "component-";
 	protected static final String TESTNG_TESTPLAN_MARKER = "testplan-";
-	private static String TESTOPIA_PW = "";
-	private static String TESTOPIA_USER = "";
-	private static String TESTOPIA_URL = "";
-	static String HUDSON_TEST_NAME;
-	protected static String TEST_NAME_tmp;
-	protected static String TESTOPIA_TESTRUN_TESTPLAN;
-	protected static String TESTOPIA_TESTRUN_PRODUCT;
-	
+	protected static String TESTOPIA_PW = "";
+	protected static String TESTOPIA_USER = "";
+	protected static String TESTOPIA_URL = "";
+	protected static String TESTOPIA_TESTRUN_TESTPLAN = "";
+	protected static String TESTOPIA_TESTRUN_PRODUCT = "";
 	
 	protected TestProcedureHandler tph = null;
 	protected static Logger log = Logger.getLogger(TestopiaTestNGListener.class.getName());
@@ -77,19 +69,6 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 		System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.SimpleLog");
 		System.setProperty("org.apache.commons.logging.simplelog.showdatetime", "true");
 		System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.commons.httpclient", "severe");
-		
-		HUDSON_TEST_NAME = getProperty("hudson.testopia.testrun.testplan");
-		if (HUDSON_TEST_NAME.isEmpty()){
-			System.out.println("HUDSON NAME IS EMPTY");
-			 TEST_NAME_tmp = getProperty("testopia.testrun.testplan");
-		}
-		else{
-			System.out.println("HUDSON GOT THE NAME");
-			 TEST_NAME_tmp = HUDSON_TEST_NAME;
-			
-		}
-		
-		System.out.println("TEST PLAN NAME ="+ TEST_NAME_tmp);
 	}
 	
 	
@@ -359,7 +338,7 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 			try {
 				log.info("Creating new testcase: " + alias);
 				testcase = new TestCase(session, "PROPOSED", "--default--", "P1",
-						summary, TEST_NAME_tmp, TESTOPIA_TESTRUN_PRODUCT, version);
+						summary, TESTOPIA_TESTRUN_TESTPLAN, TESTOPIA_TESTRUN_PRODUCT, version);
 				testcase.setAlias(alias);
 				testcase.setIsAutomated(true);
 				testcase.create();
@@ -500,19 +479,15 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 		TESTOPIA_USER = System.getProperty("testopia.login");
 		TESTOPIA_PW = System.getProperty("testopia.password");
 		TESTOPIA_TESTRUN_PRODUCT = System.getProperty("testopia.testrun.product");
-		TESTOPIA_TESTRUN_TESTPLAN = TEST_NAME_tmp;
-		System.out.println("TESTOPIA_TESTRUN_TESTPLAN line 493 ="+TESTOPIA_TESTRUN_TESTPLAN);
+		TESTOPIA_TESTRUN_TESTPLAN = System.getProperty("testopia.testrun.testplan");
 		log.fine("Logging in to testopia as " + TESTOPIA_USER);
 		session = new Session(TESTOPIA_USER, TESTOPIA_PW, new URL(TESTOPIA_URL));
 		session.login();
 	}
 	
-	
-	
 	protected void retrieveContext() throws XmlRpcException{
 		product = new Product(session, System.getProperty("testopia.testrun.product"));
-		System.out.println("testplan ="+TEST_NAME_tmp);
-		testplan = new TestPlan(session, product.getId(), TEST_NAME_tmp, version);
+		testplan = new TestPlan(session, product.getId(), System.getProperty("testopia.testrun.testplan"), version);
 		
 		
 		build = new Build(session, product.getId());
@@ -596,68 +571,5 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 										  envId);
 		tcr.create();*/
 	}
-	
-	//need to add this for hudson integration
-	private static String getProperty(String key) {
-		return getProperty(key, "");
-	}
-
-	private static String getProperty(String key, String defaultValue) {
-		if (properties_other == null) {
-			loadProperties();
-		}
-		return properties_other.getProperty(key, System
-				.getProperty(key, defaultValue));
-	}
-	
-	private static void loadProperties() {
-		properties_other = new Properties();
-		String path = "/"
-				+ System.getProperty("harness.environment", "localhost")
-				+ "-settings.properties";
-		String mydir = System.getProperty("user.dir");
-		InputStream in = null;
-		try {
-			
-			if (in == null) {
-				File file = new File(mydir + path);
-				//System.out.println("file = "+file);
-					in = new FileInputStream(file);
-			}
-			if (in != null) {
-				properties_other.load(in);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			if (in != null) {
-				try {
-					in.close();
-				} catch (IOException ee) {
-					ee.printStackTrace();
-				}
-			}
-		}
-		
-		
-		
-	/*	
-		HUDSON_TEST_NAME = getProperty("hudson.testopia.testrun.testplan");
-		
-		
-		if (HUDSON_TEST_NAME.isEmpty()){
-			System.out.println("HUDSON NAME IS EMPTY");
-			 TEST_NAME_tmp = getProperty("testopia.testrun.testplan");
-		}
-		else{
-			System.out.println("HUDSON GOT THE NAME");
-			 TEST_NAME_tmp = HUDSON_TEST_NAME;
-			
-		}
-		
-		System.out.println("TEST PLAN NAME ="+ TEST_NAME_tmp);*/
-	}
-	//end my garbage
-	
 
 }
