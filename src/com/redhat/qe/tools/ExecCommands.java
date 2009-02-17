@@ -137,7 +137,7 @@ public class ExecCommands {
 		String fullCommand;
         fullCommand = command + " " + arguments;
         if(showLogResults){
-        	log.info("Executing " + fullCommand);
+        	log.fine("Executing " + fullCommand);
         }
 
        Process child = Runtime.getRuntime().exec(fullCommand);
