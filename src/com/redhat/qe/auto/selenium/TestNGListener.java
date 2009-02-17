@@ -94,7 +94,7 @@ public class TestNGListener implements IResultListener, ISuiteListener {
 
 	
 	public void onConfigurationSuccess(ITestResult result) {
-		log.fine("========= Configuration passed: " + result.getName()+ " ============================================");
+		log.fine("========= Configuration: " + result.getName()+ " ============================================");
 		
 	}
 
