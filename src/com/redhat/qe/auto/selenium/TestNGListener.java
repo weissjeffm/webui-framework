@@ -70,6 +70,7 @@ public class TestNGListener implements IResultListener, ISuiteListener {
 	}
 	public  void onTestSuccess(ITestResult result) {
 		log.fine("========= Test Passed: " + result.getName()+ " ============================================");
+		log.log(Level.FINE, "Should see two lines here, log.fine test");
 		
 		
 	}
