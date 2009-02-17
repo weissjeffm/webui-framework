@@ -30,10 +30,10 @@ public abstract class TestopiaObject {
 		//print result for debug purposes
 		if (o instanceof Object[]){
 			for (Object obj: (Object[])o){
-				log.fine("Result of '" + methodName + "' = " + obj.toString());				
+				log.finer("Result of '" + methodName + "' = " + obj.toString());				
 			}
 		}
-		else log.fine("Result of '" + methodName + "' = " + o.toString());
+		else log.finer("Result of '" + methodName + "' = " + o.toString());
 		return o;
 	}
 
