@@ -25,7 +25,7 @@ public abstract class TestopiaObject {
 			sb.append(param.toString());
 			sb.append((param==params[params.length-1]?"":","));
 		}
-		log.fine("Calling xmlrpc method '" + methodName + "', with params (" + sb.toString() + ")");
+		log.finer("Calling xmlrpc method '" + methodName + "', with params (" + sb.toString() + ")");
 		Object o = (Object) session.getClient().execute(methodName, Arrays.asList(params));	
 		//print result for debug purposes
 		if (o instanceof Object[]){
@@ -73,7 +73,7 @@ public abstract class TestopiaObject {
 		Map<String,Object> map = new HashMap<String,Object>();
 		for(Attribute attribute: attributes){
 			if (attribute.getValue() != null && attribute.isDirty()){
-				log.fine("Found dirty attribute: "+attribute.getName() + ", value=" + attribute.getValue());
+				log.finer("Found dirty attribute: "+attribute.getName() + ", value=" + attribute.getValue());
 				map.put(attribute.getName(), attribute.getValue());
 			}
 		}
@@ -84,7 +84,7 @@ public abstract class TestopiaObject {
 		Map<String,Object> map = new HashMap<String,Object>();
 		for(Attribute attribute: attributes){
 			if (attribute.getValue() != null){
-				log.fine("Found attribute: "+attribute.getName() + ", value=" + attribute.getValue());
+				log.finer("Found attribute: "+attribute.getName() + ", value=" + attribute.getValue());
 				map.put(attribute.getName(), attribute.getValue());
 			}
 		}
@@ -97,7 +97,7 @@ public abstract class TestopiaObject {
 			Object val = remoteMap.get(name);
 			if (val == null) 
 				try {
-					log.fine("Did not get attribute " + attr.getName() + " in response.");
+					log.finer("Did not get attribute " + attr.getName() + " in response.");
 				}
 				catch(NullPointerException npe) {}
 			else {
