@@ -188,7 +188,7 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 				existingComponents.add(componentName);
 			}
 		}catch(Exception e){
-			log.log(Level.FINE, "Unable to retrieve existing components for testcase " + testcase.getId() + ".", e);
+			log.log(Level.FINER, "Unable to retrieve existing components for testcase " + testcase.getId() + ".", e);
 		}
 		List<String> newComponents = getComponentsFromGroupAnnotations(result);
 		for (String component: newComponents){
@@ -201,7 +201,7 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 					testcase.addComponent(componentID);
 				}
 				catch(Exception e){
-					log.log(Level.FINE, "Unable to add component '" + component + "' in product '" +
+					log.log(Level.FINER, "Unable to add component '" + component + "' in product '" +
 							TESTOPIA_TESTRUN_PRODUCT + "' to testcase.", e);
 					continue;
 				}
@@ -216,7 +216,7 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 					testcase.removeComponent(componentID);
 				}
 				catch(Exception e){
-					log.log(Level.FINE, "Unable to remove component '" + component + "' in product '" +
+					log.log(Level.FINER, "Unable to remove component '" + component + "' in product '" +
 							TESTOPIA_TESTRUN_PRODUCT + "' to testcase.", e);
 					continue;
 				}
@@ -234,7 +234,7 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 			}
 		}
 		catch(Exception e){
-			log.log(Level.FINE, "Unable to retrieve associated test plans for testcase " + testcase.getId() + ".", e);
+			log.log(Level.FINER, "Unable to retrieve associated test plans for testcase " + testcase.getId() + ".", e);
 		}
 		List<Integer> newTestPlans = getTestPlansFromGroupAnnotations(result);
 		for (Integer testplan: newTestPlans){
@@ -245,7 +245,7 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 					testcase.addTestPlan(testplan);
 				}
 				catch (Exception e){
-					log.log(Level.FINE, "Unable to add test plan '" + testplan + "' in product '" +
+					log.log(Level.FINER, "Unable to add test plan '" + testplan + "' in product '" +
 							TESTOPIA_TESTRUN_PRODUCT + "' to testcase.", e);
 					continue;
 				}
@@ -259,7 +259,7 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 					testcase.removeTestPlan(testplan);
 				}
 				catch(Exception e){
-					log.log(Level.FINE, "Unable to remove test plan '" + testplan + "' in product '" +
+					log.log(Level.FINER, "Unable to remove test plan '" + testplan + "' in product '" +
 							TESTOPIA_TESTRUN_PRODUCT + "' to testcase.", e);
 					continue;
 				}
@@ -334,7 +334,7 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 			testcase.update();
 			
 		}catch(Exception e){
-			log.log(Level.FINE, "Testcase retrieval failed on '" + summary + "', probably doesn't exist yet.", e);
+			log.log(Level.FINER, "Testcase retrieval failed on '" + summary + "', probably doesn't exist yet.", e);
 			try {
 				log.info("Creating new testcase: " + alias);
 				testcase = new TestCase(session, "PROPOSED", "--default--", "P1",
