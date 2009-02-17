@@ -193,7 +193,7 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 		List<String> newComponents = getComponentsFromGroupAnnotations(result);
 		for (String component: newComponents){
 			if (existingComponents.contains(component)) {
-				log.fine("Component is already in testcase.");
+				log.finer("Component is already in testcase.");
 			}
 			else {
 				try {
@@ -239,7 +239,7 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 		List<Integer> newTestPlans = getTestPlansFromGroupAnnotations(result);
 		for (Integer testplan: newTestPlans){
 			if (existingTestPlans.contains(testplan))
-				log.fine("Testcase is already assigned to test plan.");
+				log.finer("Testcase is already assigned to test plan.");
 			else {
 				try {
 					testcase.addTestPlan(testplan);
@@ -273,7 +273,7 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 		for (String group: groups){
 			if (group.startsWith(TESTNG_COMPONENT_MARKER)) {
 				String component = group.split(TESTNG_COMPONENT_MARKER)[1];
-				log.fine("Found component: " + component);
+				log.finer("Found component: " + component);
 				components.add(component);		
 			}
 		}
@@ -286,14 +286,14 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 		for (String group: groups){
 			if (group.startsWith(TESTNG_TESTPLAN_MARKER)) {
 				String testplan = group.split(TESTNG_TESTPLAN_MARKER)[1];
-				log.fine("Found test plan: " + testplan);
+				log.finer("Found test plan: " + testplan);
 				try{
 					Integer testplanid = new TestPlan(session, product.getId(), testplan, version).getId();
-					log.fine("with plan ID: " + testplanid);
+					log.finer("with plan ID: " + testplanid);
 					testplans.add(testplanid);
 				}
 				catch(Exception e){
-					log.fine("Test plan \"" + testplan + "\" not found on Testopia, skipping...");
+					log.finer("Test plan \"" + testplan + "\" not found on Testopia, skipping...");
 					continue;
 				}
 			}
@@ -315,7 +315,7 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 		
 		//create new testcaserun
 		int iteration = result.getMethod().getCurrentInvocationCount();
-		log.fine("Got getCurrentInvocationCount()=" + iteration  + ", total=" + result.getMethod().getInvocationCount());
+		log.finer("Got getCurrentInvocationCount()=" + iteration  + ", total=" + result.getMethod().getInvocationCount());
 		String count = "";
 		
 		String className = getPackagelessTestClass(result);
@@ -354,7 +354,7 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 		syncComponents(result);
 		syncTestPlans(result);
 
-		log.fine("Testrun is " + testrun.getId());
+		log.finer("Testrun is " + testrun.getId());
 		
 			
 		testcaserun = new TestCaseRun(session,
@@ -388,7 +388,7 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 			}
 		//}
 		action = tph.getLog();
-		log.fine("Updating testcase " + testcase.getAlias() + " with successful action log: \n" + action);
+		log.finer("Updating testcase " + testcase.getAlias() + " with successful action log: \n" + action);
 		//put it in testopia
 		testcase.setAction(action);
 		
@@ -480,7 +480,7 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 		TESTOPIA_PW = System.getProperty("testopia.password");
 		TESTOPIA_TESTRUN_PRODUCT = System.getProperty("testopia.testrun.product");
 		TESTOPIA_TESTRUN_TESTPLAN = System.getProperty("testopia.testrun.testplan");
-		log.fine("Logging in to testopia as " + TESTOPIA_USER);
+		log.finer("Logging in to testopia as " + TESTOPIA_USER);
 		session = new Session(TESTOPIA_USER, TESTOPIA_PW, new URL(TESTOPIA_URL));
 		session.login();
 	}
