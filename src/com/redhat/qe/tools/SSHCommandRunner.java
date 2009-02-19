@@ -35,6 +35,19 @@ public class SSHCommandRunner implements Runnable {
 		this.command = command;
 	}
 	
+	public SSHCommandRunner(String server,
+							String user,
+							File sshPemFile,
+							String password,
+							String command) throws Exception{
+		super();
+		Connection newConn = new Connection(server);
+		newConn.connect();
+		newConn.authenticateWithPublicKey(user, sshPemFile, password);
+		this.connection = newConn;
+		this.command = command;
+	}
+	
 
 	public void run() {
 		try {
