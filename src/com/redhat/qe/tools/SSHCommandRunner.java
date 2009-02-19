@@ -19,6 +19,7 @@ import com.trilead.ssh2.StreamGobbler;
 
 public class SSHCommandRunner implements Runnable {
 
+	protected boolean isDone = false;
 	protected Connection connection;
 	protected Session session;
 	protected InputStream out;
@@ -48,8 +49,12 @@ public class SSHCommandRunner implements Runnable {
 		this.command = command;
 	}
 	
-
+	public boolean isDone(){
+		return isDone;
+	}
+	
 	public void run() {
+		isDone=false;
 		try {
 			
 			// sshSession.requestDumbPTY();
@@ -70,6 +75,7 @@ public class SSHCommandRunner implements Runnable {
 			log.log(Level.FINER, "Command stderr: " + s_err);
 			session.close();
 			kill=false;
+			isDone=true;
 
 		} catch (Exception e) {
 			throw new RuntimeException(e);
