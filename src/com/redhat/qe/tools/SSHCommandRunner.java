@@ -53,6 +53,34 @@ public class SSHCommandRunner implements Runnable {
 		return isDone;
 	}
 	
+	protected void dynamicLogger(InputStream stdout,
+								 InputStream stderr){
+		BufferedReader buffer = new BufferedReader(
+                new InputStreamReader(stdout));
+        BufferedReader buffer2 = new BufferedReader(
+                new InputStreamReader(stderr));
+
+        String s = null;
+        String s2 = null;
+        try {
+          while (((s = buffer.readLine()) != null) && ((s2 = buffer2.readLine()) == null)) {
+        	  log.finer("Output: " + s);
+          }
+
+          if(s2 != null){
+        	  log.info("Error Encountered");
+        	  log.info("Error Output: " + s2);
+        	  while ((s2 = buffer2.readLine()) != null) {
+        		  log.finer("Error Output: " + s2);
+                }
+          }
+          buffer.close();
+          buffer2.close();
+        }catch (Exception e) {
+        	log.log(Level.INFO, "error occurred",e);
+          }
+	}
+	
 	public void run() {
 		isDone=false;
 		try {
@@ -64,15 +92,17 @@ public class SSHCommandRunner implements Runnable {
 			out = new StreamGobbler(session.getStdout());
 			err = new StreamGobbler(session.getStderr());
 			int res = 0;
-			while (!kill && ((res & ChannelCondition.EOF) == 0)){
-			 res = session.waitForCondition(ChannelCondition.EOF, 1000);
+			
+			//dynamicLogger(session.getStdout(), session.getStderr());
+			
+			//while (!kill && ((res & ChannelCondition.EOF) == 0)){
+			// res = session.waitForCondition(ChannelCondition.EOF, 1000);
 			 
-			}
-
+			//}
+			log.log(Level.INFO, "Command stdout: ");
 			s_out = convertStreamToString(out);
-			log.log(Level.FINER, "Command output: " + s_out);
+			log.log(Level.INFO, "Command stderr: ");
 			s_err = convertStreamToString(err);
-			log.log(Level.FINER, "Command stderr: " + s_err);
 			session.close();
 			kill=false;
 			isDone=true;
@@ -95,6 +125,7 @@ public class SSHCommandRunner implements Runnable {
 		String line = null;
 		try {
 			while ((line = reader.readLine()) != null) {
+				log.info(line);
 				sb.append(line + "\n");
 			}
 		} catch (IOException e) {
