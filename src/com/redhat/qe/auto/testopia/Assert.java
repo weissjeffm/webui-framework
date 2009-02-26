@@ -112,10 +112,10 @@ public class Assert {
     if((expected == null) && (actual == null)) {
       if (!quiet)pass(message);
     }
-    if((expected != null) && expected.equals(actual)) {
+    else if((expected != null) && expected.equals(actual)) {
       if(!quiet)pass(message);
     }
-    failNotEquals(actual, expected, message);
+    else failNotEquals(actual, expected, message);
   }
 
   
