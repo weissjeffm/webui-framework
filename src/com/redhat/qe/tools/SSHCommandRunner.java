@@ -11,6 +11,7 @@ import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
+import com.redhat.qe.auto.selenium.MyLevel;
 import com.trilead.ssh2.ChannelCondition;
 import com.trilead.ssh2.Connection;
 import com.trilead.ssh2.SCPClient;
@@ -29,11 +30,19 @@ public class SSHCommandRunner implements Runnable {
 	protected static Logger log = Logger.getLogger(SSHCommandRunner.class.getName());
 	protected boolean kill = false;
 	protected String command = null;
+	protected Level logLevel = MyLevel.INFO;
 
 	public SSHCommandRunner(Connection connection, String command) {
 		super();
 		this.connection = connection;
 		this.command = command;
+	}
+	
+	public SSHCommandRunner(Connection connection, String command, Level logLevel) {
+		super();
+		this.connection = connection;
+		this.command = command;
+		this.logLevel = logLevel;
 	}
 	
 	public SSHCommandRunner(String server,
@@ -49,36 +58,23 @@ public class SSHCommandRunner implements Runnable {
 		this.command = command;
 	}
 	
-	public boolean isDone(){
-		return isDone;
+	public SSHCommandRunner(String server,
+			String user,
+			File sshPemFile,
+			String password,
+			String command,
+			Level logLevel) throws Exception{
+		super();
+		Connection newConn = new Connection(server);
+		newConn.connect();
+		newConn.authenticateWithPublicKey(user, sshPemFile, password);
+		this.connection = newConn;
+		this.command = command;
+		this.logLevel = logLevel;
 	}
 	
-	protected void dynamicLogger(InputStream stdout,
-								 InputStream stderr){
-		BufferedReader buffer = new BufferedReader(
-                new InputStreamReader(stdout));
-        BufferedReader buffer2 = new BufferedReader(
-                new InputStreamReader(stderr));
-
-        String s = null;
-        String s2 = null;
-        try {
-          while (((s = buffer.readLine()) != null) && ((s2 = buffer2.readLine()) == null)) {
-        	  log.finer("Output: " + s);
-          }
-
-          if(s2 != null){
-        	  log.info("Error Encountered");
-        	  log.info("Error Output: " + s2);
-        	  while ((s2 = buffer2.readLine()) != null) {
-        		  log.finer("Error Output: " + s2);
-                }
-          }
-          buffer.close();
-          buffer2.close();
-        }catch (Exception e) {
-        	log.log(Level.INFO, "error occurred",e);
-          }
+	public boolean isDone(){
+		return isDone;
 	}
 	
 	public void run() {
@@ -99,9 +95,9 @@ public class SSHCommandRunner implements Runnable {
 			// res = session.waitForCondition(ChannelCondition.EOF, 1000);
 			 
 			//}
-			log.log(Level.INFO, "Command stdout: ");
+			log.log(logLevel, "Command stdout: ");
 			s_out = convertStreamToString(out);
-			log.log(Level.INFO, "Command stderr: ");
+			log.log(logLevel, "Command stderr: ");
 			s_err = convertStreamToString(err);
 			session.close();
 			kill=false;
@@ -125,7 +121,7 @@ public class SSHCommandRunner implements Runnable {
 		String line = null;
 		try {
 			while ((line = reader.readLine()) != null) {
-				log.info(line);
+				log.log(logLevel, line);
 				sb.append(line + "\n");
 			}
 		} catch (IOException e) {
