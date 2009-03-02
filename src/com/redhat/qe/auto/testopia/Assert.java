@@ -3,6 +3,7 @@ package com.redhat.qe.auto.testopia;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
@@ -117,7 +118,27 @@ public class Assert {
     }
     else failNotEquals(actual, expected, message);
   }
+  
+  static public void assertEquals(Object actual, Object expected, Comparator comparator, String message) {
+	  compare(actual, expected, comparator, message, 0);
+  }
 
+  public static void assertLess(Object actual, Object expected, Comparator comparator, String message){
+	  compare(actual, expected, comparator, message, -1);	  
+  }
+  
+  public static void assertMore(Object actual, Object expected, Comparator comparator, String message){
+	  compare(actual, expected, comparator, message, 1);	  
+  }
+ 
+  protected static void compare(Object actual, Object expected, Comparator comparator, String message, int expComp){
+	  String newMessage = message + ": " + actual + comparator.toString() + expected;
+	  if (comparator.compare(actual, expected) == expComp){
+	    	pass(newMessage);
+	  }
+	  else failNotEquals(actual, expected, newMessage);
+  }
+  
   
   static public void assertEquals(Object actual, Object expected, String message) {
 	    assertEquals(actual, expected, message, false);
