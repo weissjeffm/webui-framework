@@ -86,7 +86,7 @@ public class ExecCommands {
 			results = submitCommandtoWindows(showLogResults, command, arguments);
 		}
 		else{
-			results = submitCommandToLocalWithReturnPrivate(showLogResults, command, arguments);
+			results = submitCommandToLocalWithReturnPrivate(showLogResults, command, arguments).trim();
 		}
 		return results;
 	}
