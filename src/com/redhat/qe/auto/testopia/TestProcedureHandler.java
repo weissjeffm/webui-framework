@@ -11,7 +11,7 @@ import com.redhat.qe.auto.selenium.MyLevel;
  * format them and return them as a big formatted string.
  *
  */
-public class TestProcedureHandler extends Handler {
+public class TestProcedureHandler extends Handler implements ITestProcedureHandler {
 
 	protected StringBuffer sb = new StringBuffer();
 	
