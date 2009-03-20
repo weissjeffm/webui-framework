@@ -49,7 +49,7 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 	protected static String TESTOPIA_TESTRUN_TESTPLAN = "";
 	protected static String TESTOPIA_TESTRUN_PRODUCT = "";
 	
-	protected TestProcedureHandler tph = null;
+	protected ITestProcedureHandler tph = null;
 	protected static Logger log = Logger.getLogger(TestopiaTestNGListener.class.getName());
 	protected TestRun testrun;
 	protected Product product;
@@ -383,11 +383,12 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 		//if (tph == null) {
 			//find the right handler (and save for later)
 			for (Handler handler: handlers){
+				log.finer("Handerlers = " + handler.getClass().getName());
 				if (handler.getClass().getName().contains("TestProcedureHandler")) {
-					/*log.finer("Class cl:" + TestProcedureHandler.class.getClassLoader().toString() + 
-							". var cl" + tph.getClass().getClassLoader().toString());*/
-					tph = ((TestProcedureHandler)handler);
+					//log.finer("Class cl:" + TestProcedureHandler.class.getClassLoader().toString() + ". var cl" + tph.getClass().getClassLoader().toString());
+					tph = ((ITestProcedureHandler)handler);
 				}
+				
 			}
 		//}
 		action = tph.getLog();
@@ -434,7 +435,7 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 			throw new TestopiaException(e);
 		}finally{
 			//reset the handler so that our log for the next testcase run starts fresh.
-			((TestProcedureHandler)tph).reset();
+			((ITestProcedureHandler)tph).reset();
 		}
 	}
 	
