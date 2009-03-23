@@ -62,6 +62,7 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 	protected static String buildName = "";
 	protected static String environmentName = "";
 	protected static String version = "";
+	protected static boolean testcaseOverwrite = true;
 	
 	protected static boolean isInUse = false;
 	
@@ -81,6 +82,9 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 	}
 	public static void setVersion(String version){
 		TestopiaTestNGListener.version = version;
+	}
+	public static void setTestcaseOverwrite(boolean overwrite){
+		TestopiaTestNGListener.testcaseOverwrite = overwrite;
 	}
 	
 	public static boolean isInUse(){
@@ -392,22 +396,23 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 			}
 		//}
 		action = tph.getLog();
-		log.finer("Updating testcase " + testcase.getAlias() + " with successful action log: \n" + action);
-		//put it in testopia
-		testcase.setAction(action);
 		
-		try {
-			testcase.storeText();
-			//FIXME remove the following lines later when all records are updated
-			testcase.setIsAutomated(true);
+		if(testcaseOverwrite){
+			log.finer("Updating testcase " + testcase.getAlias() + " with successful action log: \n" + action);
+			//put it in testopia
+		
+			testcase.setAction(action);
+		
+			try {
+				testcase.storeText();
+				//FIXME remove the following lines later when all records are updated
+				testcase.setIsAutomated(true);
 
-			testcase.update();
-		}catch(Exception e){
-			throw new TestopiaException(e);
+				testcase.update();
+			}catch(Exception e){
+				throw new TestopiaException(e);
+			}
 		}
-		
-		
-		
 		
 		//also update the test run
 		markTestRunComplete(result);
