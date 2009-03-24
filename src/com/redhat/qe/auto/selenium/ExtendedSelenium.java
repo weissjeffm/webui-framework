@@ -383,7 +383,7 @@ public class ExtendedSelenium extends DefaultSelenium implements IScreenCapture 
 			localHtmlDir = htmlDir;
 			fullPathtoFile = screenshotDir.getCanonicalPath()+ File.separator + outFileName;
 			super.captureScreenshot(fullPathtoFile);
-			log.log(Level.FINE, "Captured screenshot to "+ fullPathtoFile);
+			log.log(Level.FINER, "Captured screenshot to "+ fullPathtoFile);
 			
 		}
 		catch(Exception e ){
