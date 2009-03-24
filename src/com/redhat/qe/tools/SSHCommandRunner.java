@@ -30,19 +30,35 @@ public class SSHCommandRunner implements Runnable {
 	protected static Logger log = Logger.getLogger(SSHCommandRunner.class.getName());
 	protected boolean kill = false;
 	protected String command = null;
-	protected Level logLevel = MyLevel.INFO;
+	protected Level logLevelStdout = MyLevel.INFO;
+	protected Level logLevelStderr = MyLevel.INFO;
 
-	public SSHCommandRunner(Connection connection, String command) {
+	public SSHCommandRunner(Connection connection,
+			String command) {
 		super();
 		this.connection = connection;
 		this.command = command;
 	}
 	
-	public SSHCommandRunner(Connection connection, String command, Level logLevel) {
+	public SSHCommandRunner(Connection connection,
+			String command,
+			Level logLevel) {
 		super();
 		this.connection = connection;
 		this.command = command;
-		this.logLevel = logLevel;
+		this.logLevelStdout = logLevel;
+		this.logLevelStderr = logLevel;
+	}
+	
+	public SSHCommandRunner(Connection connection,
+			String command,
+			Level logLevelStdout,
+			Level logLevelStderr){
+		super();
+		this.connection = connection;
+		this.command = command;
+		this.logLevelStdout = logLevelStdout;
+		this.logLevelStderr = logLevelStderr;
 	}
 	
 	public SSHCommandRunner(String server,
@@ -70,7 +86,25 @@ public class SSHCommandRunner implements Runnable {
 		newConn.authenticateWithPublicKey(user, sshPemFile, password);
 		this.connection = newConn;
 		this.command = command;
-		this.logLevel = logLevel;
+		this.logLevelStdout = logLevel;
+		this.logLevelStderr = logLevel;
+	}
+	
+	public SSHCommandRunner(String server,
+			String user,
+			File sshPemFile,
+			String password,
+			String command,
+			Level logLevelStdout,
+			Level logLevelStderr) throws Exception{
+		super();
+		Connection newConn = new Connection(server);
+		newConn.connect();
+		newConn.authenticateWithPublicKey(user, sshPemFile, password);
+		this.connection = newConn;
+		this.command = command;
+		this.logLevelStdout = logLevelStdout;
+		this.logLevelStderr = logLevelStderr;
 	}
 	
 	public boolean isDone(){
@@ -95,10 +129,10 @@ public class SSHCommandRunner implements Runnable {
 			// res = session.waitForCondition(ChannelCondition.EOF, 1000);
 			 
 			//}
-			log.log(logLevel, "Command stdout: ");
-			s_out = convertStreamToString(out);
-			log.log(logLevel, "Command stderr: ");
-			s_err = convertStreamToString(err);
+			log.log(Level.FINER, "Command stdout: ");
+			s_out = convertStreamToString(out, logLevelStdout);
+			log.log(Level.FINER, "Command stderr: ");
+			s_err = convertStreamToString(err, logLevelStderr);
 			session.close();
 			kill=false;
 			isDone=true;
@@ -108,7 +142,8 @@ public class SSHCommandRunner implements Runnable {
 		}
 	}
 
-	protected String convertStreamToString(InputStream is) {
+	protected String convertStreamToString(InputStream is,
+			Level logLevel) {
 		/*
 		 * To convert the InputStream to String we use the
 		 * BufferedReader.readLine() method. We iterate until the BufferedReader
