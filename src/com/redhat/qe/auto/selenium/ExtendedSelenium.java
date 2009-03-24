@@ -49,7 +49,7 @@ public class ExtendedSelenium extends DefaultSelenium implements IScreenCapture 
 
 		// TODO this is ugly
 		TestNGListener.setScreenCaptureUtility(this);
-		
+		sleep(3);
 		windowMaximize();
 	}
 	
