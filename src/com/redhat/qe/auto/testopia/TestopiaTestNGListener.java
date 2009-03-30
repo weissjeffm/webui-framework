@@ -63,6 +63,7 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 	protected static String environmentName = "";
 	protected static String version = "";
 	protected static boolean testcaseOverwrite = true;
+	protected static String myOverwrite = null;
 	
 	protected static boolean isInUse = false;
 	
@@ -380,6 +381,7 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 	 * @see org.testng.ITestListener#onTestSuccess(org.testng.ITestResult)
 	 */
 	public void onTestSuccess(ITestResult result) {
+		myOverwrite = System.getProperty("testopia.testcase.overwrite");
 		//get the procedure log from the handler
 		String action = "no procedure found!";
 		Handler[] handlers = Logger.getLogger("").getHandlers();
@@ -397,7 +399,7 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 		//}
 		action = tph.getLog();
 		
-		if(testcaseOverwrite){
+		if(myOverwrite.equalsIgnoreCase("1")){
 			log.finer("Updating testcase " + testcase.getAlias() + " with successful action log: \n" + action);
 			//put it in testopia
 		
