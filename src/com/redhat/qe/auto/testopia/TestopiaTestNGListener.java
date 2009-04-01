@@ -399,7 +399,7 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 		//}
 		action = tph.getLog();
 		
-		if(myOverwrite.equalsIgnoreCase("1")){
+		if(myOverwrite == null || myOverwrite.equalsIgnoreCase("1")){
 			log.finer("Updating testcase " + testcase.getAlias() + " with successful action log: \n" + action);
 			//put it in testopia
 		
@@ -431,7 +431,7 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 						
 				//testcaserun.setNotes(throwableToString(result.getThrowable()));		
 				//put the whole log instead
-				testcaserun.setNotes(tph.getLog());
+				testcaserun.setNotes(tph == null? "" :tph.getLog());
 			
 			testcaserun.setStatus(result.isSuccess() ? TestCaseRun.Statuses.PASSED : TestCaseRun.Statuses.FAILED);
 		}
