@@ -442,7 +442,7 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 			throw new TestopiaException(e);
 		}finally{
 			//reset the handler so that our log for the next testcase run starts fresh.
-			((ITestProcedureHandler)tph).reset();
+			if (tph != null) ((ITestProcedureHandler)tph).reset();
 		}
 	}
 	

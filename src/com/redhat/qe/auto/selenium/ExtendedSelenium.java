@@ -50,6 +50,7 @@ public class ExtendedSelenium extends DefaultSelenium implements IScreenCapture 
 		// TODO this is ugly
 		TestNGListener.setScreenCaptureUtility(this);
 		sleep(3);
+		windowFocus();
 		windowMaximize();
 	}
 	
@@ -108,9 +109,10 @@ public class ExtendedSelenium extends DefaultSelenium implements IScreenCapture 
 	 * @param highlight - if true, highlight the element for a fraction of a second before clicking it.
 	 *   This makes it easier to see what selenium is doing "live".
 	 */
-	public void click(String locator, boolean highlight) {
+	public void click(String locator, boolean highlight)  {
 		if (highlight)
 			highlight(locator);
+		
 		super.click(locator);
 		log.log(MyLevel.ACTION, "Clicked on locator: " + locator);
 	}
