@@ -2,16 +2,12 @@ package com.redhat.qe.tools;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.util.logging.Level;
-import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
-import com.redhat.qe.auto.selenium.MyLevel;
 import com.trilead.ssh2.ChannelCondition;
 import com.trilead.ssh2.Connection;
 import com.trilead.ssh2.SCPClient;
@@ -20,18 +16,18 @@ import com.trilead.ssh2.StreamGobbler;
 
 public class SSHCommandRunner implements Runnable {
 
-	protected boolean isDone = false;
 	protected Connection connection;
 	protected Session session;
 	protected InputStream out;
+	protected static Logger log = Logger.getLogger(SSHCommandRunner.class.getName());
+
+
 	protected InputStream err;
 	protected String s_out = null;
 	protected String s_err = null;
-	protected static Logger log = Logger.getLogger(SSHCommandRunner.class.getName());
 	protected boolean kill = false;
 	protected String command = null;
-	protected Level logLevelStdout = MyLevel.INFO;
-	protected Level logLevelStderr = MyLevel.INFO;
+	protected Boolean lock = true;
 
 	public SSHCommandRunner(Connection connection,
 			String command) {
@@ -40,26 +36,6 @@ public class SSHCommandRunner implements Runnable {
 		this.command = command;
 	}
 	
-	public SSHCommandRunner(Connection connection,
-			String command,
-			Level logLevel) {
-		super();
-		this.connection = connection;
-		this.command = command;
-		this.logLevelStdout = logLevel;
-		this.logLevelStderr = logLevel;
-	}
-	
-	public SSHCommandRunner(Connection connection,
-			String command,
-			Level logLevelStdout,
-			Level logLevelStderr){
-		super();
-		this.connection = connection;
-		this.command = command;
-		this.logLevelStdout = logLevelStdout;
-		this.logLevelStderr = logLevelStderr;
-	}
 	
 	public SSHCommandRunner(String server,
 							String user,
@@ -74,76 +50,41 @@ public class SSHCommandRunner implements Runnable {
 		this.command = command;
 	}
 	
-	public SSHCommandRunner(String server,
-			String user,
-			File sshPemFile,
-			String password,
-			String command,
-			Level logLevel) throws Exception{
-		super();
-		Connection newConn = new Connection(server);
-		newConn.connect();
-		newConn.authenticateWithPublicKey(user, sshPemFile, password);
-		this.connection = newConn;
-		this.command = command;
-		this.logLevelStdout = logLevel;
-		this.logLevelStderr = logLevel;
-	}
-	
-	public SSHCommandRunner(String server,
-			String user,
-			File sshPemFile,
-			String password,
-			String command,
-			Level logLevelStdout,
-			Level logLevelStderr) throws Exception{
-		super();
-		Connection newConn = new Connection(server);
-		newConn.connect();
-		newConn.authenticateWithPublicKey(user, sshPemFile, password);
-		this.connection = newConn;
-		this.command = command;
-		this.logLevelStdout = logLevelStdout;
-		this.logLevelStderr = logLevelStderr;
-	}
-	
-	public boolean isDone(){
-		return isDone;
-	}
 	
 	public void run() {
-		isDone=false;
 		try {
+			/*
+			 * Sync'd block prevents other threads from getting the streams before they've been set up here.
+			 */
+			synchronized (lock) {
+				// sshSession.requestDumbPTY();
+				session = connection.openSession();
+				//session.startShell();
+				session.execCommand(command);
+				out = new StreamGobbler(session.getStdout());
+				err = new StreamGobbler(session.getStderr());
+			}
 			
-			// sshSession.requestDumbPTY();
-			session = connection.openSession();
-			//session.startShell();
-			session.execCommand(command);
-			out = new StreamGobbler(session.getStdout());
-			err = new StreamGobbler(session.getStderr());
-			int res = 0;
 			
-			//dynamicLogger(session.getStdout(), session.getStderr());
-			
-			//while (!kill && ((res & ChannelCondition.EOF) == 0)){
-			// res = session.waitForCondition(ChannelCondition.EOF, 1000);
-			 
-			//}
-			log.log(Level.FINER, "Command stdout: ");
-			s_out = convertStreamToString(out, logLevelStdout);
-			log.log(Level.FINER, "Command stderr: ");
-			s_err = convertStreamToString(err, logLevelStderr);
-			session.close();
-			kill=false;
-			isDone=true;
 
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
+	
+	public void waitFor(){
+		int res = 0;
+		while (!kill && ((res & ChannelCondition.EOF) == 0)){
+		 res = session.waitForCondition(ChannelCondition.EOF, 1000);
+		 
+		}
+		
+		session.close();
 
-	protected String convertStreamToString(InputStream is,
-			Level logLevel) {
+		kill=false;
+	}
+
+	protected String convertStreamToString(InputStream is) {
 		/*
 		 * To convert the InputStream to String we use the
 		 * BufferedReader.readLine() method. We iterate until the BufferedReader
@@ -156,7 +97,6 @@ public class SSHCommandRunner implements Runnable {
 		String line = null;
 		try {
 			while ((line = reader.readLine()) != null) {
-				log.log(logLevel, line);
 				sb.append(line + "\n");
 			}
 		} catch (IOException e) {
@@ -171,21 +111,64 @@ public class SSHCommandRunner implements Runnable {
 
 		return sb.toString();
 	}
-
+	
+	/**
+	 * Consumes entire stdout stream of the command, this will block until the stream is closed.
+	 * @return entire contents of stdout stream
+	 */
 	public String getStdout() {
-		return s_out;
+		synchronized (lock) {
+			if (s_out == null) s_out = convertStreamToString(out);
+			return s_out;
+		}
 	}
 
+	/**
+	 * Consumes entire stderr stream of the command, this will block until the stream is closed.
+	 * @return entire contents of stderr stream
+	 */
 	public String getStderr() {
-		return s_err;
+		synchronized (lock) {
+			if (s_err == null) s_err = convertStreamToString(err);
+			return s_err;
+		}
 	}
 	
 	public void setCommand(String command) {
+		reset();
 		this.command = command;
 	}
 	
+	/**
+	 * Stop waiting for the command to complete.
+	 */
 	public synchronized void kill(){
 		kill= true;
+	}
+	
+	public InputStream getStdoutStream() {		
+		synchronized (lock) {
+			return out;
+		}
+	}
+
+	public InputStream getStdErrStream() {		
+		synchronized (lock) {
+			return err;
+		}
+	}
+	
+	public void reset(){
+		try {
+			out.close();
+			err.close();
+		}
+		catch(IOException ioe) {
+			log.log(Level.FINER, "Couldn't close input stream", ioe);
+		}
+		s_out = null;
+		s_err = null;
+		command = null;
 	}
 
 	/**
@@ -203,38 +186,45 @@ public class SSHCommandRunner implements Runnable {
 				 String autoSubdir = System.getProperty("auto.subdir", "");
 				 fn = System.getProperty("user.dir") + File.separator + autoSubdir + File.separator + "log.properties";
 			}
-			LogManager.getLogManager().readConfiguration(new FileInputStream(fn));
-			log.fine("Loaded logger configuration.");
+			//LogManager.getLogManager().readConfiguration(new FileInputStream(fn));
+			//log.fine("Loaded logger configuration.");
 		} catch (Exception e) {
 			System.err.println("Failed to load log settings.");
 			e.printStackTrace();
-			log.log(Level.WARNING,
-					"Unable to read logging settings.  Keeping default.", e);
+			//log.log(Level.WARNING,
+			//		"Unable to read logging settings.  Keeping default.", e);
 		}
 		/*SSHCommandRunner runner = new SSHCommandRunner("witte.usersys.redhat.com", "jonqa", "dog8code", "java -Dcom.sun.management.jmxremote.port=1500 -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false -cp /tmp DummyJVM");
 		Connection conn =runner.connect();*/
 		//String jh = runner.getStdout().trim();
-		Connection conn = new Connection("witte.usersys.redhat.com");
+		Connection conn = new Connection("jweiss-rhel2.usersys.redhat.com");
 		conn.connect();
 		if (!conn.authenticateWithPassword("jonqa", "dog8code"))
 			throw new IllegalStateException("Authentication failed.");
 		SCPClient scp = new SCPClient(conn);
-		scp.put(System.getProperty("user.dir")+ "/bin/DummyJVM.class", "/tmp");
-		SSHCommandRunner runner = new SSHCommandRunner(conn, "java -Dcom.sun.management.jmxremote.port=1500 -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false -cp /tmp DummyJVM");
-		Thread t = new Thread(runner);
-		t.start();
+		scp.put(System.getProperty("user.dir")+ "/../jon-2.0/bin/DummyJVM.class", "/tmp");
+		SSHCommandRunner jrunner = new SSHCommandRunner(conn, "java -Dcom.sun.management.jmxremote.port=1500 -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false -cp /tmp DummyJVM");
 
+		jrunner.run();
+
+		new SplitStreamLogger(jrunner).log();
+		
 		
 		Thread.sleep(10000);
-		runner = new SSHCommandRunner(conn, "ps -ef | grep [D]ummy | awk '{print $2}'");
+		SSHCommandRunner runner = new SSHCommandRunner(conn, "ps -ef | grep [D]ummy | awk '{print $2}'");
 		runner.run();
 		String pid = runner.getStdout().trim();
+		log.info("Found pid " + pid);
 		runner = new SSHCommandRunner(conn, "kill " + pid);
 		runner.run();
-		Thread.sleep(1000);
-
-		runner.kill();
-		t.join();
+		
+		
+		new SplitStreamLogger(runner).log();
+		runner.waitFor();
+		jrunner.waitFor();
+		
+		
+	
 	/*	System.out.println("Output: " + runner.getStdout());
 		System.out.println("Stderr: " + runner.getStderr());*/
 
