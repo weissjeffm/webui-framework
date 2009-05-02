@@ -18,6 +18,9 @@ public class SplitStreamLogger {
 	protected InputStream stderr;
 	protected static Logger log = Logger.getLogger(SplitStreamLogger.class.getName());
 
+	StreamLogger sl_out;
+	StreamLogger sl_err;
+	
 	public SplitStreamLogger(SSHCommandRunner runner){
 		this.stdout = runner.getStdoutStream();
 		this.stderr = runner.getStdErrStream();
@@ -29,14 +32,21 @@ public class SplitStreamLogger {
 	}
 	
 	public void log(Level outlevel, Level errlevel){
-
-		Thread out = new Thread(new StreamLogger(stdout, outlevel));
-		Thread err = new Thread(new StreamLogger(stderr, errlevel));
+		sl_out = new StreamLogger(stdout, outlevel);
+		sl_err = new StreamLogger(stderr, errlevel);
+		Thread out = new Thread(sl_out);
+		Thread err = new Thread(sl_err);
 		out.start();
 		err.start();
-
 	}
 	
+	public String getStdout(){
+		return sl_out.toString();
+	}
+	
+	public String getStderr(){
+		return sl_err.toString();
+	}
 	
 	public void log(){
 		log(Level.INFO, Level.SEVERE);
@@ -45,9 +55,15 @@ public class SplitStreamLogger {
 	class StreamLogger implements Runnable{
 		protected InputStream stream;
 		protected Level level;
+		protected StringBuffer sb = new StringBuffer();
+
 		public StreamLogger(InputStream stream, Level level){
 			this.stream = stream;
 			this.level = level;
+		}
+		
+		public String toString(){
+			return sb.toString();
 		}
 		
 		public void run(){
@@ -56,6 +72,7 @@ public class SplitStreamLogger {
 			try {
 				while ((line = reader.readLine()) != null){
 					log.log(level, line);
+					sb.append(line + "\n");
 				}
 			}
 			catch (IOException e) {
