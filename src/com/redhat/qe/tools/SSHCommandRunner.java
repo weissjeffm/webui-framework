@@ -41,7 +41,7 @@ public class SSHCommandRunner implements Runnable {
 							String user,
 							File sshPemFile,
 							String password,
-							String command) throws Exception{
+							String command) throws IOException{
 		super();
 		Connection newConn = new Connection(server);
 		newConn.connect();

@@ -18,7 +18,7 @@ public class VersionedInstantiator {
 	protected LinkedHashMap<String,String> packageMap = new LinkedHashMap<String,String>();
 	protected Integer versionedPackageIndex = 1;
 	protected String runningVersion = "";
-	protected static Map<Class,Object> instances = new HashMap<Class,Object>();
+	protected static Map<Class<?>,Object> instances = new HashMap<Class<?>,Object>();
 	
 	/**
 	 * @param packageMap - a map of version strings to package names.  For example, a product version 2.2.0 might have 

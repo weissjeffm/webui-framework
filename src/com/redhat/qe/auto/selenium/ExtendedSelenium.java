@@ -2,7 +2,12 @@ package com.redhat.qe.auto.selenium;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -379,6 +384,14 @@ public class ExtendedSelenium extends DefaultSelenium implements IScreenCapture 
 		return screenCapture(dirName);
 	}
 	
+	protected void writeBase64ScreenCapture(String data, File file) throws FileNotFoundException, IOException{
+		byte[] pngBytes = Base64.decode(data);
+		FileOutputStream fos = new FileOutputStream(file);
+		fos.write(pngBytes);
+		fos.flush();
+		fos.close();
+	}
+	
 	public String screenCapture(String dirName) throws Exception {
 		String fullPathtoFile = null;
 		mkdir(dirName);
@@ -391,8 +404,9 @@ public class ExtendedSelenium extends DefaultSelenium implements IScreenCapture 
 			writeHtmlOnError(htmlDir);
 			//if success use that next time
 			localHtmlDir = htmlDir;
-			fullPathtoFile = screenshotDir.getCanonicalPath()+ File.separator + outFileName;
-			super.captureScreenshot(fullPathtoFile);
+			fullPathtoFile = localHtmlDir.getCanonicalPath()+ File.separator + outFileName;
+			String base64Png = super.captureEntirePageScreenshotToString("");
+			writeBase64ScreenCapture(base64Png, new File(fullPathtoFile));
 			log.log(Level.FINER, "Captured screenshot to "+ fullPathtoFile);
 			
 		}
