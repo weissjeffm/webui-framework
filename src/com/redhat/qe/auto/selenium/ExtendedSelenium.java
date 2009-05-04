@@ -406,8 +406,9 @@ public class ExtendedSelenium extends DefaultSelenium implements IScreenCapture 
 			localHtmlDir = htmlDir;
 			fullPathtoFile = localHtmlDir.getCanonicalPath()+ File.separator + outFileName;
 			String base64Png = super.captureEntirePageScreenshotToString("");
-			writeBase64ScreenCapture(base64Png, new File(fullPathtoFile));
-			log.log(Level.FINER, "Captured screenshot to "+ fullPathtoFile);
+			File ssFile = new File(fullPathtoFile);
+			writeBase64ScreenCapture(base64Png, ssFile);
+			log.log(Level.FINER, "Captured screenshot to "+ ssFile.toURI().toURL());
 			
 		}
 		catch(Exception e ){
