@@ -421,11 +421,12 @@ public class ExtendedSelenium extends DefaultSelenium implements IScreenCapture 
 			String base64Png = super.captureEntirePageScreenshotToString("");
 			File ssFile = new File(fullPathtoFile);
 			writeBase64ScreenCapture(base64Png, ssFile);
-			log.log(Level.FINER, "Captured screenshot to "+ ssFile.toURI().toURL());
+			log.log(Level.FINE, "screenshot URL= "+ getLocation());
+			log.log(Level.FINE, "Captured screenshot to "+ ssFile.toURI().toURL());
 			
 		}
 		catch(Exception e ){
-			log.fine("Couldn't capture screenshot, trying to write to tmp dir instead.");
+			log.log(Level.FINE, "Couldn't capture screenshot, trying to write to tmp dir instead.",e);
 			//if this failed, try the temp dir
 			screenshotDir = new File("/tmp");
 			super.captureScreenshot("/tmp"+ File.separator + outFileName);
