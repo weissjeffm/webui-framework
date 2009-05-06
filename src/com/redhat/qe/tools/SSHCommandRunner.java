@@ -73,8 +73,9 @@ public class SSHCommandRunner implements Runnable {
 	}
 	
 	public int waitFor(){
-		getStderr();
-		getStdout();
+		/*getStderr();
+		getStdout();*/
+		//causes problem when another thread is reading the 'live' output.
 		
 		int res = 0;
 		while (!kill && ((res & ChannelCondition.EXIT_STATUS) == 0)){
