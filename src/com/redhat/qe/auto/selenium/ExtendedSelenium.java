@@ -332,7 +332,20 @@ public class ExtendedSelenium extends DefaultSelenium implements IScreenCapture 
 		waitForPageToLoad();
 	}
 	
-	
+
+	public boolean refreshAndIsElementPresent(String locator, long timeout_ms, long refreshInterval_ms){
+		if (isElementPresent(locator))
+			return true;
+		long startTime = System.currentTimeMillis();
+		while (System.currentTimeMillis() - startTime < timeout_ms ){
+			sleep(refreshInterval_ms);
+			refresh();
+		
+			if (isElementPresent(locator))
+				return true;
+		}
+		return false;
+	}
 
 	@Override
 	public String getAlert() {
@@ -379,8 +392,8 @@ public class ExtendedSelenium extends DefaultSelenium implements IScreenCapture 
 	
 	
 	public String screenCapture() throws Exception {
-		String dirName = System.getProperty("user.dir") + File.separator
-		+ "screenshots";
+		String dirName = System.getProperty("selenium.screenshot.dir", System.getProperty("user.dir") + File.separator
+		+ "screenshots");
 		return screenCapture(dirName);
 	}
 	
@@ -452,10 +465,11 @@ public class ExtendedSelenium extends DefaultSelenium implements IScreenCapture 
 		return instance;
 	}
 	
-	public static ExtendedSelenium killInstance(){
+	public static void killInstance(){
 		instance = null;//
-		return instance;
 	}
+	
+	
 	
 	public static ExtendedSelenium newInstance(String serverHost, int serverPort, String browserStartCommand, String browserURL){
 		instance = new ExtendedSelenium(serverHost, serverPort, browserStartCommand, browserURL);

@@ -27,7 +27,7 @@ public class SSHCommandRunner implements Runnable {
 	protected String s_err = null;
 	protected boolean kill = false;
 	protected String command = null;
-	protected Boolean lock = true;
+	protected Object lock = new Object();
 
 	public SSHCommandRunner(Connection connection,
 			String command) {
@@ -72,16 +72,21 @@ public class SSHCommandRunner implements Runnable {
 		}
 	}
 	
-	public void waitFor(){
+	public int waitFor(){
+		getStderr();
+		getStdout();
+		
 		int res = 0;
-		while (!kill && ((res & ChannelCondition.EOF) == 0)){
-		 res = session.waitForCondition(ChannelCondition.EOF, 1000);
+		while (!kill && ((res & ChannelCondition.EXIT_STATUS) == 0)){
+		 res = session.waitForCondition(ChannelCondition.EXIT_STATUS, 1000);
 		 
 		}
 		
+		int exitCode = session.getExitStatus();
 		session.close();
 
 		kill=false;
+		return exitCode;
 	}
 
 	protected String convertStreamToString(InputStream is) {
