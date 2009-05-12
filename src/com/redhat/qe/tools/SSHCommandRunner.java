@@ -176,6 +176,10 @@ public class SSHCommandRunner implements Runnable {
 		s_err = null;
 		command = null;
 	}
+	
+	public Connection getConnection() {
+		return connection;
+	}
 
 	/**
 	 * Test code
