@@ -389,7 +389,7 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 		//if (tph == null) {
 			//find the right handler (and save for later)
 			for (Handler handler: handlers){
-				log.finer("Handerlers = " + handler.getClass().getName());
+				log.finer("Handlers = " + handler.getClass().getName());
 				if (handler.getClass().getName().contains("TestProcedureHandler")) {
 					//log.finer("Class cl:" + TestProcedureHandler.class.getClassLoader().toString() + ". var cl" + tph.getClass().getClassLoader().toString());
 					tph = ((ITestProcedureHandler)handler);

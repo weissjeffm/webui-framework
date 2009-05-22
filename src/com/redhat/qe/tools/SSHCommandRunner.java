@@ -17,6 +17,8 @@ import com.trilead.ssh2.StreamGobbler;
 public class SSHCommandRunner implements Runnable {
 
 	protected Connection connection;
+	
+
 	protected Session session;
 	protected InputStream out;
 	protected static Logger log = Logger.getLogger(SSHCommandRunner.class.getName());
@@ -145,6 +147,12 @@ public class SSHCommandRunner implements Runnable {
 		this.command = command;
 	}
 	
+	public void runCommand(String command){
+		reset();
+		this.command = command;
+		run();
+	}
+	
 	/**
 	 * Stop waiting for the command to complete.
 	 */
@@ -176,10 +184,12 @@ public class SSHCommandRunner implements Runnable {
 		s_err = null;
 		command = null;
 	}
+
 	
 	public Connection getConnection() {
 		return connection;
 	}
+
 
 	/**
 	 * Test code

@@ -2,12 +2,13 @@ package com.redhat.qe.tools;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.logging.Level;
-import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 import com.trilead.ssh2.Connection;
 import com.trilead.ssh2.SCPClient;
+import com.trilead.ssh2.SFTPv3Client;
 
 public class SCPTools {
 	protected String userName;
@@ -47,6 +48,17 @@ public class SCPTools {
 		
 		return true;
 	}
+	
+	/*public void sendStream(OutputStream os, String dest) throws IOException{
+		Connection newConn = new Connection(server);
+		log.info("SFTP: Copying stream to "+this.server+":"+dest);
+		newConn.connect();
+		newConn.authenticateWithPublicKey(userName, sshPemFile, password);
+		SFTPv3Client sftp = new SFTPv3Client(newConn);
+		sftp.createFile(dest);
+		
+		log.info("SFTP: Transfer succeeded");
+	}*/
 	
 	public boolean getFile(String remoteFile, String target){
 		Connection newConn = new Connection(server);
