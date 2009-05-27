@@ -379,6 +379,13 @@ public class ExtendedSelenium extends DefaultSelenium implements IScreenCapture 
 		super.setTimeout(timeout);
 		WAITFORPAGE_TIMEOUT = timeout;
 	}
+	
+	public void selectPopupWindowAndWait(){
+		String[] winnames = getAllWindowNames();
+		String name = winnames[winnames.length-1]; //select last opened window
+		waitForPopUp(name, "60000");
+		selectWindow(name);
+	}
 
 	public void sleep(long millis){
 		try {
