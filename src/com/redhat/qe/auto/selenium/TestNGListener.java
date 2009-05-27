@@ -10,6 +10,7 @@ import org.testng.ISuiteListener;
 import org.testng.ITestContext;
 import org.testng.ITestListener;
 import org.testng.ITestResult;
+import org.testng.SkipException;
 import org.testng.internal.IConfigurationListener;
 import org.testng.internal.IResultListener;
 
@@ -61,7 +62,11 @@ public class TestNGListener implements IResultListener, ISuiteListener {
 		log.log(Level.SEVERE, "Test failed: "+ result.getName(), result.getThrowable());
 	}
 	public void onTestSkipped(ITestResult result) {
-		log.fine("========= Skipping test: " + result.getName()+ " ============================================");
+		if (result.getThrowable() instanceof SkipException){
+			log.log(Level.INFO, "========= Skipping test due to SkipException: " 
+					+ result.getName()+ " ============================================\n",result.getThrowable());
+		}
+		else log.fine("========= Skipping test: " + result.getName()+ " ============================================");
 
 	}
 	public  void onTestStart(ITestResult result) {
