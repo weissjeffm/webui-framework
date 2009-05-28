@@ -57,6 +57,15 @@ public class ExtendedSelenium extends DefaultSelenium implements IScreenCapture 
 		sleep(3);
 		windowFocus();
 		windowMaximize();
+		String delay = System.getProperty("selenium.delay");
+		if (delay != null)  {
+			try {
+				setSpeed(delay);
+			}
+			catch(Exception e){
+				log.log(Level.FINER, "Could not set delay: " + delay, e);
+			}
+		}
 	}
 	
 
