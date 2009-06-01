@@ -20,10 +20,12 @@ public class SplitStreamLogger {
 
 	StreamLogger sl_out;
 	StreamLogger sl_err;
+	String remoteHost;
 	
 	public SplitStreamLogger(SSHCommandRunner runner){
 		this.stdout = runner.getStdoutStream();
 		this.stderr = runner.getStdErrStream();
+		remoteHost = runner.getConnection().getHostname();
 	}
 	
 	public SplitStreamLogger(InputStream stdout, InputStream stderr){
@@ -71,7 +73,7 @@ public class SplitStreamLogger {
 			BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
 			try {
 				while ((line = reader.readLine()) != null){
-					log.log(level, line);
+					log.log(level, "[" + remoteHost + "]: " + line);
 					sb.append(line + "\n");
 				}
 			}
