@@ -328,7 +328,7 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 		String alias = version + "." + className + "." + result.getMethod().getMethodName() + count;
 		String script = className + "." + result.getMethod().getMethodName();
 		String description = result.getMethod().getDescription();
-		String summary = description.length()>0 ? description : (script + count);
+		String summary = description.length()>0 ? (description + count) : (script + count);
 		
 		try {
 			testcase = new TestCase(session, alias);
