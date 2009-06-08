@@ -15,7 +15,7 @@ public class AlphabeticalInterceptor implements IMethodInterceptor {
 			ITestContext context) {
 		Comparator<IMethodInstance> alphaByMethodName = new Comparator<IMethodInstance>(){
 
-			@Override
+			
 			public int compare(IMethodInstance m1, IMethodInstance m2) {
 				String name1 = m1.getMethod().getMethodName();
 				String name2 = m2.getMethod().getMethodName();			
