@@ -10,7 +10,7 @@ import org.testng.ITestContext;
 
 public class AlphabeticalInterceptor implements IMethodInterceptor {
 
-	@Override
+	
 	public List<IMethodInstance> intercept(List<IMethodInstance> methods,
 			ITestContext context) {
 		Comparator<IMethodInstance> alphaByMethodName = new Comparator<IMethodInstance>(){
