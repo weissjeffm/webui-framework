@@ -147,6 +147,10 @@ public class SSHCommandRunner implements Runnable {
 		this.command = command;
 	}
 	
+	public String getCommand() {
+		return command;
+	}
+	
 	public void runCommand(String command){
 		reset();
 		this.command = command;
@@ -176,6 +180,8 @@ public class SSHCommandRunner implements Runnable {
 		try {
 			out.close();
 			err.close();
+			session.close();
+			
 		}
 		catch(IOException ioe) {
 			log.log(Level.FINER, "Couldn't close input stream", ioe);
@@ -221,7 +227,7 @@ public class SSHCommandRunner implements Runnable {
 		conn.connect();
 		if (!conn.authenticateWithPassword("jonqa", "dog8code"))
 			throw new IllegalStateException("Authentication failed.");
-		SCPClient scp = new SCPClient(conn);
+		/*SCPClient scp = new SCPClient(conn);
 		scp.put(System.getProperty("user.dir")+ "/../jon-2.0/bin/DummyJVM.class", "/tmp");
 		SSHCommandRunner jrunner = new SSHCommandRunner(conn, "java -Dcom.sun.management.jmxremote.port=1500 -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false -cp /tmp DummyJVM");
 
@@ -241,10 +247,13 @@ public class SSHCommandRunner implements Runnable {
 		
 		new SplitStreamLogger(runner).log();
 		runner.waitFor();
-		jrunner.waitFor();
+		jrunner.waitFor();*/
 		
 		
-	
+		SSHCommandRunner jrunner = new SSHCommandRunner(conn, "grep sdf /tmp/sdsdfs");
+
+		jrunner.run();
+		System.out.println(jrunner.waitFor());
 	/*	System.out.println("Output: " + runner.getStdout());
 		System.out.println("Stderr: " + runner.getStderr());*/
 

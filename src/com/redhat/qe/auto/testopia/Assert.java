@@ -110,11 +110,10 @@ public class Assert {
  * @param quiet If true, print nothing if the assertion is true.
    */
   static public void assertEquals(Object actual, Object expected, String message, boolean quiet) {
-    if((expected == null) && (actual == null)) {
-      if (!quiet)pass(message);
-    }
-    else if((expected != null) && expected.equals(actual)) {
-      if(!quiet)pass(message);
+    if (  ((expected == null) && (actual == null)) || ((expected != null) && expected.equals(actual)) ) {
+    	if (!quiet) {
+    		pass(message != null? message : "Actual value of '" + actual + "' matches expected value.");
+    	}
     }
     else failNotEquals(actual, expected, message);
   }
