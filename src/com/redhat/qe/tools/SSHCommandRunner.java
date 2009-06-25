@@ -178,10 +178,9 @@ public class SSHCommandRunner implements Runnable {
 	
 	public void reset(){
 		try {
-			out.close();
-			err.close();
-			session.close();
-			
+			if (out!= null) out.close();
+			if (err != null) err.close();
+			if (session!= null)session.close();			
 		}
 		catch(IOException ioe) {
 			log.log(Level.FINER, "Couldn't close input stream", ioe);

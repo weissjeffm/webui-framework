@@ -32,7 +32,7 @@ public class Assert {
    * Asserts that a condition is true. If it isn't,
    * an AssertionError, with the given message, is thrown.
    * @param condition the condition to evaluate
-   * @param message the assertion error message
+   * @param message the assertion message
    */
   static public void assertTrue(boolean condition, String message) {
     if(!condition) {
@@ -54,7 +54,7 @@ public class Assert {
    * Asserts that a condition is false. If it isn't,  
    * an AssertionError, with the given message, is thrown.
    * @param condition the condition to evaluate
-   * @param message the assertion error message
+   * @param message the assertion message
    */
   static public void assertFalse(boolean condition, String message) {
     if(condition) {
@@ -76,7 +76,7 @@ public class Assert {
   /**
    * Fails a test with the given message and wrapping the original exception.
    *
-   * @param message the assertion error message
+   * @param message the assertion message
    * @param realCause the original exception
    */
   static public void fail(String message, Throwable realCause) {
@@ -88,7 +88,7 @@ public class Assert {
  
   /**
    * Fails a test with the given message.
-   * @param message the assertion error message
+   * @param message the assertion message
    */
   static public void fail(String message) {
     throw new AssertionError(message);
@@ -106,7 +106,7 @@ public class Assert {
    * an AssertionError, with the given message, is thrown.
    * @param actual the actual value
  * @param expected the expected value
- * @param message the assertion error message
+ * @param message Description of the actual value
  * @param quiet If true, print nothing if the assertion is true.
    */
   static public void assertEquals(Object actual, Object expected, String message, boolean quiet) {
@@ -158,7 +158,7 @@ public class Assert {
    * an AssertionError, with the given message, is thrown.
    * @param actual the actual value
    * @param expected the expected value
-   * @param message the assertion error message
+   * @param message Description of the actual value (where it came from)
    */
   static public void assertEquals(String actual, String expected, String message) {
     assertEquals((Object) actual, (Object) expected, message, false);
@@ -181,7 +181,7 @@ public class Assert {
    * @param actual the actual value
    * @param expected the expected value
    * @param delta the absolute tolerate value value between the actual and expected value
-   * @param message the assertion error message
+   * @param message the assertion message
    */
   static public void assertEquals(double actual, double expected, double delta, String message) {
     // handle infinity specially since subtracting to infinite values gives NaN and the
@@ -218,7 +218,7 @@ public class Assert {
    * @param actual the actual value
    * @param expected the expected value
    * @param delta the absolute tolerate value value between the actual and expected value
-   * @param message the assertion error message
+   * @param message the assertion message
    */
   static public void assertEquals(float actual, float expected, float delta, String message) {
     // handle infinity specially since subtracting to infinite values gives NaN and the
@@ -254,7 +254,7 @@ public class Assert {
    * an AssertionError, with the given message, is thrown.
    * @param actual the actual value
    * @param expected the expected value
-   * @param message the assertion error message
+   * @param message the assertion message
    */
   static public void assertEquals(long actual, long expected, String message) {
     assertEquals(new Long(actual), new Long(expected), message, false);
@@ -275,7 +275,7 @@ public class Assert {
    * an AssertionError, with the given message, is thrown.
    * @param actual the actual value
    * @param expected the expected value
-   * @param message the assertion error message
+   * @param message the assertion message
    */
   static public void assertEquals(boolean actual, boolean expected, String message) {
     assertEquals( Boolean.valueOf(actual), Boolean.valueOf(expected), message, false);
@@ -296,7 +296,7 @@ public class Assert {
    * an AssertionError, with the given message, is thrown.
    * @param actual the actual value
    * @param expected the expected value
-   * @param message the assertion error message
+   * @param message the assertion message
    */
   static public void assertEquals(byte actual, byte expected, String message) {
     assertEquals(new Byte(actual), new Byte(expected), message, false);
@@ -317,7 +317,7 @@ public class Assert {
    * an AssertionFailedError, with the given message, is thrown.
    * @param actual the actual value
    * @param expected the expected value
-   * @param message the assertion error message
+   * @param message the assertion message
    */
   static public void assertEquals(char actual, char expected, String message) {
     assertEquals(new Character(actual), new Character(expected), message, false);
@@ -338,7 +338,7 @@ public class Assert {
    * an AssertionFailedError, with the given message, is thrown.
    * @param actual the actual value
    * @param expected the expected value
-   * @param message the assertion error message
+   * @param message the assertion message
    */
   static public void assertEquals(short actual, short expected, String message) {
     assertEquals(new Short(actual), new Short(expected), message, false);
@@ -359,7 +359,7 @@ public class Assert {
    * an AssertionFailedError, with the given message, is thrown.
    * @param actual the actual value
    * @param expected the expected value
-   * @param message the assertion error message
+   * @param message the assertion message
    */
   static public void assertEquals(int actual,  int expected, String message) {
     assertEquals(new Integer(actual), new Integer(expected), message, false);
@@ -388,7 +388,7 @@ public class Assert {
    * Asserts that an object isn't null. If it is,
    * an AssertionFailedError, with the given message, is thrown.
    * @param object the assertion object
-   * @param message the assertion error message
+   * @param message the assertion message
    */
   static public void assertNotNull(Object object, String message) {
     assertTrue(object != null, message);
@@ -407,7 +407,7 @@ public class Assert {
    * Asserts that an object is null.  If it is not,
    * an AssertionFailedError, with the given message, is thrown.
    * @param object the assertion object
-   * @param message the assertion error message
+   * @param message the assertion message
    */
   static public void assertNull(Object object, String message) {
     assertTrue(object == null, message);
@@ -418,7 +418,7 @@ public class Assert {
    * an AssertionFailedError, with the given message, is thrown.
    * @param actual the actual value
    * @param expected the expected value
-   * @param message the assertion error message
+   * @param message the assertion message
    */
   static public void assertSame(Object actual, Object expected, String message) {
     if(expected == actual) {
@@ -443,7 +443,7 @@ public class Assert {
    * an AssertionError, with the given message, is thrown.
    * @param actual the actual value
    * @param expected the expected value
-   * @param message the assertion error message
+   * @param message the assertion message
    */
   static public void assertNotSame(Object actual, Object expected, String message) {
     if(expected == actual) {
@@ -506,7 +506,7 @@ public class Assert {
    * an AssertionError, with the given message, is thrown.
    * @param actual the actual value
    * @param expected the expected value
-   * @param message the assertion error message
+   * @param message the assertion message
    */
   static public void assertEquals(Collection actual, Collection expected, String message) {
     if(actual == expected) return;
@@ -538,7 +538,7 @@ public class Assert {
    * an AssertionError, with the given message, is thrown.
    * @param actual the actual value
    * @param expected the expected value
-   * @param message the assertion error message
+   * @param message the assertion message
    */
   static public void assertEquals(Object[] actual, Object[] expected, String message) {
     if(actual == expected) return;
@@ -555,7 +555,7 @@ public class Assert {
    * an AssertionError, with the given message, is thrown.
    * @param actual the actual value
    * @param expected the expected value
-   * @param message the assertion error message
+   * @param message the assertion message
    */
   static public void assertEqualsNoOrder(Object[] actual, Object[] expected, String message) {
     if(actual == expected) return;
@@ -635,7 +635,7 @@ public class Assert {
    *
    * @param actual the actual value
    * @param expected the expected value
-   * @param message the assertion error message
+   * @param message the assertion message
    */
   static public void assertEquals(final byte[] actual, final byte[] expected, final String message) {
     if(expected == actual) {
