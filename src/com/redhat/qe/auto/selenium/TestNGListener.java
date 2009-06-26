@@ -74,6 +74,10 @@ public class TestNGListener implements IResultListener, ISuiteListener {
 		
 	}
 	public  void onTestSuccess(ITestResult result) {
+		Throwable throwable = result.getThrowable();
+		if (throwable != null){
+			log.log(MyLevel.ACTION, "Expected exception of " + throwable.getClass().getName() + " '" + throwable.getMessage() + "' was in fact thrown." );
+		}
 		log.fine("========= Test Passed: " + result.getName()+ " ============================================");
 	}
 
