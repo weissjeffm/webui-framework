@@ -214,7 +214,7 @@ public class ExtendedSelenium extends DefaultSelenium implements IScreenCapture 
 	public void typeKeys(String locator, String value) {
 		highlight(locator);
 		super.typeKeys(locator, value);
-		log.log(MyLevel.ACTION, "Typed '" + value + "' into textbox '"
+		log.log(MyLevel.ACTION, "Typed keys '" + value + "' into textbox '"
 				+ locator + "'");
 	}
 	
