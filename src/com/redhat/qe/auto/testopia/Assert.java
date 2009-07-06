@@ -29,7 +29,7 @@ public class Assert {
   }
  
   /**
-   * Asserts that a condition is true. If it isn't,
+   * Asserts that a condition is true and passes the message. If it isn't,
    * an AssertionError, with the given message, is thrown.
    * @param condition the condition to evaluate
    * @param message the assertion message
@@ -51,7 +51,7 @@ public class Assert {
   }
  
   /**
-   * Asserts that a condition is false. If it isn't,  
+   * Asserts that a condition is false and passes the message. If it isn't,  
    * an AssertionError, with the given message, is thrown.
    * @param condition the condition to evaluate
    * @param message the assertion message
@@ -105,9 +105,9 @@ public class Assert {
    * Asserts that two objects are equal. If they are not,
    * an AssertionError, with the given message, is thrown.
    * @param actual the actual value
- * @param expected the expected value
- * @param message Description of the actual value
- * @param quiet If true, print nothing if the assertion is true.
+   * @param expected the expected value
+   * @param message the assertion error message
+   * @param quiet If true, print nothing if the assertion is true.
    */
   static public void assertEquals(Object actual, Object expected, String message, boolean quiet) {
     if (  ((expected == null) && (actual == null)) || ((expected != null) && expected.equals(actual)) ) {
