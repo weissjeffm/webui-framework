@@ -246,13 +246,16 @@ public class ExtendedSelenium extends DefaultSelenium implements IScreenCapture 
 	@Override
 	public void check(String locator) {
 		checkUncheck(locator, true);
-		log.log(MyLevel.ACTION, "Checked checkbox '"
+		log.log(MyLevel.ACTION, "Checked checkbox or radio '"
 				+ locator + "'");
 	}
 	
 	public void checkUncheck(String locator, boolean check){
-		if (isChecked(locator) != check) super.click(locator);
-		else log.log(Level.FINE, "Checkbox '"
+		if (isChecked(locator) != check) {
+			super.check(locator);
+			super.click(locator); //just to be sure
+		}
+		else log.log(Level.FINE, "Checkbox or radio '"
 				+ locator + "' is already " + (check ? "checked.": "unchecked."));
 	}
 
