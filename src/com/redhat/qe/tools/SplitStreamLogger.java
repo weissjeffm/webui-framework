@@ -65,7 +65,9 @@ public class SplitStreamLogger {
 		}
 		
 		public String toString(){
-			return sb.toString();
+			synchronized (sb) {
+				return sb.toString();
+			}
 		}
 		
 		public void run(){
@@ -73,8 +75,10 @@ public class SplitStreamLogger {
 			BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
 			try {
 				while ((line = reader.readLine()) != null){
-					log.log(level, "[" + remoteHost + "]: " + line);
-					sb.append(line + "\n");
+					synchronized (sb) {
+						sb.append(line + "\n");
+						log.log(level, "[" + remoteHost + "]: " + line);
+					}		
 				}
 			}
 			catch (IOException e) {
