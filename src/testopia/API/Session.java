@@ -33,9 +33,7 @@ public class Session {
 		this.url = url;
 	}
 
-	public Object login()
-	throws XmlRpcException, GeneralSecurityException, IOException
-	{
+	public void init() throws XmlRpcException, GeneralSecurityException, IOException{
 		TrustAllCerts();
 
 		// setup client
@@ -52,7 +50,12 @@ public class Session {
 		client.setTransportFactory(fac);
 		if (httpState == null)
 			httpState = httpClient.getState();
-
+	}
+	
+	public Object login()
+	throws XmlRpcException, GeneralSecurityException, IOException
+	{
+		init();
 		HashMap<String, Object> map = new HashMap<String, Object>();
 		map.put("login", userName);
 		map.put("password", password);
