@@ -44,7 +44,7 @@ public class BzChecker {
 			System.setProperty("bugzilla.url", "https://bugzilla.redhat.com/bugzilla/xmlrpc.cgi");
 		}
 		
-		protected void loginBZ() throws XmlRpcException, GeneralSecurityException, IOException{
+		protected void connectBZ() throws XmlRpcException, GeneralSecurityException, IOException{
 			BZ_URL = System.getProperty("bugzilla.url");
 			session = new Session(null, null, new URL(BZ_URL));
 			try {
@@ -80,7 +80,7 @@ public class BzChecker {
 	public static void main(String[] args) throws Exception{
 		Bug myBug = new BzChecker().new Bug();
 		//List<>
-		myBug.loginBZ();
+		myBug.connectBZ();
 		List<String> ids = new ArrayList<String>();
 		ids.add("497793");
 		Object[] bugs = myBug.getBugs("ids",ids);
