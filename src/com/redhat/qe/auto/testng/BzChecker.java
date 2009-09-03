@@ -6,7 +6,6 @@ import java.net.URL;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -18,11 +17,17 @@ import org.apache.xmlrpc.XmlRpcException;
 import testopia.API.Session;
 import testopia.API.TestopiaObject;
 
+/**
+ * Example code to retrieve a bugzilla bug's status, given its ID.  This is for future use with testng, 
+ * so that testng can decide whether to execute a test, based on the group annotation (which may contain
+ * a bug id), and the status of that bug.  If the status is ON_QA, for example, it can be tested.
+ * @author weissj
+ *
+ */
 public class BzChecker {	
 	protected static Logger log = Logger.getLogger(BzChecker.class.getName());
 	
 	public BzChecker(){
-		log.setLevel(Level.FINEST);
 		try {
 			LogManager.getLogManager().readConfiguration(new FileInputStream("/home/weissj/workspace/automatjon/jon-2.0/log.properties"));
 		}catch(Exception e){
@@ -33,10 +38,6 @@ public class BzChecker {
 	
 	public class Bug extends TestopiaObject{
 		private String BZ_URL;
-		private String BZ_PW;
-		private String BZ_USER;
-		private String BZ_TESTRUN_PRODUCT;
-		private String BZ_TESTRUN_TESTPLAN;
 
 		public Bug(){
 			listMethod = "Bug.get_bugs";
@@ -45,12 +46,7 @@ public class BzChecker {
 		
 		protected void loginBZ() throws XmlRpcException, GeneralSecurityException, IOException{
 			BZ_URL = System.getProperty("bugzilla.url");
-			BZ_USER = System.getProperty("bugzilla.login");
-			BZ_PW = System.getProperty("bugzilla.password");
-			BZ_TESTRUN_PRODUCT = System.getProperty("bugzilla.testrun.product");
-			BZ_TESTRUN_TESTPLAN = System.getProperty("bugzilla.testrun.testplan");
-			log.finer("Logging in to bugzilla as " + BZ_USER);
-			session = new Session(BZ_USER, BZ_PW, new URL(BZ_URL));
+			session = new Session(null, null, new URL(BZ_URL));
 			try {
 				session.init();
 			}
@@ -89,9 +85,6 @@ public class BzChecker {
 		ids.add("497793");
 		Object[] bugs = myBug.getBugs("ids",ids);
 		for( Object bug: bugs){
-			//log.info("Is this a Map? " + (bug instanceof Map));
-			//log.info("Is this a Hashtable? " + (bug instanceof Hashtable));
-			//log.info("Is this a HashMap? " + (bug instanceof HashMap));
 			Map bmap = (Map)bug;
 			
 			log.info("Found bug: " + bug.toString() );
