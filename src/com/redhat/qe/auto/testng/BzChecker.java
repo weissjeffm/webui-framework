@@ -25,15 +25,38 @@ import testopia.API.TestopiaObject;
  *
  */
 public class BzChecker {	
-	protected static Logger log = Logger.getLogger(BzChecker.class.getName());
 	
-	public BzChecker(){
+	public enum bzState { NEW, ASSIGNED, MODIFIED, ON_DEV, ON_QA, VERIFIED, FAILS_QA, RELEASE_PENDING, POST, CLOSED };
+	
+	protected static Logger log = Logger.getLogger(BzChecker.class.getName());
+	protected Bug bug;
+	public BzChecker() {
 		try {
 			LogManager.getLogManager().readConfiguration(new FileInputStream("/home/weissj/workspace/automatjon/jon-2.0/log.properties"));
 		}catch(Exception e){
 			System.err.println("Unable to read log config file.");
 		}
-		
+	}
+	
+	public void init() throws Exception{
+		bug = new Bug();
+		bug.connectBZ();
+	}
+	
+	public bzState getBugState(String bugId) throws Exception{
+		Object[] bugs = bug.getBugs("ids", new Object[] {bugId});
+		if (bugs.length ==0) throw new IllegalStateException("No bug found matching ID " + bugId);
+		else if (bugs.length > 1) throw new IllegalStateException("Multiple matches found for bug ID " + bugId);
+		else {
+			Object thisbug = bugs[0];
+			Map bmap = (Map)thisbug;
+			
+			log.finer("Found bug: " + thisbug.toString() );
+			Map internals = (Map)bmap.get("internals");
+			String status = internals.get("bug_status").toString();
+			log.finer("Bug status of " + bugId + " is " + status);
+			return bzState.valueOf(status);
+		}
 	}
 	
 	public class Bug extends TestopiaObject{
@@ -75,10 +98,12 @@ public class BzChecker {
 			map.put(name, value);
 			return getBugs(map);
 		}
+		
+		
 	}
 	
 	public static void main(String[] args) throws Exception{
-		Bug myBug = new BzChecker().new Bug();
+		/*Bug myBug = new BzChecker().new Bug();
 		//List<>
 		myBug.connectBZ();
 		List<String> ids = new ArrayList<String>();
@@ -90,7 +115,11 @@ public class BzChecker {
 			log.info("Found bug: " + bug.toString() );
 			Map internals = (Map)bmap.get("internals");
 			log.info("Bug status is " + internals.get("bug_status"));
-		}
+		}*/
+		BzChecker checker = new BzChecker();
+		checker.init();
+		String id = "497793";
+		log.info("State of " + id + " is " + checker.getBugState(id));
 	}
 
 }
