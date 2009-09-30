@@ -152,7 +152,7 @@ public class ExtendedSelenium extends DefaultSelenium implements IScreenCapture 
 		if (highlight)
 			highlight(locator);
 		super.click(locator);
-		log.log(MyLevel.ACTION, "Clicked on locator: " + humanReadableName);
+		log.log(MyLevel.ACTION, "Clicked on : " + humanReadableName);
 	}
 
 
