@@ -2,18 +2,19 @@ package com.redhat.qe.auto.selenium;
 
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.testng.ITestResult;
+import org.testng.Reporter;
 
 import com.thoughtworks.selenium.CommandProcessor;
 import com.thoughtworks.selenium.DefaultSelenium;
@@ -25,7 +26,7 @@ import com.thoughtworks.selenium.DefaultSelenium;
  * @author jweiss
  *
  */
-public class ExtendedSelenium extends DefaultSelenium implements IScreenCapture {
+public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCapture {
 
 	private static ExtendedSelenium instance = null;
 	
@@ -443,12 +444,7 @@ public class ExtendedSelenium extends DefaultSelenium implements IScreenCapture 
 			//if success use that next time
 			localHtmlDir = htmlDir;
 			fullPathtoFile = localHtmlDir.getCanonicalPath()+ File.separator + outFileName;
-			String base64Png = super.captureEntirePageScreenshotToString("");
-			File ssFile = new File(fullPathtoFile);
-			writeBase64ScreenCapture(base64Png, ssFile);
-			log.log(Level.FINE, "screenshot URL= "+ getLocation());
-			log.log(Level.FINE, "Captured screenshot to "+ ssFile.toURI().toURL());
-			
+			pngRemoteScreenCapture(fullPathtoFile);
 		}
 		catch(Exception e ){
 			log.log(Level.FINER, "Couldn't capture screenshot, trying to write to tmp dir instead.",e);
@@ -461,7 +457,28 @@ public class ExtendedSelenium extends DefaultSelenium implements IScreenCapture 
 			//writeHtmlOnError(screenshotDir);		
 		}
 		return fullPathtoFile;
+	}
+	
+	public void testNGScreenCapture(ITestResult result) throws Exception{
+		String dirName = System.getProperty("selenium.screenshot.dir", System.getProperty("user.dir") + File.separator
+				+ "screenshots");
+		Date rightNow = new Date();
+		String outFileName = result.getTestClass().getName() + "." + result.getMethod().getMethodName() +
+								"." + dateFormat.format(rightNow) + ".png";
+		String fullpath = dirName + File.separator + outFileName;
+		pngRemoteScreenCapture(fullpath);
 		
+		//embed link in testng report
+		Reporter.setCurrentTestResult(result);
+		Reporter.log("<a href='" + new File(fullpath).toURI().toURL() + "'>Screenshot</a>");
+	}
+	
+	protected void pngRemoteScreenCapture(String filepath) throws Exception{
+		String base64Png = super.captureEntirePageScreenshotToString("");
+		File ssFile = new File(filepath);
+		writeBase64ScreenCapture(base64Png, ssFile);
+		log.log(Level.FINE, "screenshot URL= "+ getLocation());
+		log.log(Level.FINE, "Captured screenshot to "+ ssFile.toURI().toURL());
 	}
 	
 	protected void mkdir(String dirName){

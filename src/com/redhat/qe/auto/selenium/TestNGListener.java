@@ -51,7 +51,7 @@ public class TestNGListener implements IResultListener, ISuiteListener {
 	
 	public void onTestFailure(ITestResult result) {
 		try {
-			sc.screenCapture();
+			screencap(result);
 		}
 		catch(NullPointerException npe){
 			log.log(Level.FINE, "Unable to capture screenshot, the capture utility has not been set up yet.");
@@ -84,7 +84,7 @@ public class TestNGListener implements IResultListener, ISuiteListener {
 	
 	public void onConfigurationFailure(ITestResult result) {
 		try {
-			sc.screenCapture();
+			screencap(result);
 		}
 		catch(Exception e){
 			log.log(Level.WARNING, "Unable to capture screenshot.", e);
@@ -115,6 +115,11 @@ public class TestNGListener implements IResultListener, ISuiteListener {
 		log.fine("=========  TestNG Starting Suite:" + suite.getName()+ " =============================================");
 	}
 	
-	
+	protected void screencap(ITestResult result) throws Exception{
+		if (sc instanceof ITestNGScreenCapture){
+			((ITestNGScreenCapture) sc).testNGScreenCapture(result);
+		}
+		else sc.screenCapture();
+	}
 
 }
