@@ -399,6 +399,14 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 		WAITFORPAGE_TIMEOUT = timeout;
 	}
 	
+	/**
+	 * Retrieves the current value for Selenium wait for page timeout. 
+	 * @return Current value of: WAITFORPAGE_TIMEOUT
+	 */
+	public String getTimeout(){
+		return WAITFORPAGE_TIMEOUT;
+	}
+	
 	public void selectPopupWindowAndWait(){
 		String[] winnames = getAllWindowNames();
 		String name = winnames[winnames.length-1]; //select last opened window
