@@ -86,13 +86,32 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 	
 	
 
+	
+
+	public boolean isChecked(Element element) {
+		return super.isChecked(element.getLocator());
+	}
+
+	public String getValue(Element element) {
+		return getValue(element.getLocator());
+	}
+
 	public void clickAndWait(String locator) {
 		clickAndWait(locator, WAITFORPAGE_TIMEOUT, true);
 	}
 	
+	public void clickAndWait(Element element) {
+		click(element);
+		waitForPageToLoad(WAITFORPAGE_TIMEOUT);
+	}
 
+		
 	public void clickAndWait(String locator, String timeout) {
 		clickAndWait(locator, timeout, true);
+	}
+
+	public void clickAndWait(Element element, String timeout) {
+		clickAndWait(element.getLocator(), timeout);
 	}
 
 	public void clickAndWait(String locator, String timeout, boolean highlight) {
@@ -100,11 +119,18 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 		waitForPageToLoad(timeout);
 	}
 	
+	public void clickAndWait(Element element, String timeout, boolean highlight) {
+		clickAndWait(element.getLocator(), timeout, highlight);
+	}
+
 	public void selectAndWait(String selectLocator, String optionLocator){
 		select(selectLocator, optionLocator);
 		waitForPageToLoad();
 	}
 	
+	public void selectAndWait(Element element, String optionLocator){
+		selectAndWait(element.getLocator(), optionLocator);
+	}
 	
 	public void waitForPageToLoad(){
 		waitForPageToLoad(WAITFORPAGE_TIMEOUT);
@@ -137,6 +163,16 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 		click(locator, true);
 	}
 	
+	//TODO need to have logging like this on all similar methods  --JMW 10/5/09
+	public void click(Element element) {
+		super.click(element.getLocator());
+		log.log(MyLevel.ACTION, "Clicked on element: " + element);
+	}
+	
+	public String getText(Element element){
+		return getText(element.getLocator());
+	}
+	
 	@Override
 	public void mouseOver(String locator) {
 		super.mouseOver(locator);
@@ -144,6 +180,17 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 
 	}
 	
+	public void mouseOver(Element element) {
+		mouseOver(element.getLocator());
+	}
+
+	
+	
+	public void keyPress(Element element, String keySequence) {
+		// TODO Auto-generated method stub
+		super.keyPress(element.getLocator(), keySequence);
+	}
+
 	/**
 	 * @param locator
 	 * @param highlight - if true, highlight the element for a fraction of a second before clicking it.
@@ -174,6 +221,11 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 		click(locator);
 	}
 	
+	public void waitAndClick(Element element, String timeout) {
+		waitAndClick(element.getLocator(), timeout);
+	}
+
+	
 	/**
 	 * Similar to waitAndClick-  waits for an element to appear on the page, then clicks it, then waits for the page
 	 * to load. 
@@ -193,8 +245,17 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 		clickAndWait(locator, timeout2);
 	}
 	
+	public void waitAndClickAndWait(Element element, String timeout1, String timeout2) {
+		waitAndClickAndWait(element.getLocator(), timeout1, timeout2);
+	}
+
+	
 	public void waitAndClickAndWait(String locator, String timeout1){
 		waitAndClickAndWait(locator, timeout1, WAITFORPAGE_TIMEOUT);
+	}
+	
+	public void waitAndClickAndWait(Element element, String timeout1) {
+		waitAndClickAndWait(element.getLocator(), timeout1);
 	}
 	
 	public void waitForElement(String locator, String timeout){
@@ -202,11 +263,19 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 		super.waitForCondition("selenium.isElementPresent(\"" + locator + "\");", timeout);
 	}
 	
+	public void waitForElement(Element element, String timeout){
+		waitForElement(element.getLocator(), timeout);
+	}
+	
 	public void waitForInvisible(String locator, String timeout){
 		// if the locator is not present, then it is effectively invisible
 		if (!super.isElementPresent(locator)) return;
 		log.info("Waiting for element to be invisible '" + locator  + "', with timeout of " + timeout + ".");
 		super.waitForCondition("!selenium.isVisible(\"" + locator + "\");", timeout);
+	}
+	
+	public void waitForInvisible(Element element, String timeout){
+		waitForInvisible(element.getLocator(), timeout);
 	}
 	
 	@Override
@@ -217,6 +286,10 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 				+ locator + "'");
 	}
 	
+	public void type(Element element, String value) {
+		type(element.getLocator(), value);
+	}
+	
 	@Override
 	public void typeKeys(String locator, String value) {
 		highlight(locator);
@@ -225,6 +298,9 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 				+ locator + "'");
 	}
 	
+	public void typeKeys(Element element, String value) {
+		typeKeys(element.getLocator(), value);
+	}
 	
 	public void type(String locator,String humanReadableName, String value) {
 		highlight(locator);
@@ -235,6 +311,12 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 	
 	public void setText(String locator, String value){
 		type(locator, value);
+	}
+	
+	public void setText(Element element, String value){
+		highlight(element.getLocator());
+		super.type(element.getLocator(), value);
+		log.log(MyLevel.ACTION, "Typed '" + value + "' into textbox '" + element);
 	}
 	
 	public void setText(String locator, String humanReadableName,String value){
@@ -257,6 +339,11 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 				+ locator + "'");
 	}
 	
+	public void check(Element element){
+		check(element.getLocator());
+	}
+	
+	
 	public void checkUncheck(String locator, boolean check){
 		if (isChecked(locator) != check) {
 			super.click(locator);
@@ -265,6 +352,10 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 		else log.log(Level.FINE, "Checkbox or radio '"
 				+ locator + "' is already " + (check ? "checked.": "unchecked."));
 	}
+	
+	public void checkUncheck(Element element, boolean check){
+		checkUncheck(element.getLocator(), check);
+	}
 
 	@Override
 	public void select(String selectLocator, String optionLocator) {
@@ -272,6 +363,11 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 		log.log(MyLevel.ACTION, "Selected item '"
 				+ optionLocator + "' in list '" + selectLocator + "'.");
 	}
+	
+	public void select(Element element, String optionLocator) {
+		super.select(element.getLocator(), optionLocator);
+		log.log(MyLevel.ACTION, "Selected item '"
+				+ optionLocator + "' in list " + element);	}
 	
 	/**
 	 * Selects a list item by value.  To be used when a select list doesn't have any other 
@@ -292,49 +388,48 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 		log.log(MyLevel.ACTION, "Unchecked checkbox '"
 				+ locator + "'");
 	}
+	
+	public void uncheck(Element element){
+		uncheck(element.getLocator());
+	}
+	
 	/*
 	 * @see com.thoughtworks.selenium.DefaultSelenium#isElementPresent(java.lang.String)
 	 */
 	@Override
 	public boolean isElementPresent(String element){
-		if(super.isElementPresent(element)){
-		log.log(Level.INFO,"Found element: "+element);
-		highlight(element);
-		return true;
-		}
-		else{
-			log.fine(" Did not find element: '"+ element+"'");
-			return false;
-		}
+		return isElementPresent(element, Level.FINER);
 	}
 	
-	public boolean isElementPresent(String element,boolean logResults){
-		if(super.isElementPresent(element)){
-		if(logResults)	
-			log.log(Level.INFO,"Found element: "+element);
-		highlight(element);
-		return true;
-		}
-		else{
-			if(logResults)
-				log.fine(" Did not find element: '"+ element+"'");
-			return false;
-		}
+	public boolean isElementPresent(Element element){
+		return isElementPresent(element.getLocator());
 	}
 	
-	
-	public boolean isTextPresent(String txt, boolean logResults){
-		if(super.isTextPresent(txt)){
-			if(logResults){
-			log.log(Level.INFO,"Success, Found text: '"+txt+"'");
-			}
-			//sel.highlight(txt);
+	public boolean isElementPresent(String element,Level level){
+		if(super.isElementPresent(element)){
+			log.log(level,"Found element: '"+ element+"'");
+			highlight(element);
 			return true;
-			}
-			else{
-				log.log(Level.INFO,"Did not find text: '"+ txt+"'");
-				return false;
-			}
+		}
+		else {	
+			log.log(level, "Did not find element: '"+ element+"'");
+			return false;
+		}
+	}
+	
+	public boolean isElementPresent(Element element,Level level){
+		return isElementPresent(element.getLocator(), level);
+	}
+	
+	public boolean isTextPresent(String txt, Level level){
+		if(super.isTextPresent(txt)){
+			log.log(level,"Found text: '"+ txt+"'");
+			return true;
+		}
+		else {	
+			log.log(level, "Did not find text: '"+ txt+"'");
+			return false;
+		}
 	}
 	
 	@Override
@@ -352,7 +447,7 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 	}
 	
 
-	public boolean refreshAndIsElementPresent(String locator, long timeout_ms, long refreshInterval_ms){
+	public boolean isElementPresentWithRefreshing(String locator, long timeout_ms, long refreshInterval_ms){
 		if (isElementPresent(locator))
 			return true;
 		long startTime = System.currentTimeMillis();
@@ -364,6 +459,10 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 				return true;
 		}
 		return false;
+	}
+	
+	public boolean isElementPresentWithRefreshing(Element element, long timeout_ms, long refreshInterval_ms){
+		return isElementPresentWithRefreshing(element.getLocator(), timeout_ms, refreshInterval_ms);
 	}
 
 	@Override
@@ -471,8 +570,7 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 		String dirName = System.getProperty("selenium.screenshot.dir", System.getProperty("user.dir") + File.separator
 				+ "screenshots");
 		Date rightNow = new Date();
-		String outFileName = result.getTestClass().getName() + "." + result.getMethod().getMethodName() +
-								"." + dateFormat.format(rightNow) + ".png";
+		String outFileName = dateFormat.format(rightNow) + "-" + result.getTestClass().getName() + "." + result.getMethod().getMethodName() + ".png";
 		String fullpath = dirName + File.separator + outFileName;
 		pngRemoteScreenCapture(fullpath);
 		
