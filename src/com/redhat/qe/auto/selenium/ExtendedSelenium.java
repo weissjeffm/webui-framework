@@ -85,8 +85,9 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 	}
 	
 	
-
-	
+	public boolean isEditable(Element element) {
+		return super.isEditable(element.getLocator());
+	}
 
 	public boolean isChecked(Element element) {
 		return super.isChecked(element.getLocator());
@@ -381,6 +382,9 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 		select("//select[option[@value='" + value + "']]", "value=" + value);
 	}
 	
+	public void select(Element element){
+		select(element.getLocator());
+	}
 
 	@Override
 	public void uncheck(String locator) {
