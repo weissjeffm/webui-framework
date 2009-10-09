@@ -1,6 +1,7 @@
 package com.redhat.qe.auto.selenium;
 
 import java.io.BufferedWriter;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -10,6 +11,7 @@ import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -547,6 +549,35 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 		}
 	}
 	
+	/**
+	 * Gets the HTML attributes for a given locator
+	 * @param locator 
+	 * @return a Properties object containing all the attributes of the 
+	 * element.  Also includes a "tagName" attribute which contains the tag name,
+	 * eg, input, a, div, etc.
+	 * @throws IOException
+	 */
+	public Properties getAttributes(String locator) throws IOException{
+		String attributesScript =
+	         " {" +
+	            "var elem =  this.browserbot.findElement(\"" + locator + "\");" +
+	            "var attrs = elem.attributes; " +
+	            " var str='tagName=' + elem.tagName + '\\n'; " +
+	            " for(var i = 0; i < attrs.length; i++) { " +
+	            "  	str = str + attrs[i].name + '=' + attrs[i].value + '\\n'; " +
+	            " }; " +
+	            " str; }";
+		String result = getEval(attributesScript);
+		StringBuffer StringBuffer1 = new StringBuffer(result);
+		ByteArrayInputStream Bis1 = new ByteArrayInputStream(StringBuffer1.toString().getBytes("UTF-8"));
+		Properties props = new Properties();
+		props.load(Bis1);
+		return props;
+	}
+	
+	public Properties getAttributes(Element element) throws IOException{
+		return getAttributes(element.getLocator());
+	}
 	
 	public String screenCapture() throws Exception {
 		String dirName = System.getProperty("selenium.screenshot.dir", System.getProperty("user.dir") + File.separator
