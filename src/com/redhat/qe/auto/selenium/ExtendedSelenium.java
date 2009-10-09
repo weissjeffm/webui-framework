@@ -167,7 +167,16 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 	//TODO need to have logging like this on all similar methods  --JMW 10/5/09
 	public void click(Element element) {
 		super.click(element.getLocator());
-		log.log(MyLevel.ACTION, "Clicked on element: " + element);
+		Element humanReadable = element.getHumanReadable();
+		if (humanReadable != null) {
+			try {
+				log.log(MyLevel.ACTION, "Clicked on element: " + this.getText(humanReadable));
+				return;
+			} catch(Exception e) {
+				log.log(Level.FINEST, "Unable to get text for associated human readable element: " + humanReadable, e);
+			}		
+		}
+	    log.log(MyLevel.ACTION, "Clicked on element: " + element);
 	}
 	
 	public String getText(Element element){
@@ -367,6 +376,17 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 	
 	public void select(Element element, String optionLocator) {
 		super.select(element.getLocator(), optionLocator);
+		Element humanReadable = element.getHumanReadable();
+		if (humanReadable != null) {
+			try {
+				log.log(MyLevel.ACTION, "Selected item '"
+						+ optionLocator + "' in list " + getText(humanReadable));
+				return;
+			} catch(Exception e) {
+				log.log(Level.FINEST, "Unable to get text for associated human readable element: " + humanReadable, e);
+			}		
+		}
+
 		log.log(MyLevel.ACTION, "Selected item '"
 				+ optionLocator + "' in list " + element);	}
 	

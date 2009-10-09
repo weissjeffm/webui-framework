@@ -5,7 +5,10 @@ public class Element {
 	protected String locator = null;
 	protected LocatorStrategy locatorStrategy= null;
 	protected String[] locatorStrategyArgs = null;
+	protected Element humanReadable = null;
 	
+	
+
 	public Element(){
 		
 	}
@@ -20,6 +23,11 @@ public class Element {
 	public Element(LocatorStrategy locatorStrategy, String... locatorStrategyArgs){
 		this.locatorStrategy = locatorStrategy;
 		this.locatorStrategyArgs = locatorStrategyArgs;
+	}
+	
+	public Element(String locator, Element humanReadable) {
+		this.locator = locator;
+		this.humanReadable = humanReadable;
 	}
 	
 	public String getLocator(){
@@ -42,6 +50,10 @@ public class Element {
 	
 	public String[] getArguments() {
 		return locatorStrategyArgs;
+	}
+	
+	public Element getHumanReadable() {
+		return humanReadable;
 	}
 
 	public String toString(){
