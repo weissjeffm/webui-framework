@@ -235,7 +235,8 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 	}
 	
 	public void waitAndClick(Element element, String timeout) {
-		waitAndClick(element.getLocator(), timeout);
+		super.waitForCondition("selenium.isElementPresent(\"" + element.getLocator() + "\");", timeout);
+		click(element);
 	}
 
 	
@@ -591,13 +592,23 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 	 */
 	public String getDescription(Element element) {
 		String elementStr = element.toString();
-		String elementType = getElementType(element);
+		String elementType = "";
+		try {
+			 elementType = getElementType(element);
+		}catch(Exception e) {
+			log.log(Level.FINER, "Could not retrieve element type, perhaps it is not present: " + elementStr, e);
+		}
 		elementStr =elementStr.replaceAll("^" +elementType + " ", ""); //remove duplicate element type strings
 		return elementType + ": " + elementStr;
-		
 	}
+	
 	public String getDescription(String locator) {
-		return getElementType(locator) + ": " + locator;
+		try {
+			return getElementType(locator) + ": " + locator;
+		} catch(Exception e) {
+			log.log(Level.FINER, "Could not get element type for '" + locator + "', perhaps it is not present?", e);
+		}
+		return locator;
 	}
 	
 	
@@ -606,7 +617,13 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 		Properties attrs = getAttributes(locator);
 		String tagName = attrs.getProperty("tagName").toLowerCase();
 		if (tagName.equals("input")) {
-			String type = attrs.getProperty("type").toLowerCase();
+			String type = null;
+			try {
+				type = attrs.getProperty("type").toLowerCase();
+			}
+			catch(NullPointerException npe) {
+				return "textbox";
+			}
 			if (type.equals("text")) return "textbox";
 			if (type.equals("button")) return "button";
 			if (type.equals("checkbox")) return "checkbox";
