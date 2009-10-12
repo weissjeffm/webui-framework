@@ -14,6 +14,7 @@ import java.util.Date;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
 import org.testng.ITestResult;
 import org.testng.Reporter;
@@ -158,7 +159,7 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 			highlight(locator);
 		
 		super.click(locator);
-		log.log(MyLevel.ACTION, "Clicked on " + getElementType(locator) + ": " + locator);
+		log.log(MyLevel.ACTION, "Clicked on " + getDescription(locator));
 	}
 
 	@Override
@@ -178,7 +179,7 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 				log.log(Level.FINEST, "Unable to get text for associated human readable element: " + humanReadable, e);
 			}		
 		}
-	    log.log(MyLevel.ACTION, "Clicked on " + getElementType(element) + ": " + element);
+	    log.log(MyLevel.ACTION, "Clicked on " + getDescription(element));
 	}
 	
 	public String getText(Element element){
@@ -188,7 +189,7 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 	@Override
 	public void mouseOver(String locator) {
 		super.mouseOver(locator);
-		log.log(MyLevel.ACTION, "Hovered over " + getElementType(locator) + ": " + locator);
+		log.log(MyLevel.ACTION, "Hovered over " + getDescription(locator));
 
 	}
 	
@@ -276,7 +277,8 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 	}
 	
 	public void waitForElement(Element element, String timeout){
-		waitForElement(element.getLocator(), timeout);
+		log.info("Waiting for element '" + element  + "', with timeout of " + timeout + ".");
+		super.waitForCondition("selenium.isElementPresent(\"" + element.getLocator() + "\");", timeout);
 	}
 	
 	public void waitForInvisible(String locator, String timeout){
@@ -294,8 +296,7 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 	public void type(String locator, String value) {
 		highlight(locator);
 		super.type(locator, value);
-		log.log(MyLevel.ACTION, "Typed '" + value + "' into textbox '"
-				+ locator + "'");
+		log.log(MyLevel.ACTION, "Typed '" + value + "' into " + getDescription(locator));
 	}
 	
 	public void type(Element element, String value) {
@@ -306,8 +307,7 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 	public void typeKeys(String locator, String value) {
 		highlight(locator);
 		super.typeKeys(locator, value);
-		log.log(MyLevel.ACTION, "Typed keys '" + value + "' into textbox '"
-				+ locator + "'");
+		log.log(MyLevel.ACTION, "Typed keys '" + value + "' into " + getDescription(locator));
 	}
 	
 	public void typeKeys(Element element, String value) {
@@ -328,7 +328,7 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 	public void setText(Element element, String value){
 		highlight(element.getLocator());
 		super.type(element.getLocator(), value);
-		log.log(MyLevel.ACTION, "Typed '" + value + "' into " + getElementType(element) + ": " + element);
+		log.log(MyLevel.ACTION, "Typed '" + value + "' into " + getDescription(element));
 	}
 	
 	public void setText(String locator, String humanReadableName,String value){
@@ -347,8 +347,7 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 	@Override
 	public void check(String locator) {
 		checkUncheck(locator, true);
-		log.log(MyLevel.ACTION, "Checked " + getElementType(locator) + ": "
-				+ locator + "'");
+		log.log(MyLevel.ACTION, "Checked " + getDescription(locator));
 	}
 	
 	public void check(Element element){
@@ -361,8 +360,7 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 			super.click(locator);
 			if (isChecked(locator) != check)super.check(locator); //just to be sure
 		}
-		else log.log(Level.FINE, "Checkbox or radio '"
-				+ locator + "' is already " + (check ? "checked.": "unchecked."));
+		else log.log(Level.FINE, getDescription(locator) + " is already " + (check ? "checked.": "unchecked."));
 	}
 	
 	public void checkUncheck(Element element, boolean check){
@@ -433,12 +431,12 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 	
 	public boolean isElementPresent(String element,Level level){
 		if(super.isElementPresent(element)){
-			log.log(level,"Found " + getElementType(element) + ": "+ element);
+			log.log(level,"Found " + getDescription(element));
 			highlight(element);
 			return true;
 		}
 		else {	
-			log.log(level, "Did not find " + getElementType(element) + ": " + element);
+			log.log(level, "Did not find " + getDescription(element));
 			return false;
 		}
 	}
@@ -585,6 +583,24 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 	public String getElementType(Element element) {
 		return getElementType(element.getLocator());
 	}
+	
+	/**
+	 * Return a string description of what was acted upon by selenium
+	 * @param element
+	 * @return
+	 */
+	public String getDescription(Element element) {
+		String elementStr = element.toString();
+		String elementType = getElementType(element);
+		elementStr =elementStr.replaceAll("^" +elementType + " ", ""); //remove duplicate element type strings
+		return elementType + ": " + elementStr;
+		
+	}
+	public String getDescription(String locator) {
+		return getElementType(locator) + ": " + locator;
+	}
+	
+	
 	
 	public String getElementType(String locator) {
 		Properties attrs = getAttributes(locator);
