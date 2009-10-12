@@ -158,7 +158,7 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 			highlight(locator);
 		
 		super.click(locator);
-		log.log(MyLevel.ACTION, "Clicked on locator: " + locator);
+		log.log(MyLevel.ACTION, "Clicked on " + getElementType(locator) + ": " + locator);
 	}
 
 	@Override
@@ -178,7 +178,7 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 				log.log(Level.FINEST, "Unable to get text for associated human readable element: " + humanReadable, e);
 			}		
 		}
-	    log.log(MyLevel.ACTION, "Clicked on element: " + element);
+	    log.log(MyLevel.ACTION, "Clicked on " + getElementType(element) + ": " + element);
 	}
 	
 	public String getText(Element element){
@@ -188,7 +188,7 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 	@Override
 	public void mouseOver(String locator) {
 		super.mouseOver(locator);
-		log.log(MyLevel.ACTION, "Hovered over locator: " + locator);
+		log.log(MyLevel.ACTION, "Hovered over " + getElementType(locator) + ": " + locator);
 
 	}
 	
@@ -317,7 +317,7 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 	public void type(String locator,String humanReadableName, String value) {
 		highlight(locator);
 		super.type(locator, value);
-		log.log(MyLevel.ACTION, "Typed '" + value + "' into textbox '"
+		log.log(MyLevel.ACTION, "Typed '" + value + "' into " + getElementType(locator) + ": "
 				+ humanReadableName + "'");
 	}
 	
@@ -328,7 +328,7 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 	public void setText(Element element, String value){
 		highlight(element.getLocator());
 		super.type(element.getLocator(), value);
-		log.log(MyLevel.ACTION, "Typed '" + value + "' into textbox '" + element);
+		log.log(MyLevel.ACTION, "Typed '" + value + "' into " + getElementType(element) + ": " + element);
 	}
 	
 	public void setText(String locator, String humanReadableName,String value){
@@ -347,7 +347,7 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 	@Override
 	public void check(String locator) {
 		checkUncheck(locator, true);
-		log.log(MyLevel.ACTION, "Checked checkbox or radio '"
+		log.log(MyLevel.ACTION, "Checked " + getElementType(locator) + ": "
 				+ locator + "'");
 	}
 	
@@ -433,12 +433,12 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 	
 	public boolean isElementPresent(String element,Level level){
 		if(super.isElementPresent(element)){
-			log.log(level,"Found element: '"+ element+"'");
+			log.log(level,"Found " + getElementType(element) + ": "+ element);
 			highlight(element);
 			return true;
 		}
 		else {	
-			log.log(level, "Did not find element: '"+ element+"'");
+			log.log(level, "Did not find " + getElementType(element) + ": " + element);
 			return false;
 		}
 	}
@@ -557,7 +557,7 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 	 * eg, input, a, div, etc.
 	 * @throws IOException
 	 */
-	public Properties getAttributes(String locator) throws IOException{
+	public Properties getAttributes(String locator) {
 		String attributesScript =
 	         " {" +
 	            "var elem =  this.browserbot.findElement(\"" + locator + "\");" +
@@ -567,17 +567,48 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 	            "  	str = str + attrs[i].name + '=' + attrs[i].value + '\\n'; " +
 	            " }; " +
 	            " str; }";
+		Properties props = new Properties();
 		String result = getEval(attributesScript);
 		StringBuffer StringBuffer1 = new StringBuffer(result);
-		ByteArrayInputStream Bis1 = new ByteArrayInputStream(StringBuffer1.toString().getBytes("UTF-8"));
-		Properties props = new Properties();
-		props.load(Bis1);
+		try {
+			ByteArrayInputStream Bis1 = new ByteArrayInputStream(StringBuffer1.toString().getBytes("UTF-8"));
+			props.load(Bis1);
+		}catch(IOException ioe) {
+			throw new RuntimeException(ioe);
+		}
 		return props;
 	}
 	
-	public Properties getAttributes(Element element) throws IOException{
+	public Properties getAttributes(Element element) {
 		return getAttributes(element.getLocator());
 	}
+	public String getElementType(Element element) {
+		return getElementType(element.getLocator());
+	}
+	
+	public String getElementType(String locator) {
+		Properties attrs = getAttributes(locator);
+		String tagName = attrs.getProperty("tagName").toLowerCase();
+		if (tagName.equals("input")) {
+			String type = attrs.getProperty("type").toLowerCase();
+			if (type.equals("text")) return "textbox";
+			if (type.equals("button")) return "button";
+			if (type.equals("checkbox")) return "checkbox";
+			if (type.equals("image")) return "input image";
+			if (type.equals("password")) return "password textbox";
+			if (type.equals("radio")) return "radio button";
+			if (type.equals("submit")) return "submit button";
+			return tagName + " " + type;
+		}
+		else if (tagName.equals("a")) return "link";
+		else if (tagName.equals("select")) return "selectlist";
+		else if (tagName.equals("div")) return "link";
+		else if (tagName.equals("img")) return "image";
+		else if (tagName.equals("td")) return "table cell";
+		else if (tagName.equals("span")) return "link";
+		else return tagName;	
+	}
+	
 	
 	public String screenCapture() throws Exception {
 		String dirName = System.getProperty("selenium.screenshot.dir", System.getProperty("user.dir") + File.separator

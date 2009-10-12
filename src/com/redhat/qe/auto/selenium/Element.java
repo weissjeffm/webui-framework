@@ -62,11 +62,11 @@ public class Element {
 		if (locatorStrategy != null) {
 			sb.append(locatorStrategy.getName());
 			for (String arg:locatorStrategyArgs){
-				sb.append(" " + arg);
+				sb.append(" '" + arg + "'");
 			}
 			sb.append(". (");
 		}
-		sb.append( "locator '" + getLocator() + "'");
+		sb.append( "'" + getLocator() + "'");
 		if (locatorStrategy != null) {
 			sb.append(")");
 		}
