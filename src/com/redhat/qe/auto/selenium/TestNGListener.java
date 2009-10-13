@@ -1,17 +1,13 @@
 package com.redhat.qe.auto.selenium;
 
-import java.io.File;
-import java.net.InetAddress;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.testng.ISuite;
 import org.testng.ISuiteListener;
 import org.testng.ITestContext;
-import org.testng.ITestListener;
 import org.testng.ITestResult;
 import org.testng.SkipException;
-import org.testng.internal.IConfigurationListener;
 import org.testng.internal.IResultListener;
 
 /**

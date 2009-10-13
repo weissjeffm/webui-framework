@@ -14,7 +14,6 @@ import java.util.Date;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.regex.Pattern;
 
 import org.testng.ITestResult;
 import org.testng.Reporter;

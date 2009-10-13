@@ -5,9 +5,6 @@ package com.redhat.qe.auto.selenium;
 import java.awt.AWTException;
 import java.awt.Robot;
 import java.awt.event.KeyEvent;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
 import java.util.logging.Logger;
 
 public class PopUpHandler implements Runnable{

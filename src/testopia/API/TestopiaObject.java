@@ -9,8 +9,6 @@ import java.util.logging.Logger;
 
 import org.apache.xmlrpc.XmlRpcException;
 
-import com.redhat.qe.auto.testopia.TestopiaTestNGListener;
-
 public abstract class TestopiaObject {
 
 	protected Session session;

@@ -1,5 +1,7 @@
 package com.redhat.qe.auto.instantiate;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -48,6 +50,10 @@ public class VersionedInstantiator {
 	 */
 	@SuppressWarnings("unchecked")
 	public Object getVersionedInstance(Class baseClass) {
+		return getVersionedInstance(baseClass, new Object[] {});
+	}
+	
+	public Object getVersionedInstance(Class baseClass, Object... args) {
 		log.finer("Product version currently running is '" + runningVersion + "'.");
 		List<String> validVersions = getValidVersionList(packageMap.get(runningVersion));
 		Iterator<String> it = validVersions.iterator();
@@ -61,10 +67,16 @@ public class VersionedInstantiator {
 				 log.finer("Trying to instantiate: " + className);
 
 				 clazz = Class.forName(className);
-				 //see if we already have an instance
-				 o = instances.get(clazz);
-				 //if not, create a new one
-				 if (o == null) o = clazz.newInstance();
+				 if (args.length == 0) {
+					 //see if we already have a no-arg instance
+					 o = instances.get(clazz);
+					 //if not, create a new one
+					 if (o == null) o = clazz.newInstance();
+				 }
+				 else {
+					 //create a new instance with the args
+					 o = newInstance(clazz, args);
+				 }
 			}
 			catch(ClassNotFoundException cnfe){
 				log.log(Level.FINEST, "Couldn't instantiate: " + ver, cnfe);
@@ -87,6 +99,41 @@ public class VersionedInstantiator {
 		}
 		else throw new RuntimeException ("The versioned class of " + baseClass.getName() + ", '" + o.getClass().getName() + "', don't have a parent/subclass relationship.");
 		
+
+	}
+	
+	protected Object newInstance(Class clazz, Object... args) {
+		Constructor[] constrs = clazz.getConstructors();
+		for (int i=0; i<constrs.length; i++) {
+			if (argsMatch(constrs[i], args)) {
+				try {
+					return constrs[i].newInstance(args);
+				}
+				catch(InvocationTargetException ite) {
+					log.log(Level.FINEST, "Could not create new instance with constructor " + constrs[i] + " and args " + args);
+					continue;
+				}
+				catch(IllegalAccessException ite) {
+					log.log(Level.FINEST, "Could not create new instance with constructor " + constrs[i] + " and args " + args);
+					continue;
+				}
+				catch(InstantiationException ite) {
+					log.log(Level.FINEST, "Could not create new instance with constructor " + constrs[i] + " and args " + args);
+					continue;
+				}
+			}
+		}
+		throw new RuntimeException("Could not instantiate " + clazz.getName() + " with the given arguments.");
+	}
+	
+	protected boolean argsMatch(Constructor constr, Object... args) {
+		Class[] c_args = constr.getParameterTypes();
+		if (args.length != c_args.length) return false;
+		
+		for (int i=0; i<args.length;i++) {
+			if (! c_args[i].isInstance(args[i])) return false;
+		}
+		return true;
 	}
 	
 	protected String getClassName(Class<Object> baseClass, String versionedPackage){

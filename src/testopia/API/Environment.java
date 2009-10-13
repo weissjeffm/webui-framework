@@ -26,10 +26,6 @@ import java.util.Map;
 
 import org.apache.xmlrpc.XmlRpcException;
 
-import testopia.API.TestopiaObject.BooleanAttribute;
-import testopia.API.TestopiaObject.IntegerAttribute;
-import testopia.API.TestopiaObject.StringAttribute;
-
 /**
  * Allows the user to get an environment from it's ID. It can also create 
  * and update an environment

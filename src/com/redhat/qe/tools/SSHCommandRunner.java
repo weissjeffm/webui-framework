@@ -10,7 +10,6 @@ import java.util.logging.Logger;
 
 import com.trilead.ssh2.ChannelCondition;
 import com.trilead.ssh2.Connection;
-import com.trilead.ssh2.SCPClient;
 import com.trilead.ssh2.Session;
 import com.trilead.ssh2.StreamGobbler;
 

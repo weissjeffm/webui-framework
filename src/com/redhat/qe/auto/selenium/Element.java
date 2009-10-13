@@ -3,10 +3,15 @@ package com.redhat.qe.auto.selenium;
 public class Element {
 
 	protected String locator = null;
+	
+
+
 	protected LocatorStrategy locatorStrategy= null;
 	protected String[] locatorStrategyArgs = null;
 	protected Element humanReadable = null;
 	
+	
+
 	
 
 	public Element(){
@@ -56,6 +61,32 @@ public class Element {
 		return humanReadable;
 	}
 
+	
+	public void setLocator(String locator) {
+		this.locator = locator;
+	}
+
+	public void setLocatorStrategy(LocatorStrategy locatorStrategy) {
+		this.locatorStrategy = locatorStrategy;
+	}
+	
+	public void setHumanReadable(Element humanReadable) {
+		this.humanReadable = humanReadable;
+	}
+	
+	
+	public void setLocatorStrategyArgs(String[] locatorStrategyArgs) {
+		this.locatorStrategyArgs = locatorStrategyArgs;
+	}
+	
+	/**
+	 * @param index - 1 based index of the arg list to set
+	 * @param locatorStrategyArg - new value
+	 */
+	public void setLocatorStrategyArg(int index, String locatorStrategyArg) {
+		this.locatorStrategyArgs[index-1]=locatorStrategyArg;
+	}
+	
 	public String toString(){
 		StringBuffer sb = new StringBuffer();
 		

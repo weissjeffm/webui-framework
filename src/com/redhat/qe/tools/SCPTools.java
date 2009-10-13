@@ -2,13 +2,11 @@ package com.redhat.qe.tools;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.trilead.ssh2.Connection;
 import com.trilead.ssh2.SCPClient;
-import com.trilead.ssh2.SFTPv3Client;
 
 public class SCPTools {
 	protected String userName;
