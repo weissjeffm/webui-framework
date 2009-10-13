@@ -557,14 +557,15 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 	 */
 	public Properties getAttributes(String locator) {
 		String attributesScript =
-	         " {" +
-	            "var elem =  this.browserbot.findElement(\"" + locator + "\");" +
-	            "var attrs = elem.attributes; " +
-	            " var str='tagName=' + elem.tagName + '\\n'; " +
-	            " for(var i = 0; i < attrs.length; i++) { " +
-	            "  	str = str + attrs[i].name + '=' + attrs[i].value + '\\n'; " +
-	            " }; " +
-	            " str; }";
+			"{" +
+				"var elem =  this.browserbot.findElement(\"" + locator + "\");" +
+				"var attrs = elem.attributes;" +
+				"var str='tagName=' + elem.tagName + '\\n';" +
+				"for(var i = 0; i < attrs.length; i++) {" +
+				"  	str = str + attrs[i].name + '=' + attrs[i].value + '\\n';" +
+				"};" +
+				"str;" +  // the value of str is the returned String result from getEval(attributesScript);
+			"}";
 		Properties props = new Properties();
 		String result = getEval(attributesScript);
 		StringBuffer StringBuffer1 = new StringBuffer(result);
