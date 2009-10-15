@@ -429,6 +429,19 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 		return isElementPresent(element.getLocator());
 	}
 	
+	public boolean isElementPresent(TabElement element){
+		return (isElementPresent(element.getLocator()) |
+				isElementPresent(element.getAlternateElement().getLocator()));
+	}
+	
+	public boolean isElementSelected(TabElement tabElement) {
+		if (tabElement.getAlternateElement().equals(tabElement)) {
+			log.log(MyLevel.WARNING, "Do not know how to determine if this tab element is selected: "+this);
+			return false;
+		}
+		return isElementPresent(tabElement.getAlternateElement().getLocator()) && !isElementPresent(tabElement.getLocator());
+	}
+	
 	public boolean isElementPresent(String element,Level level){
 		if(super.isElementPresent(element)){
 			log.log(level,"Found " + getDescription(element));

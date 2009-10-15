@@ -21,7 +21,5 @@ public class TabElement extends Element{
 		else return new Element(
 				alternateLocatorStrategy == null ? locatorStrategy : alternateLocatorStrategy,
 				locatorStrategyArgs);
-	}
-
-	
+	}	
 }
