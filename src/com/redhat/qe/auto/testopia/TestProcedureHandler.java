@@ -17,7 +17,7 @@ public class TestProcedureHandler extends Handler implements ITestProcedureHandl
 	
 	public TestProcedureHandler() {
  	
-		setLevel(MyLevel.ACTION);
+		setLevel(MyLevel.INFO);
 		setFormatter(new TestProcedureFormatter());
 	
     }
