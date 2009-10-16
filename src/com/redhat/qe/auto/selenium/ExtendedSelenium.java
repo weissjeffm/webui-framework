@@ -7,6 +7,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -28,7 +29,12 @@ import com.thoughtworks.selenium.DefaultSelenium;
  * @author jweiss
  *
  */
-public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCapture {
+public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCapture, Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -4832886620261520916L;
 
 	private static ExtendedSelenium instance = null;
 	
@@ -52,8 +58,8 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 
 	@Override
 	public void start() {
+		log.finer("Start selenium.");
 		super.start();
-		log.finest("Selenium started.");
 
 		// TODO this is ugly
 		TestNGListener.setScreenCaptureUtility(this);
@@ -74,6 +80,7 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 
 	@Override
 	public void stop() {
+		log.finer("Stop selenium.");
 		super.stop();
 		//added this as part of a fix to guarantee that only instance of selenium
 		//is running.  So be sure that there is only one browser session up at a time
@@ -141,6 +148,7 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 	
 	@Override
 	public void waitForPageToLoad(String timeout){
+		log.finer("Wait for page to load.");
 		long start = System.currentTimeMillis();
 		super.waitForPageToLoad(timeout);
 		Double waitedInSecs = ((System.currentTimeMillis() - start)) / 1000.0;
@@ -154,11 +162,10 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 	 *   This makes it easier to see what selenium is doing "live".
 	 */
 	public void click(String locator, boolean highlight)  {
+		log.log(MyLevel.ACTION, "Click on " + getDescription(locator));
 		if (highlight)
 			highlight(locator);
-		
 		super.click(locator);
-		log.log(MyLevel.ACTION, "Clicked on " + getDescription(locator));
 	}
 
 	@Override
@@ -168,17 +175,21 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 	
 	//TODO need to have logging like this on all similar methods  --JMW 10/5/09
 	public void click(Element element) {
+		logClick(element);
 		super.click(element.getLocator());
+	}
+	
+	protected void logClick(Element element){
 		Element humanReadable = element.getHumanReadable();
 		if (humanReadable != null) {
 			try {
-				log.log(MyLevel.ACTION, "Clicked on element: " + this.getText(humanReadable));
+				log.log(MyLevel.ACTION, "Click on element: " + this.getText(humanReadable));
 				return;
 			} catch(Exception e) {
 				log.log(Level.FINEST, "Unable to get text for associated human readable element: " + humanReadable, e);
 			}		
 		}
-	    log.log(MyLevel.ACTION, "Clicked on " + getDescription(element));
+	    log.log(MyLevel.ACTION, "Click on " + getDescription(element));
 	}
 	
 	public String getText(Element element){
@@ -187,8 +198,8 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 	
 	@Override
 	public void mouseOver(String locator) {
+		log.log(MyLevel.ACTION, "Hover over " + getDescription(locator));
 		super.mouseOver(locator);
-		log.log(MyLevel.ACTION, "Hovered over " + getDescription(locator));
 
 	}
 	
@@ -209,10 +220,10 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 	 *   This makes it easier to see what selenium is doing "live".
 	 */
 	public void click(String locator, String humanReadableName,boolean highlight) {
+		log.log(MyLevel.ACTION, "Click on : " + humanReadableName);
 		if (highlight)
 			highlight(locator);
 		super.click(locator);
-		log.log(MyLevel.ACTION, "Clicked on : " + humanReadableName);
 	}
 
 
@@ -277,14 +288,14 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 	}
 	
 	public void waitForElement(Element element, String timeout){
-		log.info("Waiting for element '" + element  + "', with timeout of " + timeout + ".");
+		log.info("Wait for element '" + element  + "', with timeout of " + timeout + ".");
 		super.waitForCondition("selenium.isElementPresent(\"" + element.getLocator() + "\");", timeout);
 	}
 	
 	public void waitForInvisible(String locator, String timeout){
 		// if the locator is not present, then it is effectively invisible
 		if (!super.isElementPresent(locator)) return;
-		log.info("Waiting for element to be invisible '" + locator  + "', with timeout of " + timeout + ".");
+		log.info("Wait for element to be invisible '" + locator  + "', with timeout of " + timeout + ".");
 		super.waitForCondition("!selenium.isVisible(\"" + locator + "\");", timeout);
 	}
 	
@@ -294,9 +305,9 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 	
 	@Override
 	public void type(String locator, String value) {
+		log.log(MyLevel.ACTION, "Type '" + value + "' into " + getDescription(locator));
 		highlight(locator);
 		super.type(locator, value);
-		log.log(MyLevel.ACTION, "Typed '" + value + "' into " + getDescription(locator));
 	}
 	
 	public void type(Element element, String value) {
@@ -305,9 +316,9 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 	
 	@Override
 	public void typeKeys(String locator, String value) {
+		log.log(MyLevel.ACTION, "Type keys '" + value + "' into " + getDescription(locator));
 		highlight(locator);
 		super.typeKeys(locator, value);
-		log.log(MyLevel.ACTION, "Typed keys '" + value + "' into " + getDescription(locator));
 	}
 	
 	public void typeKeys(Element element, String value) {
@@ -315,10 +326,10 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 	}
 	
 	public void type(String locator,String humanReadableName, String value) {
+		log.log(MyLevel.ACTION, "Type '" + value + "' into " + getElementType(locator) + ": "
+				+ humanReadableName + "'");
 		highlight(locator);
 		super.type(locator, value);
-		log.log(MyLevel.ACTION, "Typed '" + value + "' into " + getElementType(locator) + ": "
-				+ humanReadableName + "'");
 	}
 	
 	public void setText(String locator, String value){
@@ -326,9 +337,9 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 	}
 	
 	public void setText(Element element, String value){
+		log.log(MyLevel.ACTION, "Type '" + value + "' into " + getDescription(element));
 		highlight(element.getLocator());
 		super.type(element.getLocator(), value);
-		log.log(MyLevel.ACTION, "Typed '" + value + "' into " + getDescription(element));
 	}
 	
 	public void setText(String locator, String humanReadableName,String value){
@@ -338,20 +349,22 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 
 	@Override
 	public void open(String url) {
+		log.log(MyLevel.ACTION, "Open URL '" + url + "'.");  
 		super.open(url);
-		log.log(MyLevel.ACTION, "Opened URL '" + url + "'.  Current location is " + getLocation() + " .");
+		log.info("Current URL is " + getLocation() + " .");
 	}
 
 	
 	
 	@Override
 	public void check(String locator) {
+		log.log(MyLevel.ACTION, "Check " + getDescription(locator));
 		checkUncheck(locator, true);
-		log.log(MyLevel.ACTION, "Checked " + getDescription(locator));
 	}
 	
 	public void check(Element element){
-		check(element.getLocator());
+		log.log(MyLevel.ACTION, "Check " + element);
+		checkUncheck(element, true);
 	}
 	
 	
@@ -369,17 +382,16 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 
 	@Override
 	public void select(String selectLocator, String optionLocator) {
-		super.select(selectLocator, optionLocator);
-		log.log(MyLevel.ACTION, "Selected item '"
+		log.log(MyLevel.ACTION, "Select item '"
 				+ optionLocator + "' in list '" + selectLocator + "'.");
+		super.select(selectLocator, optionLocator);
 	}
 	
 	public void select(Element element, String optionLocator) {
-		super.select(element.getLocator(), optionLocator);
 		Element humanReadable = element.getHumanReadable();
 		if (humanReadable != null) {
 			try {
-				log.log(MyLevel.ACTION, "Selected item '"
+				log.log(MyLevel.ACTION, "Select item '"
 						+ optionLocator + "' in list " + getText(humanReadable));
 				return;
 			} catch(Exception e) {
@@ -387,8 +399,10 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 			}		
 		}
 
-		log.log(MyLevel.ACTION, "Selected item '"
-				+ optionLocator + "' in list " + element);	}
+		log.log(MyLevel.ACTION, "Select item '"
+				+ optionLocator + "' in list " + element);
+		super.select(element.getLocator(), optionLocator);
+	}
 	
 	/**
 	 * Selects a list item by value.  To be used when a select list doesn't have any other 
@@ -408,13 +422,13 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 
 	@Override
 	public void uncheck(String locator) {
+		log.log(MyLevel.ACTION, "Uncheck " + getDescription(locator));
 		checkUncheck(locator, false);
-		log.log(MyLevel.ACTION, "Unchecked checkbox '"
-				+ locator + "'");
 	}
 	
 	public void uncheck(Element element){
-		uncheck(element.getLocator());
+		log.log(MyLevel.ACTION, "Uncheck " + element);
+		checkUncheck(element, false);
 	}
 	
 	/*
@@ -471,15 +485,15 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 	
 	@Override
 	public void goBack(){
+		log.log(MyLevel.ACTION, "Click Browser Back Button");
 		super.goBack();
-		log.log(MyLevel.ACTION, "Clicked Browser Back Button");
 		waitForPageToLoad();
 	}
 	
 	@Override
 	public void refresh(){
+		log.log(MyLevel.ACTION, "Click Browser Refresh Button");
 		super.refresh();
-		log.log(MyLevel.ACTION, "Clicked Browser Refresh Button");
 		waitForPageToLoad();
 	}
 	
@@ -504,22 +518,25 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 
 	@Override
 	public String getAlert() {
+		log.log(MyLevel.ACTION, "Click OK on alert dialog.");
 		String text = super.getAlert();
-		log.log(MyLevel.ACTION, "Clicked OK on alert dialog: " + text);
+		log.log(Level.INFO, "Dismissed alert dialog: " + text);
 		return text;
 	}
 
 	@Override
 	public String getConfirmation() {
+		log.log(MyLevel.ACTION, "Click OK on confirmation dialog.");
 		String text = super.getConfirmation();
-		log.log(MyLevel.ACTION, "Clicked OK on confirmation dialog: " + text);
+		log.log(Level.INFO, "Dismissed confirmation dialog: " + text);
 		return text;
 	}
 
 	@Override
 	public String getPrompt() {
+		log.log(MyLevel.ACTION, "Click OK on prompt dialog.");
 		String text = super.getPrompt();
-		log.log(MyLevel.ACTION, "Clicked OK on prompt dialog: " + text);
+		log.log(Level.INFO, "Dismissed prompt dialog: " + text);
 		return text;
 	}
 	
@@ -552,7 +569,7 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 
 	public void sleep(long millis){
 		try {
-			log.log(Level.INFO, "Sleeping for " + millis + "ms.");
+			log.log(Level.INFO, "Sleep for " + millis + "ms.");
 			Thread.sleep(millis);
 		}
 		catch(InterruptedException ie){
@@ -627,7 +644,16 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 	
 	
 	public String getElementType(String locator) {
-		Properties attrs = getAttributes(locator);
+		
+		Properties attrs;
+		try {
+			attrs = getAttributes(locator);
+		}
+		catch (Exception e){
+			//if attributes can't be retrieved, log and return the locator
+			log.log(Level.FINER, "Can't retrieve attributes for locator: " + locator, e);
+			return locator;
+		}
 		String tagName = attrs.getProperty("tagName").toLowerCase();
 		if (tagName.equals("input")) {
 			String type = null;
