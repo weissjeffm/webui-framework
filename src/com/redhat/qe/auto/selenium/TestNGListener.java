@@ -7,6 +7,7 @@ import org.testng.ISuite;
 import org.testng.ISuiteListener;
 import org.testng.ITestContext;
 import org.testng.ITestResult;
+import org.testng.Reporter;
 import org.testng.SkipException;
 import org.testng.internal.IResultListener;
 
@@ -36,7 +37,6 @@ public class TestNGListener implements IResultListener, ISuiteListener {
 	}
 	
 	public void onStart(ITestContext context) {
-		
 		log.fine("=========  TestNG Starting Test: " + context.getName()+ " =============================================");
 	}
 	
@@ -66,9 +66,10 @@ public class TestNGListener implements IResultListener, ISuiteListener {
 
 	}
 	public  void onTestStart(ITestResult result) {
+		Reporter.setCurrentTestResult(result);
 		log.fine("========= Starting test: " + result.getName()+ " ============================================");
-		
 	}
+	
 	public  void onTestSuccess(ITestResult result) {
 		Throwable throwable = result.getThrowable();
 		if (throwable != null){
