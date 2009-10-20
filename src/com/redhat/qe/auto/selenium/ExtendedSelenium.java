@@ -204,7 +204,8 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 	}
 	
 	public void mouseOver(Element element) {
-		mouseOver(element.getLocator());
+		log.log(MyLevel.ACTION, "Hover over " + getDescription(element));
+		super.mouseOver(element.getLocator());
 	}
 
 	

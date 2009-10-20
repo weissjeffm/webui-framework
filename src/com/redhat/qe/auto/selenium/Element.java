@@ -97,7 +97,7 @@ public class Element {
 			}
 			sb.append(". (");
 		}
-		sb.append( "'" + getLocator() + "'");
+		sb.append(getLocator());
 		if (locatorStrategy != null) {
 			sb.append(")");
 		}
@@ -115,7 +115,11 @@ public class Element {
 						}
 					public String getName(){
 						return "my silly strategy"; }
+					@Override
+					public String getTemplate() {
+						return "//a[.='$1']";
 					}
+				}
 				, "myarg");
 		
 		System.out.println("Found " + genericLink.getArguments() + " using " + 
