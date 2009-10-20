@@ -58,6 +58,10 @@ public class LocatorTemplate implements LocatorStrategy {
 	public String getName() {
 		return this.name;
 	}
+	
+	public String getTemplate() {
+		return this.template;
+	}
 
 	public static void main (String[] args){
 		// this is just a developers test

@@ -31,11 +31,20 @@ public class StringSandwichLocatorStrategy implements LocatorStrategy {
 		return name;
 	}
 	
+	public String getTemplate() {
+		String template=bread[0];
+		for (int i = 1; i < bread.length; i++) {
+			template += "$"+i+bread[i];
+		}
+		return template;
+	}
+	
 	public static void main (String[] args){
 		StringSandwichLocatorStrategy ssls1 = new StringSandwichLocatorStrategy("pbj", "bread1", "bread2");
 		System.out.println(ssls1.getLocator("meat1"));
 		System.out.println(ssls1.getLocator("meat1", "meat2"));
 		System.out.println(ssls1.getLocator("meat1", "meat2", "meat3"));
+		System.out.println(ssls1.getTemplate());
 		
 	}
 
