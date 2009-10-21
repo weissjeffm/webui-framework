@@ -84,8 +84,10 @@ public class BugzillaTestNGListener implements IResultListener{
 				log.fine("This test verifies bugzilla bug #"+ number);
 				BzChecker.bzState state = bzChecker.getBugState(number);
 				if (state.equals(BzChecker.bzState.ON_QA)){
-					//TODO need to call code here to actually close the bug (doesn't exist yet)
-					log.warning("Need to close bug " + number + "!");
+					//TODO need to call code here to actually close the bug (doesn't work yet)
+					log.warning("Need to verify bug " + number + "!");
+					bzChecker.setBugState(number, BzChecker.bzState.VERIFIED);
+					log.info("Verified bug " + number);
 				}
 				else log.warning("Bug " + number + " has been verified, but it is in " + state + " state instead of ON_QA");
 			}

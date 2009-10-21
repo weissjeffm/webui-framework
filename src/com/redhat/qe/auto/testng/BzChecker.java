@@ -67,8 +67,13 @@ public class BzChecker {
 		}
 	}
 	
-	public void setBugState(String bugId, bzState state){
-		
+	public void setBugState(String bugId, bzState state) {
+		try {
+			bug.update_bug_status(bugId, state);
+		}
+		catch(Exception e){
+			throw new RuntimeException("Could not set bug status " + bugId + " in bugzilla." ,e);
+		}
 	}
 	
 	public class Bug extends TestopiaObject{
