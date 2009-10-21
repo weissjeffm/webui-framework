@@ -186,7 +186,7 @@ public abstract class TestopiaObject {
 		}
 	}
 	
-	class StringAttribute extends Attribute{
+	public class StringAttribute extends Attribute{
 		private StringAttribute(String name, String value){
 			this.name = name;
 			this.value = value;
@@ -203,7 +203,7 @@ public abstract class TestopiaObject {
 		
 	}
 	
-	class IntegerAttribute extends Attribute{
+	public class IntegerAttribute extends Attribute{
 		private IntegerAttribute(String name, Integer value){
 			this.name = name;
 			this.value = value;	
@@ -217,7 +217,7 @@ public abstract class TestopiaObject {
 
 	}
 	
-	class BooleanAttribute extends Attribute{
+	public class BooleanAttribute extends Attribute{
 		private BooleanAttribute(String name, Boolean value){
 			this.name = name;
 			this.value = value;	

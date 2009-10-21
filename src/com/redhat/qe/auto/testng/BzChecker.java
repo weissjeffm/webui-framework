@@ -36,13 +36,23 @@ public class BzChecker {
 		}
 	}
 	
-	public void init() throws Exception{
+	public void init() {
 		bug = new Bug();
-		bug.connectBZ();
+		try {
+			bug.connectBZ();
+		}catch(Exception e){
+			throw new RuntimeException("Could not initialize BzChecker." ,e);
+		}
 	}
 	
-	public bzState getBugState(String bugId) throws Exception{
-		Object[] bugs = bug.getBugs("ids", new Object[] {bugId});
+	public bzState getBugState(String bugId) {
+		Object[] bugs = null;
+		try {
+			bug.getBugs("ids", new Object[] {bugId});
+		}catch(Exception e){
+			throw new RuntimeException("Could not retrieve bug " + bugId + " from bugzilla." ,e);
+		}
+		
 		if (bugs.length ==0) throw new IllegalStateException("No bug found matching ID " + bugId);
 		else if (bugs.length > 1) throw new IllegalStateException("Multiple matches found for bug ID " + bugId);
 		else {
@@ -57,9 +67,14 @@ public class BzChecker {
 		}
 	}
 	
+	public void setBugState(String bugId, bzState state){
+		
+	}
+	
 	public class Bug extends TestopiaObject{
 		private String BZ_URL;
-
+		//private StringAttribute bug_status = newStringAttribute("bug_status", null);
+		
 		public Bug(){
 			listMethod = "Bug.get_bugs";
 			System.setProperty("bugzilla.url", "https://bugzilla.redhat.com/bugzilla/xmlrpc.cgi");
@@ -97,6 +112,17 @@ public class BzChecker {
 			return getBugs(map);
 		}
 		
+		
+		public Map update_bug_status(String bug_id, bzState newState) throws XmlRpcException{
+			Map<String,Object> main = new HashMap<String,Object>(); 
+			Map<String,Object> updates = new HashMap<String,Object>();
+			updates.put("bug_status", newState.toString());
+			main.put("updates", updates);
+			Map map = (Map) this.callXmlrpcMethod("bug.update", main);
+			
+			System.out.println(map);
+			return map;
+		}
 		
 	}
 	
