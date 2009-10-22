@@ -32,17 +32,17 @@ public class TestNGListener implements IResultListener, ISuiteListener {
 	//TestNG's Test Listener methods so Selenium can log and screenshot properly
 
 	public void onFinish(ITestContext context){
-		log.fine("=========  TestNG Finishing Test: " + context.getName()+ " ============================================");
-		
+		log.fine("========= Finished TestNG Script: " + context.getName());
+		System.out.println();
 	}
 	
 	public void onStart(ITestContext context) {
-		log.fine("=========  TestNG Starting Test: " + context.getName()+ " =============================================");
+		System.out.println();
+		log.fine("========= Starting TestNG Script: " + context.getName());
 	}
 	
 	public void onTestFailedButWithinSuccessPercentage(ITestResult result) {
 		log.log(Level.WARNING, "Test failed (but within success percentage): "+ result.getName(), result.getThrowable());
-
 	}	
 	
 	public void onTestFailure(ITestResult result) {
@@ -57,17 +57,20 @@ public class TestNGListener implements IResultListener, ISuiteListener {
 		}
 		log.log(Level.SEVERE, "Test failed: "+ result.getName(), result.getThrowable());
 	}
+	
 	public void onTestSkipped(ITestResult result) {
 		if (result.getThrowable() instanceof SkipException){
-			log.log(Level.INFO, "========= Skipping test due to SkipException: " 
-					+ result.getName()+ " ============================================\n",result.getThrowable());
+			log.log(Level.INFO, "========= Skipping test due to SkipException: " + result.getName(),result.getThrowable());
 		}
-		else log.fine("========= Skipping test: " + result.getName()+ " ============================================");
-
+		else {
+			log.fine("========= Skipping Test: " + result.getName());
+		}
 	}
+	
 	public  void onTestStart(ITestResult result) {
 		Reporter.setCurrentTestResult(result);
-		log.fine("========= Starting test: " + result.getName()+ " ============================================");
+		System.out.println();
+		log.fine("========= Starting Test: " + result.getName());
 	}
 	
 	public  void onTestSuccess(ITestResult result) {
@@ -75,7 +78,7 @@ public class TestNGListener implements IResultListener, ISuiteListener {
 		if (throwable != null){
 			log.log(MyLevel.ACTION, "Expected exception of " + throwable.getClass().getName() + " '" + throwable.getMessage() + "' was in fact thrown." );
 		}
-		log.fine("========= Test Passed: " + result.getName()+ " ============================================");
+		log.fine("========= Test Passed: " + result.getName());
 	}
 
 	
@@ -87,29 +90,28 @@ public class TestNGListener implements IResultListener, ISuiteListener {
 			log.log(Level.WARNING, "Unable to capture screenshot.", e);
 		}
 		log.log(Level.SEVERE, "Configuration Failed: " + result.getName(), result.getThrowable());
-		
 	}
 
 	
 	public void onConfigurationSkip(ITestResult result) {
-		log.fine("========= Configuration skipped: " + result.getName()+ " ============================================");
-		
+		System.out.println();
+		log.fine("========= Configuration skipped: " + result.getName());
 	}
 
 	
 	public void onConfigurationSuccess(ITestResult result) {
-		log.finer("========= Configuration completed: " + result.getName()+ " ============================================");
-		
+		log.finer("========= Configuration completed: " + result.getName());
 	}
 
 	@Override
 	public void onFinish(ISuite suite) {
-		log.fine("=========  TestNG Finishing Suite:" + suite.getName()+ " =============================================");
+		log.fine("========= Finishing TestNG Suite:" + suite.getName());
 	}
 
 	@Override
 	public void onStart(ISuite suite) {
-		log.fine("=========  TestNG Starting Suite:" + suite.getName()+ " =============================================");
+		System.out.println();
+		log.fine("========= Starting TestNG Suite:" + suite.getName());
 	}
 	
 	protected void screencap(ITestResult result) throws Exception{
