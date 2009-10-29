@@ -22,7 +22,7 @@ public class LocatorTemplate implements LocatorStrategy {
 	/**
 	 * @param name - a brief human readable name for the template.
 	 * 			Example: "link in resource breadcrumb trail"
-	 * @param template - the locator path containing keywords of the form $d that will be sequentially replaced with the arguments passed to method getLocator(String... args).
+	 * @param template - the locator path containing place holders of the form $d that will be sequentially replaced with the arguments passed to method getLocator(String... args).
 	 * 			Example: "//span[normalize-space(.)='$1']/../a[normalize-space(.)='$2']"
 	 */
 	public LocatorTemplate(String name, String template){
@@ -30,19 +30,19 @@ public class LocatorTemplate implements LocatorStrategy {
 		this.template = template;
 	}
 	
+
 	/* (non-Javadoc)
 	 * @see com.redhat.qe.auto.selenium.LocatorStrategy#getLocator(java.lang.String[])
 	 */
 	@Override
 	public String getLocator(String... args) {
 		
-		int i=0;
 		String locator = this.template;
-		for (String arg : args) {
-			locator = locator.replaceFirst("\\$"+(++i), arg);
-		}
+		for (int i=args.length; i>0; i--) { // count backwards to prevent aggressive replacements on a two digit number 
+			locator = locator.replaceAll("\\$"+i, args[i-1]);
+		}		
 		
-		// check for left over $d replacement strings
+		// check for left over $d replacement strings (too few args)
 		if (locator.matches(".*\\$\\d.*")) {
 			log.log(Level.FINE, "Template "+name+ " has left over replacement holders. ("+locator+")");
 			//System.out.println("Template "+name+ " has left over replacement holders. ("+locator+")");
@@ -66,9 +66,10 @@ public class LocatorTemplate implements LocatorStrategy {
 	public static void main (String[] args){
 		// this is just a developers test
 		LocatorTemplate locatorTemplate = new LocatorTemplate("table column row#","//table[@id='$1']//th[$2]/a[starts-with(.,'$3')]/../../../tr[$4]/td[$5]");
-		System.out.println(locatorTemplate.getLocator("table id1","10","column name","5","10"));
-		System.out.println(locatorTemplate.getLocator("table id2"));
-		System.out.println(locatorTemplate.getLocator("table id3","10","column name","5","10","too many args"));
+		System.out.println("locatorTemplate.getTemplate= "+locatorTemplate.getTemplate());
+		System.out.println("locatorTemplate.getLocator= "+locatorTemplate.getLocator("table id1","10","column name","5","10"));
+		System.out.println("locatorTemplate.getLocator= "+locatorTemplate.getLocator("table id2"));  // too few args
+		System.out.println("locatorTemplate.getLocator= "+locatorTemplate.getLocator("table id3","10","column name","5","10","too many args"));
 		
 	}
 }
