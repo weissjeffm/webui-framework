@@ -55,17 +55,24 @@ public class Session {
 	public Object login()
 	throws XmlRpcException, GeneralSecurityException, IOException
 	{
+		return login("User.login","login",userName,"password",password,"id");
+	}
+	
+	
+	public Object login(String loginMethod,String loginKey, String login, String passKey, String password,String returnKey)
+	throws XmlRpcException, GeneralSecurityException, IOException
+	{
 		init();
 		HashMap<String, Object> map = new HashMap<String, Object>();
-		map.put("login", userName);
-		map.put("password", password);
+		map.put(loginKey, login);
+		map.put(passKey, password);
 		ArrayList<Object> params = new ArrayList<Object>();
 		params.add(map);
 
 		HashMap<String, Object>hash = (HashMap<String, Object>)
-										client.execute("User.login", params);
+										client.execute(loginMethod, params);
 		
-		this.userid = (Integer) hash.get("id");
+		this.userid = (Integer) hash.get(returnKey);
 		return hash;
 		
 	}
