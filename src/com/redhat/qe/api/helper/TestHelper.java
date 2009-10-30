@@ -6,6 +6,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+
+
 import redstone.xmlrpc.XmlRpcArray;
 import redstone.xmlrpc.XmlRpcStruct;
 
@@ -66,6 +68,19 @@ public class TestHelper {
 		}
 		return myKeys;	
 	}
+	
+	/**
+	 * Gets the keys from a Map, and pulls the keys into an array and returns
+	 * @param results
+	 * @return ArrayList
+	 */
+	public ArrayList getKeys(Map results){
+		ArrayList<String> myKeys = new ArrayList<String>();
+		myKeys = (ArrayList<String>) results.keySet();
+		return myKeys;	
+	}
+	
+
 	
 	/**
 	 * Returns the key of a hashmap as an object
