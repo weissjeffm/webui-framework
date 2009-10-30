@@ -29,6 +29,10 @@ public class SSHCommandRunner implements Runnable {
 	protected boolean kill = false;
 	protected String command = null;
 	protected Object lock = new Object();
+	
+	public SSHCommandRunner(){
+		//blank constructor
+	}
 
 	public SSHCommandRunner(Connection connection,
 			String command) {
@@ -192,6 +196,43 @@ public class SSHCommandRunner implements Runnable {
 	
 	public Connection getConnection() {
 		return connection;
+	}
+	
+	/**
+	 * Runs a command via SSH as specified user, logs all output to INFO
+	 * logging level, returns String[] containing stdout in 0 position
+	 * and stderr in 1 position
+	 * @param hostname hostname of system
+	 * @param user user to execute command as
+	 * @param command command to execute
+	 * @return output as String[], stdout in 0 pos and stderr in 1 pos
+	 */
+	public String[] executeViaSSHWithReturn(String hostname, 
+			String user, String command){
+		SSHCommandRunner runner = null;
+		SplitStreamLogger logger;
+
+		log.info("SSH: Running '"+command+"' on '"+hostname+"'");
+		try{
+			runner = new SSHCommandRunner(hostname,
+					user,
+					new File(System.getProperty("user.dir")+"/.ssh/id_auto_dsa"),
+					"dog8code",
+					command);
+			runner.run();
+			logger = new SplitStreamLogger(runner);
+			logger.log();
+			runner.waitFor();
+		}
+		catch (Exception e){
+			log.log(Level.INFO, "SSH command failed:", e);
+			return failSSH();
+		}
+		return new String[] {logger.getStdout(), logger.getStderr()};
+	}
+	
+	private String[] failSSH(){
+		return new String[] {"fail", "fail"};
 	}
 
 
