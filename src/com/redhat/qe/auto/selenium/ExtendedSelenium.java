@@ -578,6 +578,10 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 		}
 	}
 	
+	public String[] getSelectOptions(Element element){
+		return super.getSelectOptions(element.getLocator());
+	}
+	
 	/**
 	 * Gets the HTML attributes for a given locator
 	 * @param locator 
