@@ -70,6 +70,7 @@ public class TestNGListener implements IResultListener, ISuiteListener {
 	public  void onTestStart(ITestResult result) {
 		Reporter.setCurrentTestResult(result);
 		System.out.println();
+		log.fine("");
 		log.fine("========= Starting Test: " + result.getName());
 	}
 	
@@ -79,6 +80,7 @@ public class TestNGListener implements IResultListener, ISuiteListener {
 			log.log(MyLevel.ACTION, "Expected exception of " + throwable.getClass().getName() + " '" + throwable.getMessage() + "' was in fact thrown." );
 		}
 		log.fine("========= Test Passed: " + result.getName());
+		log.fine("");
 	}
 
 	
