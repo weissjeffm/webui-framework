@@ -11,6 +11,8 @@ import org.testng.Reporter;
 import org.testng.SkipException;
 import org.testng.internal.IResultListener;
 
+import com.sun.corba.se.spi.orbutil.fsm.Guard.Result;
+
 /**
  * This class listens for TestNG events, and logs them using the 
  * standard java logging facility.
@@ -70,7 +72,7 @@ public class TestNGListener implements IResultListener, ISuiteListener {
 	public  void onTestStart(ITestResult result) {
 		Reporter.setCurrentTestResult(result);
 		System.out.println();
-		log.fine("");
+
 		log.fine("========= Starting Test: " + result.getName());
 	}
 	
@@ -80,7 +82,7 @@ public class TestNGListener implements IResultListener, ISuiteListener {
 			log.log(MyLevel.ACTION, "Expected exception of " + throwable.getClass().getName() + " '" + throwable.getMessage() + "' was in fact thrown." );
 		}
 		log.fine("========= Test Passed: " + result.getName());
-		log.fine("");
+		//log.fine("");
 	}
 
 	
@@ -113,7 +115,7 @@ public class TestNGListener implements IResultListener, ISuiteListener {
 	@Override
 	public void onStart(ISuite suite) {
 		System.out.println();
-		log.fine("========= Starting TestNG Suite:" + suite.getName());
+		log.fine("========= Starting TestNG Suite:" +suite.getName());
 	}
 	
 	protected void screencap(ITestResult result) throws Exception{
