@@ -11,7 +11,6 @@ import org.testng.Reporter;
 import org.testng.SkipException;
 import org.testng.internal.IResultListener;
 
-import com.sun.corba.se.spi.orbutil.fsm.Guard.Result;
 
 /**
  * This class listens for TestNG events, and logs them using the 
@@ -31,7 +30,9 @@ public class TestNGListener implements IResultListener, ISuiteListener {
 	public static void setScreenCaptureUtility(IScreenCapture sc){
 		TestNGListener.sc = sc;
 	}
-	//TestNG's Test Listener methods so Selenium can log and screenshot properly
+
+	
+	//Override TestNG's Test Listener methods so Selenium can log and screenshot properly
 
 	public void onFinish(ITestContext context){
 		log.fine("========= Finished TestNG Script: " + context.getName());
@@ -82,7 +83,6 @@ public class TestNGListener implements IResultListener, ISuiteListener {
 			log.log(MyLevel.ACTION, "Expected exception of " + throwable.getClass().getName() + " '" + throwable.getMessage() + "' was in fact thrown." );
 		}
 		log.fine("========= Test Passed: " + result.getName());
-		//log.fine("");
 	}
 
 	
