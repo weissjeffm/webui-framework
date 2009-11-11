@@ -29,11 +29,11 @@ public class BzChecker {
 	protected static Logger log = Logger.getLogger(BzChecker.class.getName());
 	protected Bug bug;
 	public BzChecker() {
-		try {
+		/*try {
 			LogManager.getLogManager().readConfiguration(new FileInputStream("/home/weissj/workspace/automatjon/jon-2.0/log.properties"));
 		}catch(Exception e){
 			System.err.println("Unable to read log config file.");
-		}
+		}*/
 	}
 	
 	public void init() {
@@ -48,7 +48,7 @@ public class BzChecker {
 	public bzState getBugState(String bugId) {
 		Object[] bugs = null;
 		try {
-			bug.getBugs("ids", new Object[] {bugId});
+			bugs = bug.getBugs("ids", new Object[] {bugId});
 		}catch(Exception e){
 			throw new RuntimeException("Could not retrieve bug " + bugId + " from bugzilla." ,e);
 		}
