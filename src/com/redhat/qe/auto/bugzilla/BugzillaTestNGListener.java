@@ -1,5 +1,6 @@
 package com.redhat.qe.auto.bugzilla;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -12,14 +13,17 @@ import org.testng.SkipException;
 import org.testng.internal.IResultListener;
 
 import com.redhat.qe.auto.testng.BlockedByBzBug;
+import com.redhat.qe.auto.testng.BzBugDependency;
 import com.redhat.qe.auto.testng.BzChecker;
+import com.redhat.qe.auto.testopia.AbstractTestProcedureHandler;
+import com.redhat.qe.auto.testopia.TestProcedureHandler;
 
 public class BugzillaTestNGListener implements IResultListener{
 	private static final String BLOCKED_BY_BUG = "blockedByBug";
 	private static final String VERIFIES_BUG = "verifiesBug";
 	protected static Logger log = Logger.getLogger(BugzillaTestNGListener.class.getName());
 	protected static BzChecker bzChecker = null;
-	protected static Map<Object[], String> bzTests = new HashMap<Object[], String>();
+	protected static Map<Object[], BzBugDependency> bzTests = new HashMap<Object[], BzBugDependency>();
 	
 	@Override
 	public void onConfigurationFailure(ITestResult arg0) {
@@ -102,7 +106,7 @@ public class BugzillaTestNGListener implements IResultListener{
 			 * and we won't know that if the test passes, we can unblock this bug,
 			 * unless we have that bug ID after the test is run
 			 */
-			bzTests.put(result.getParameters(), bbb.getBugId()); 
+			bzTests.put(result.getParameters(), bbb); 
 		}
 	}
 
@@ -139,8 +143,12 @@ public class BugzillaTestNGListener implements IResultListener{
 					if (state.equals(BzChecker.bzState.ON_QA)){
 						//TODO need to call code here to actually close the bug (doesn't work yet)
 						log.warning("Need to verify bug " + number + "!");
-						bzChecker.setBugState(number, BzChecker.bzState.VERIFIED);
-						log.info("Verified bug " + number);
+						/*
+						 * not ready to start auto-closing yet
+						 * bzChecker.setBugState(number, BzChecker.bzState.VERIFIED);
+						 * log.info("Verified bug " + number);
+						 **/
+						verifyComment(number, result);
 					}
 					else log.warning("Bug " + number + " has been verified, but it is in " + state + " state instead of ON_QA");
 				}
@@ -149,11 +157,26 @@ public class BugzillaTestNGListener implements IResultListener{
 				}
 			}
 		}
-		String blockedBy = bzTests.get(result.getParameters());
-		if (blockedBy != null){
-			log.warning("Test is now unblocked by bug " + blockedBy + ".");
-			bzTests.remove(result.getParameters());
+		BzBugDependency blockedOrVerifiedBy = bzTests.get(result.getParameters());
+		if (blockedOrVerifiedBy != null){
+			log.warning("Test is now unblocked by bug " + blockedOrVerifiedBy.getBugId() + ".");			
+			if (blockedOrVerifiedBy.getType().equals(BzBugDependency.Type.Verifies)){
+				verifyComment(blockedOrVerifiedBy.getBugId(), result);
+			}
 		}
+	}
+	
+	protected void verifyComment(String bugNumber, ITestResult result){
+		StringBuffer sb = new StringBuffer();
+		bzChecker.login(System.getProperty("bugzilla.login"), System.getProperty("bugzilla.password"));
+		sb.append("Verified by Automated Test " + result.getName() + " parameters: (" + Arrays.deepToString(result.getParameters()) + ")\n");
+		String log = AbstractTestProcedureHandler.getActiveLog();
+		if (log != null)
+		sb.append("Automation log:\n");
+		sb.append(AbstractTestProcedureHandler.getActiveLog());
+		
+		bzChecker.add_comment(bugNumber, sb.toString());
+		bzTests.remove(result.getParameters());
 	}
 	
 	public static void main (String... args) {

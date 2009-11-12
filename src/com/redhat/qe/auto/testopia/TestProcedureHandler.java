@@ -1,6 +1,5 @@
 package com.redhat.qe.auto.testopia;
 
-import java.util.logging.Handler;
 import java.util.logging.LogRecord;
 
 import com.redhat.qe.auto.selenium.MyLevel;
@@ -11,15 +10,13 @@ import com.redhat.qe.auto.selenium.MyLevel;
  * format them and return them as a big formatted string.
  *
  */
-public class TestProcedureHandler extends Handler implements ITestProcedureHandler {
+public class TestProcedureHandler extends AbstractTestProcedureHandler {
 
 	protected StringBuffer sb = new StringBuffer();
-	
+
 	public TestProcedureHandler() {
- 	
-		setLevel(MyLevel.INFO);
-		setFormatter(new TestProcedureFormatter());
-	
+ 		setLevel(MyLevel.INFO);
+		setFormatter(new TestProcedureFormatter());	
     }
 	
 	@Override
@@ -48,4 +45,5 @@ public class TestProcedureHandler extends Handler implements ITestProcedureHandl
 	public void reset(){
 		sb = new StringBuffer();
 	}
+
 }

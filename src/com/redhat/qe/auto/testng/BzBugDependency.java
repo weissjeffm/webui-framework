@@ -24,6 +24,10 @@ public abstract class BzBugDependency {
 		return params;
 	}
 	
+	public Type getType() {
+		return type;
+	}
+
 	public String toString(){
 		StringBuffer sb = new StringBuffer();
 		for (Object param: params){

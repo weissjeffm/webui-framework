@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -49,7 +48,6 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 	protected static String TESTOPIA_TESTRUN_TESTPLAN = "";
 	protected static String TESTOPIA_TESTRUN_PRODUCT = "";
 	
-	protected ITestProcedureHandler tph = null;
 	protected static Logger log = Logger.getLogger(TestopiaTestNGListener.class.getName());
 	protected TestRun testrun;
 	protected Product product;
@@ -383,21 +381,9 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 	public void onTestSuccess(ITestResult result) {
 		myOverwrite = System.getProperty("testopia.testcase.overwrite");
 		//get the procedure log from the handler
-		String action = "no procedure found!";
-		Handler[] handlers = Logger.getLogger("").getHandlers();
-		
-		//if (tph == null) {
-			//find the right handler (and save for later)
-			for (Handler handler: handlers){
-				log.finer("Handlers = " + handler.getClass().getName());
-				if (handler.getClass().getName().contains("TestProcedureHandler")) {
-					//log.finer("Class cl:" + TestProcedureHandler.class.getClassLoader().toString() + ". var cl" + tph.getClass().getClassLoader().toString());
-					tph = ((ITestProcedureHandler)handler);
-				}
-				
-			}
-		//}
-		action = tph.getLog();
+		String action= TestProcedureHandler.getActiveLog();
+		if (action == null)
+			action = "no procedure found!";
 		
 		if(myOverwrite == null || myOverwrite.equalsIgnoreCase("1")){
 			log.finer("Updating testcase " + testcase.getAlias() + " with successful action log: \n" + action);
@@ -431,7 +417,7 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 						
 				//testcaserun.setNotes(throwableToString(result.getThrowable()));		
 				//put the whole log instead
-				testcaserun.setNotes(tph == null? "" :tph.getLog());
+				testcaserun.setNotes(AbstractTestProcedureHandler.getActiveLog());
 			
 			testcaserun.setStatus(result.isSuccess() ? TestCaseRun.Statuses.PASSED : TestCaseRun.Statuses.FAILED);
 		}
@@ -442,7 +428,7 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 			throw new TestopiaException(e);
 		}finally{
 			//reset the handler so that our log for the next testcase run starts fresh.
-			if (tph != null) ((ITestProcedureHandler)tph).reset();
+			AbstractTestProcedureHandler.resetActiveLog();
 		}
 	}
 	
