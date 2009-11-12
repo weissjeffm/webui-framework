@@ -84,14 +84,31 @@ public class BzChecker {
 		}
 	}
 	
-	public void add_comment(String bugId, String comment){
+	public void addComment(String bugId, String comment){
 		try {
 			bug.add_bug_comment(bugId, comment);
 		}
 		catch(Exception e){
 			throw new RuntimeException("Could not add comment to bug " + bugId ,e);
+		}	
+	}
+	
+	public void addKeywords(String bugId, String... keywords){
+		editKeywords(bugId, true, keywords);
+	}
+	public void deleteKeywords(String bugId, String... keywords){
+		editKeywords(bugId, true, keywords);
+	}
+	
+	protected void editKeywords(String bugId, boolean add, String... keywords){
+		try {
+			Map<String,Object> updates = new HashMap<String,Object>();
+			updates.put(add?"add_keyword":"delete_keyword", keywords);
+			bug.update_bug(bugId, updates);
 		}
-		
+		catch(Exception e){
+			throw new RuntimeException("Could not " + (add? "add":"remove") + " keywords for bug " + bugId ,e);
+		}	
 	}
 	
 	public class Bug extends TestopiaObject{
@@ -146,11 +163,16 @@ public class BzChecker {
 		
 		
 		public Map update_bug_status(String bug_id, bzState newState) throws XmlRpcException{
-			Map<String,Object> main = new HashMap<String,Object>(); 
 			Map<String,Object> updates = new HashMap<String,Object>();
 			updates.put("bug_status", newState.toString());
+			return update_bug(bug_id, updates);
+		}
+		
+		protected Map update_bug(String bug_id, Map<String,Object> updates)throws XmlRpcException{
+			Map<String,Object> main = new HashMap<String,Object>(); 
 			main.put("updates", updates);
-			Map map = (Map) this.callXmlrpcMethod("bug.update", main);
+			main.put("ids", Integer.parseInt(bug_id));
+			Map map = (Map) this.callXmlrpcMethod("Bug.update", main);
 			
 			System.out.println(map);
 			return map;
@@ -186,10 +208,12 @@ public class BzChecker {
 		}*/
 		BzChecker checker = new BzChecker();
 		checker.init();
-		String id = "497793";
+		//String id = "497793";
 		//log.info("State of " + id + " is " + checker.getBugState(id));
-		checker.login("jweiss@redhat.com", "abc123");
-		checker.add_comment("539369", "test comment");
+		checker.login("jweiss@redhat.com", "2$(w^*@&J");
+		//checker.addComment("470058", "test comment");
+		//checker.setBugState("470058", bzState.ON_QA);
+		checker.addKeywords("470058", "verifiedByAutomation");
 	}
 
 }

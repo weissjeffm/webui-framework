@@ -175,7 +175,7 @@ public class BugzillaTestNGListener implements IResultListener{
 		sb.append("Automation log:\n");
 		sb.append(AbstractTestProcedureHandler.getActiveLog());
 		
-		bzChecker.add_comment(bugNumber, sb.toString());
+		bzChecker.addComment(bugNumber, sb.toString());
 		bzTests.remove(result.getParameters());
 	}
 	
