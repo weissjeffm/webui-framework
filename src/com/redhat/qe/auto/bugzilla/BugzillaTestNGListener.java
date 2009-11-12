@@ -1,7 +1,7 @@
 package com.redhat.qe.auto.bugzilla;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -19,7 +19,8 @@ public class BugzillaTestNGListener implements IResultListener{
 	private static final String VERIFIES_BUG = "verifiesBug";
 	protected static Logger log = Logger.getLogger(BugzillaTestNGListener.class.getName());
 	protected static BzChecker bzChecker = null;
-
+	protected static Map<Object[], String> bzTests = new HashMap<Object[], String>();
+	
 	@Override
 	public void onConfigurationFailure(ITestResult arg0) {
 		// TODO Auto-generated method stub
@@ -96,6 +97,12 @@ public class BugzillaTestNGListener implements IResultListener{
 			lookupBugAndSkipIfOpen(bbb.getBugId());
 			//if we get here, we need to extract items into the list of params
 			result.setParameters(bbb.getParameters());
+			/*
+			 * save the bug number in a hashtable here, otherwise the info is lost
+			 * and we won't know that if the test passes, we can unblock this bug,
+			 * unless we have that bug ID after the test is run
+			 */
+			bzTests.put(result.getParameters(), bbb.getBugId()); 
 		}
 	}
 
@@ -117,6 +124,8 @@ public class BugzillaTestNGListener implements IResultListener{
 			bzChecker = new BzChecker();
 			bzChecker.init();
 		}
+		//FIXME this method needs some work
+		
 		//if the test is in a group "verifiesBug-xxxxxx" and the bug is in ON_QA, close it
 		String[] groups = result.getMethod().getGroups();
 		Pattern p = Pattern.compile("[" + VERIFIES_BUG + "|" + BLOCKED_BY_BUG +"]-(\\d+)");
@@ -139,6 +148,10 @@ public class BugzillaTestNGListener implements IResultListener{
 					log.warning("Test is now unblocked by bug " + number + ".");
 				}
 			}
+		}
+		String blockedBy = bzTests.get(result.getParameters());
+		if (blockedBy != null){
+			log.warning("Test is now unblocked by bug " + blockedBy + ".");
 		}
 	}
 	
