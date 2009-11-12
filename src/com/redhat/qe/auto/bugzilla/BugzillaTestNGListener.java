@@ -152,6 +152,7 @@ public class BugzillaTestNGListener implements IResultListener{
 		String blockedBy = bzTests.get(result.getParameters());
 		if (blockedBy != null){
 			log.warning("Test is now unblocked by bug " + blockedBy + ".");
+			bzTests.remove(result.getParameters());
 		}
 	}
 	

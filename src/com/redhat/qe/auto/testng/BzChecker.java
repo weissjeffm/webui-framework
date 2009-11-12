@@ -29,11 +29,11 @@ public class BzChecker {
 	protected static Logger log = Logger.getLogger(BzChecker.class.getName());
 	protected Bug bug;
 	public BzChecker() {
-		/*try {
+		try {
 			LogManager.getLogManager().readConfiguration(new FileInputStream("/home/weissj/workspace/automatjon/jon-2.0/log.properties"));
 		}catch(Exception e){
 			System.err.println("Unable to read log config file.");
-		}*/
+		}
 	}
 	
 	public void init() {
@@ -75,6 +75,24 @@ public class BzChecker {
 			throw new RuntimeException("Could not set bug status " + bugId + " in bugzilla." ,e);
 		}
 	}
+	public void login(String userid, String password) {
+		try {
+			bug.login(userid, password);
+		}
+		catch(Exception e){
+			throw new RuntimeException("Could not log in to bugzilla as " + userid ,e);
+		}
+	}
+	
+	public void add_comment(String bugId, String comment){
+		try {
+			bug.add_bug_comment(bugId, comment);
+		}
+		catch(Exception e){
+			throw new RuntimeException("Could not add comment to bug " + bugId ,e);
+		}
+		
+	}
 	
 	public class Bug extends TestopiaObject{
 		private String BZ_URL;
@@ -82,7 +100,8 @@ public class BzChecker {
 		
 		public Bug(){
 			listMethod = "Bug.get_bugs";
-			System.setProperty("bugzilla.url", "https://bugzilla.redhat.com/bugzilla/xmlrpc.cgi");
+			//System.setProperty("bugzilla.url", "https://bugzilla.redhat.com/bugzilla/xmlrpc.cgi");
+			System.setProperty("bugzilla.url", "https://bz-web2-test.devel.redhat.com/bugzilla/xmlrpc.cgi");
 		}
 		
 		protected void connectBZ() throws XmlRpcException, GeneralSecurityException, IOException{
@@ -94,6 +113,14 @@ public class BzChecker {
 			catch(Exception e){
 				log.log(Level.FINE, "Couldn't set up bugzilla connection.", e);
 			}
+		}
+		
+		public int login(String userid, String password) throws XmlRpcException{
+			Map<String,Object> main = new HashMap<String,Object>();
+			main.put("login", userid);
+			main.put("password", password);
+			Map map = (Map) this.callXmlrpcMethod("User.login", main);
+			return (Integer)map.get("id");
 		}
 		
 		/*
@@ -129,6 +156,18 @@ public class BzChecker {
 			return map;
 		}
 		
+		public Map add_bug_comment(String bug_id, String comment) throws XmlRpcException{
+			Map<String,Object> main = new HashMap<String,Object>(); 
+
+			main.put("id", Integer.parseInt(bug_id));
+			main.put("comment", comment);
+			Map map = (Map) this.callXmlrpcMethod("Bug.add_comment", main);
+			//Map map = (Map) this.callXmlrpcMethod("bug.add_comment", Integer.parseInt(bug_id), comment);
+			
+			System.out.println(map);
+			return map;
+		}
+		
 	}
 	
 	public static void main(String[] args) throws Exception{
@@ -148,7 +187,9 @@ public class BzChecker {
 		BzChecker checker = new BzChecker();
 		checker.init();
 		String id = "497793";
-		log.info("State of " + id + " is " + checker.getBugState(id));
+		//log.info("State of " + id + " is " + checker.getBugState(id));
+		checker.login("jweiss@redhat.com", "abc123");
+		checker.add_comment("539369", "test comment");
 	}
 
 }

@@ -15,32 +15,17 @@ package com.redhat.qe.auto.testng;
  * @author weissj
  *
  */
-public class BlockedByBzBug {
+public class BlockedByBzBug extends BzBugDependency{
 
 	protected String bugId = null;
 	protected Object[] params = null;
-
+	
 
 	public BlockedByBzBug(String bugId, Object... params) {
 		super();
 		this.bugId = bugId;
 		this.params = params;
+		this.type = Type.BlockedBy; 
 	}
 
-	public String getBugId() {
-		return bugId;
-	}
-	
-	public Object[] getParameters() {
-		return params;
-	}
-	
-	public String toString(){
-		StringBuffer sb = new StringBuffer();
-		for (Object param: params){
-			sb.append(param.toString() + "," );
-		}
-		sb.append(" **Blocked by bugzilla bug " + bugId);
-		return sb.toString();
-	}
 }
