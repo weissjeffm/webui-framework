@@ -1,5 +1,7 @@
 package com.redhat.qe.auto.bugzilla;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -9,6 +11,7 @@ import org.testng.ITestResult;
 import org.testng.SkipException;
 import org.testng.internal.IResultListener;
 
+import com.redhat.qe.auto.testng.BlockedByBzBug;
 import com.redhat.qe.auto.testng.BzChecker;
 
 public class BugzillaTestNGListener implements IResultListener{
@@ -76,24 +79,38 @@ public class BugzillaTestNGListener implements IResultListener{
 			bzChecker.init();
 		}
 		String[] groups = result.getMethod().getGroups();
+		
 		Pattern p = Pattern.compile(BLOCKED_BY_BUG + "-(\\d+)");
 		for (String group: groups){
 			Matcher m = p.matcher(group);
 			if (m.find()){
 				String number = m.group(1);
-				BzChecker.bzState state = bzChecker.getBugState(number);
-				if (! (state.equals(BzChecker.bzState.ON_QA) ||
-						state.equals(BzChecker.bzState.VERIFIED) ||
-						state.equals(BzChecker.bzState.RELEASE_PENDING) ||
-						state.equals(BzChecker.bzState.POST) ||
-						state.equals(BzChecker.bzState.CLOSED))){
-					// the bug is not ready to retest
-					throw new SkipException("This test is blocked by bz bug " + number + ", which is currently " + state.toString());
-				}
+				lookupBugAndSkipIfOpen(number);
 			}			
+		}
+		//if nothing found, check the param list (if there is one) for certain types
+		Object[] params = result.getParameters();
+		
+		if (params[0] instanceof BlockedByBzBug){
+			BlockedByBzBug bbb = (BlockedByBzBug)params[0];
+			lookupBugAndSkipIfOpen(bbb.getBugId());
+			//if we get here, we need to extract items into the list of params
+			result.setParameters(bbb.getParameters());
 		}
 	}
 
+	protected void lookupBugAndSkipIfOpen(String number){
+		BzChecker.bzState state = bzChecker.getBugState(number);
+		if (! (state.equals(BzChecker.bzState.ON_QA) ||
+				state.equals(BzChecker.bzState.VERIFIED) ||
+				state.equals(BzChecker.bzState.RELEASE_PENDING) ||
+				state.equals(BzChecker.bzState.POST) ||
+				state.equals(BzChecker.bzState.CLOSED))){
+			// the bug is not ready to retest
+			throw new SkipException("This test is blocked by bz bug " + number + ", which is currently " + state.toString());
+		}
+	}
+	
 	@Override
 	public void onTestSuccess(ITestResult result) {
 		if (bzChecker == null) {
