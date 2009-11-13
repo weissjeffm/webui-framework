@@ -163,9 +163,14 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 	 */
 	public void click(String locator, boolean highlight)  {
 		log.log(MyLevel.ACTION, "Click on " + getDescription(locator));
-		if (highlight)
-			highlight(locator);
+		if (highlight) highlight(locator);
 		super.click(locator);
+	}
+	
+	public void doubleClick(String locator, boolean highlight)  {
+		log.log(MyLevel.ACTION, "Double click on " + getDescription(locator));
+		if (highlight) highlight(locator);
+		super.doubleClick(locator);
 	}
 
 	@Override
@@ -173,27 +178,48 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 		click(locator, true);
 	}
 	
-	//TODO need to have logging like this on all similar methods  --JMW 10/5/09
-	public void click(Element element) {
-		logClick(element);
-		super.click(element.getLocator());
+	@Override
+	public void doubleClick(String locator) {
+		doubleClick(locator, true);
 	}
 	
-	protected void logClick(Element element){
+	//TODO need to have logging like this on all similar methods  --JMW 10/5/09
+	public void click(Element element) {
 		Element humanReadable = element.getHumanReadable();
 		if (humanReadable != null) {
 			try {
 				log.log(MyLevel.ACTION, "Click on element: " + this.getText(humanReadable));
-				return;
 			} catch(Exception e) {
 				log.log(Level.FINEST, "Unable to get text for associated human readable element: " + humanReadable, e);
 			}		
+		} else {
+			log.log(MyLevel.ACTION, "Click on " + getDescription(element));
 		}
-	    log.log(MyLevel.ACTION, "Click on " + getDescription(element));
+	    highlight(element);
+		super.click(element.getLocator());
+	}
+	
+	public void doubleClick(Element element) {
+		Element humanReadable = element.getHumanReadable();
+		if (humanReadable != null) {
+			try {
+				log.log(MyLevel.ACTION, "Double click on element: " + this.getText(humanReadable));
+			} catch(Exception e) {
+				log.log(Level.FINEST, "Unable to get text for associated human readable element: " + humanReadable, e);
+			}		
+		} else {
+			log.log(MyLevel.ACTION, "Double click on " + getDescription(element));
+		}
+		highlight(element);
+		super.doubleClick(element.getLocator());
 	}
 	
 	public String getText(Element element){
 		return getText(element.getLocator());
+	}
+	
+	public String getSelectedLabel(Element element){
+		return getSelectedLabel(element.getLocator());
 	}
 	
 	@Override
@@ -220,10 +246,9 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 	 * @param highlight - if true, highlight the element for a fraction of a second before clicking it.
 	 *   This makes it easier to see what selenium is doing "live".
 	 */
-	public void click(String locator, String humanReadableName,boolean highlight) {
+	public void click(String locator, String humanReadableName, boolean highlight) {
 		log.log(MyLevel.ACTION, "Click on : " + humanReadableName);
-		if (highlight)
-			highlight(locator);
+		if (highlight) highlight(locator);
 		super.click(locator);
 	}
 
@@ -326,9 +351,8 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 		typeKeys(element.getLocator(), value);
 	}
 	
-	public void type(String locator,String humanReadableName, String value) {
-		log.log(MyLevel.ACTION, "Type '" + value + "' into " + getElementType(locator) + ": "
-				+ humanReadableName + "'");
+	public void type(String locator, String humanReadableName, String value) {
+		log.log(MyLevel.ACTION, "Type '" + value + "' into " + getElementType(locator) + ": " + humanReadableName + "'");
 		highlight(locator);
 		super.type(locator, value);
 	}
@@ -339,7 +363,7 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 	
 	public void setText(Element element, String value){
 		log.log(MyLevel.ACTION, "Type '" + value + "' into " + getDescription(element));
-		highlight(element.getLocator());
+		highlight(element);
 		super.type(element.getLocator(), value);
 	}
 	
@@ -355,8 +379,6 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 		log.info("Current URL is " + getLocation() + " .");
 	}
 
-	
-	
 	@Override
 	public void check(String locator) {
 		log.log(MyLevel.ACTION, "Check " + getDescription(locator));
@@ -368,23 +390,36 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 		checkUncheck(element, true);
 	}
 	
+	@Override
+	public void uncheck(String locator) {
+		log.log(MyLevel.ACTION, "Uncheck " + getDescription(locator));
+		checkUncheck(locator, false);
+	}
 	
-	public void checkUncheck(String locator, boolean check){
-		if (isChecked(locator) != check) {
-			super.click(locator);
-			if (isChecked(locator) != check)super.check(locator); //just to be sure
-		}
-		else log.log(Level.FINE, getDescription(locator) + " is already " + (check ? "checked.": "unchecked."));
+	public void uncheck(Element element){
+		log.log(MyLevel.ACTION, "Uncheck " + element);
+		checkUncheck(element, false);
 	}
 	
 	public void checkUncheck(Element element, boolean check){
 		checkUncheck(element.getLocator(), check);
 	}
+	
+	public void checkUncheck(String locator, boolean check){
+		if (isChecked(locator) != check) {
+			highlight(locator);
+			super.click(locator);
+			if (isChecked(locator) != check) super.check(locator); //just to be sure
+		}
+		else {
+			log.log(Level.FINE, getDescription(locator) + " is already " + (check ? "checked.": "unchecked."));
+		}
+	}
 
 	@Override
 	public void select(String selectLocator, String optionLocator) {
-		log.log(MyLevel.ACTION, "Select item '"
-				+ optionLocator + "' in list '" + selectLocator + "'.");
+		log.log(MyLevel.ACTION, "Select option '"	+ optionLocator + "' in list '" + selectLocator + "'.");
+		highlight(selectLocator);
 		super.select(selectLocator, optionLocator);
 	}
 	
@@ -392,16 +427,14 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 		Element humanReadable = element.getHumanReadable();
 		if (humanReadable != null) {
 			try {
-				log.log(MyLevel.ACTION, "Select item '"
-						+ optionLocator + "' in list " + getText(humanReadable));
-				return;
+				log.log(MyLevel.ACTION, "Select option '"	+ optionLocator + "' in list corresponding to " + getText(humanReadable));
 			} catch(Exception e) {
 				log.log(Level.FINEST, "Unable to get text for associated human readable element: " + humanReadable, e);
 			}		
+		} else {
+			log.log(MyLevel.ACTION, "Select option '"	+ optionLocator + "' in list " + element);
 		}
-
-		log.log(MyLevel.ACTION, "Select item '"
-				+ optionLocator + "' in list " + element);
+		highlight(element);
 		super.select(element.getLocator(), optionLocator);
 	}
 	
@@ -421,17 +454,7 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 		select(element.getLocator());
 	}
 
-	@Override
-	public void uncheck(String locator) {
-		log.log(MyLevel.ACTION, "Uncheck " + getDescription(locator));
-		checkUncheck(locator, false);
-	}
-	
-	public void uncheck(Element element){
-		log.log(MyLevel.ACTION, "Uncheck " + element);
-		checkUncheck(element, false);
-	}
-	
+
 	/*
 	 * @see com.thoughtworks.selenium.DefaultSelenium#isElementPresent(java.lang.String)
 	 */
@@ -442,6 +465,10 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 	
 	public boolean isElementPresent(Element element){
 		return isElementPresent(element.getLocator());
+	}
+	
+	public boolean isVisible(Element element){
+		return isVisible(element.getLocator());
 	}
 	
 	public boolean isElementPresent(TabElement element){
@@ -460,7 +487,7 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 	public boolean isElementPresent(String element,Level level){
 		if(super.isElementPresent(element)){
 			log.log(level,"Found " + getDescription(element));
-			highlight(element);
+			//highlight(element); //TODO It's misleading to highlight an element on an arbitrary query.  It's more appropriate to highlight on a assertElementIsPresent(...) which is not yet written.  (jsefler 11/12/09)
 			return true;
 		}
 		else {	
@@ -543,8 +570,8 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 	
 	@Override
 	public void answerOnNextPrompt(String answer){
-		super.answerOnNextPrompt(answer);
 		log.log(MyLevel.ACTION, "Answering prompt with: " + answer);
+		super.answerOnNextPrompt(answer);
 	}
 	
 	@Override
@@ -781,7 +808,19 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 		instance = null;//
 	}
 	
+	@Override
+	public void highlight(String locator) {
+		// TODO a decision to globally turn on/off highlight should be done here
+		try {
+			super.highlight(locator);
+		} catch (Exception e) {
+			log.log(Level.FINER, "Could not highlight locator '"+locator+"', perhaps it is not present: " + e);
+		}
+	}
 	
+	public void highlight(Element element) {
+		highlight (element.getLocator());
+	}
 	
 	public static ExtendedSelenium newInstance(String serverHost, int serverPort, String browserStartCommand, String browserURL){
 		instance = new ExtendedSelenium(serverHost, serverPort, browserStartCommand, browserURL);
