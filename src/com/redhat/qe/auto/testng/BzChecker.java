@@ -4,6 +4,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.security.GeneralSecurityException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -29,11 +30,7 @@ public class BzChecker {
 	protected static Logger log = Logger.getLogger(BzChecker.class.getName());
 	protected Bug bug;
 	public BzChecker() {
-		try {
-			LogManager.getLogManager().readConfiguration(new FileInputStream("/home/weissj/workspace/automatjon/jon-2.0/log.properties"));
-		}catch(Exception e){
-			System.err.println("Unable to read log config file.");
-		}
+		
 	}
 	
 	public void init() {
@@ -46,13 +43,17 @@ public class BzChecker {
 	}
 	
 	public bzState getBugState(String bugId) {
+		return bzState.valueOf(getBugField(bugId, "bug_status").toString());
+	}
+	
+	public Object getBugField(String bugId, String fieldId){
 		Object[] bugs = null;
 		try {
 			bugs = bug.getBugs("ids", new Object[] {bugId});
 		}catch(Exception e){
 			throw new RuntimeException("Could not retrieve bug " + bugId + " from bugzilla." ,e);
 		}
-		
+		log.finer("Retrieved bugs: " + Arrays.deepToString(bugs));
 		if (bugs.length ==0) throw new IllegalStateException("No bug found matching ID " + bugId);
 		else if (bugs.length > 1) throw new IllegalStateException("Multiple matches found for bug ID " + bugId);
 		else {
@@ -61,9 +62,9 @@ public class BzChecker {
 			
 			log.finer("Found bug: " + thisbug.toString() );
 			Map internals = (Map)bmap.get("internals");
-			String status = internals.get("bug_status").toString();
-			log.finer("Bug status of " + bugId + " is " + status);
-			return bzState.valueOf(status);
+			Object fieldValue = internals.get(fieldId);
+			log.finer("Bug field " + fieldId + " of " + bugId + " is " + fieldValue.toString());
+			return fieldValue;
 		}
 	}
 	
@@ -193,6 +194,11 @@ public class BzChecker {
 	}
 	
 	public static void main(String[] args) throws Exception{
+		try {
+			LogManager.getLogManager().readConfiguration(new FileInputStream("/home/weissj/workspace/automatjon/jon-2.0/log.properties"));
+		}catch(Exception e){
+			System.err.println("Unable to read log config file.");
+		}
 		/*Bug myBug = new BzChecker().new Bug();
 		//List<>
 		myBug.connectBZ();
@@ -210,10 +216,12 @@ public class BzChecker {
 		checker.init();
 		//String id = "497793";
 		//log.info("State of " + id + " is " + checker.getBugState(id));
-		checker.login("jweiss+auto@redhat.com", System.getProperty("bugzilla.password"));
+		//checker.login("jweiss@redhat.com", System.getProperty("bugzilla.password"));
 		//checker.addComment("470058", "test comment");
-		checker.setBugState("470058", bzState.ON_QA);
+		//checker.setBugState("470058", bzState.ON_QA);
 		//checker.addKeywords("470058", "AutoVerified");
+		log.info("Keywords: " + checker.getBugField("470058", "keywords"));
+		
 	}
 
 }
