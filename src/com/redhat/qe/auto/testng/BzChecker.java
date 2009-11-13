@@ -117,8 +117,8 @@ public class BzChecker {
 		
 		public Bug(){
 			listMethod = "Bug.get_bugs";
-			//System.setProperty("bugzilla.url", "https://bugzilla.redhat.com/bugzilla/xmlrpc.cgi");
-			System.setProperty("bugzilla.url", "https://bz-web2-test.devel.redhat.com/bugzilla/xmlrpc.cgi");
+			System.setProperty("bugzilla.url", "https://bugzilla.redhat.com/bugzilla/xmlrpc.cgi");
+			//System.setProperty("bugzilla.url", "https://bz-web2-test.devel.redhat.com/bugzilla/xmlrpc.cgi");
 		}
 		
 		protected void connectBZ() throws XmlRpcException, GeneralSecurityException, IOException{
@@ -210,10 +210,10 @@ public class BzChecker {
 		checker.init();
 		//String id = "497793";
 		//log.info("State of " + id + " is " + checker.getBugState(id));
-		checker.login("jweiss@redhat.com", "2$(w^*@&J");
+		checker.login("jweiss+auto@redhat.com", System.getProperty("bugzilla.password"));
 		//checker.addComment("470058", "test comment");
-		//checker.setBugState("470058", bzState.ON_QA);
-		checker.addKeywords("470058", "verifiedByAutomation");
+		checker.setBugState("470058", bzState.ON_QA);
+		//checker.addKeywords("470058", "AutoVerified");
 	}
 
 }
