@@ -3,7 +3,6 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry exported="true" kind="lib" path="lib/selenium-java-client-driver.jar" sourcepath="/usr/local/selenium-remote-control-1.0.1/selenium-java-client-driver-1.0.1/selenium-java-client-driver-sources.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/testng-5.8-jdk15.jar" sourcepath="/home/weissj/testng-5.8/src"/>
 	<classpathentry kind="lib" path="lib/xmlrpc-client-3.1.jar"/>
 	<classpathentry kind="lib" path="lib/xmlrpc-1.1.1.jar"/>
 	<classpathentry kind="lib" path="lib/xmlrpc-common-3.1.jar"/>
@@ -20,5 +19,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="lib/google-collect-1.0-rc3.jar" sourcepath="lib-src/src-1.0-rc3.zip"/>
+	<classpathentry kind="lib" path="lib/testng-5.9-jdk15.jar" sourcepath="lib-src/testng-5.9-src.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

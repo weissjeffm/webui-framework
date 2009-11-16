@@ -42,12 +42,12 @@ public class BzChecker {
 		}
 	}
 	
-	public bzState getBugState(String bugId) {
+	public bzState getBugState(String bugId) throws XmlRpcException{
 		return bzState.valueOf(getBugField(bugId, "bug_status").toString());
 	}
 	
-	public Object getBugField(String bugId, String fieldId){
-		Object[] bugs = null;
+	public Object getBugField(String bugId, String fieldId) throws XmlRpcException{
+		/*Object[] bugs = null;
 		try {
 			bugs = bug.getBugs("ids", new Object[] {bugId});
 		}catch(Exception e){
@@ -65,7 +65,8 @@ public class BzChecker {
 			Object fieldValue = internals.get(fieldId);
 			log.finer("Bug field " + fieldId + " of " + bugId + " is " + fieldValue.toString());
 			return fieldValue;
-		}
+		}*/
+		return bug.getBug(bugId).get(fieldId);
 	}
 	
 	public void setBugState(String bugId, bzState state) {
@@ -118,7 +119,7 @@ public class BzChecker {
 		
 		public Bug(){
 			listMethod = "Bug.get_bugs";
-			System.setProperty("bugzilla.url", "https://bugzilla.redhat.com/bugzilla/xmlrpc.cgi");
+			//System.setProperty("bugzilla.url", "https://bugzilla.redhat.com/bugzilla/xmlrpc.cgi");
 			//System.setProperty("bugzilla.url", "https://bz-web2-test.devel.redhat.com/bugzilla/xmlrpc.cgi");
 		}
 		
@@ -139,6 +140,10 @@ public class BzChecker {
 			main.put("password", password);
 			Map map = (Map) this.callXmlrpcMethod("User.login", main);
 			return (Integer)map.get("id");
+		}
+		
+		public Map<String, Object> getBug(String bugId) throws XmlRpcException{
+			return (Map) this.callXmlrpcMethod("bugzilla.getBug", bugId);
 		}
 		
 		/*
@@ -175,7 +180,7 @@ public class BzChecker {
 			main.put("ids", Integer.parseInt(bug_id));
 			Map map = (Map) this.callXmlrpcMethod("Bug.update", main);
 			
-			System.out.println(map);
+			//System.out.println(map);
 			return map;
 		}
 		
@@ -187,7 +192,7 @@ public class BzChecker {
 			Map map = (Map) this.callXmlrpcMethod("Bug.add_comment", main);
 			//Map map = (Map) this.callXmlrpcMethod("bug.add_comment", Integer.parseInt(bug_id), comment);
 			
-			System.out.println(map);
+			//System.out.println(map);
 			return map;
 		}
 		
@@ -220,7 +225,7 @@ public class BzChecker {
 		//checker.addComment("470058", "test comment");
 		//checker.setBugState("470058", bzState.ON_QA);
 		//checker.addKeywords("470058", "AutoVerified");
-		log.info("Keywords: " + checker.getBugField("470058", "keywords"));
+		log.info("Keywords: " + checker.getBugField("470058","keywords"));
 		
 	}
 

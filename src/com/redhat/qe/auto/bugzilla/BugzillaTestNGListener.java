@@ -3,10 +3,12 @@ package com.redhat.qe.auto.bugzilla;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.xmlrpc.XmlRpcException;
 import org.testng.ITestContext;
 import org.testng.ITestResult;
 import org.testng.SkipException;
@@ -19,6 +21,7 @@ import com.redhat.qe.auto.testopia.AbstractTestProcedureHandler;
 import com.redhat.qe.auto.testopia.TestProcedureHandler;
 
 public class BugzillaTestNGListener implements IResultListener{
+	private static final String AUTO_VERIFIED = "AutoVerified";
 	private static final String BLOCKED_BY_BUG = "blockedByBug";
 	private static final String VERIFIES_BUG = "verifiesBug";
 	protected static Logger log = Logger.getLogger(BugzillaTestNGListener.class.getName());
@@ -69,7 +72,7 @@ public class BugzillaTestNGListener implements IResultListener{
 		}
 		String[] groups = result.getMethod().getGroups();
 		
-		Pattern p = Pattern.compile(BLOCKED_BY_BUG + "-(\\d+)");
+		Pattern p = Pattern.compile("[" + VERIFIES_BUG + "|" + BLOCKED_BY_BUG +"]-(\\d+)");
 		for (String group: groups){
 			Matcher m = p.matcher(group);
 			if (m.find()){
@@ -80,10 +83,11 @@ public class BugzillaTestNGListener implements IResultListener{
 		//if nothing found, check the param list (if there is one) for certain types
 		Object[] params = result.getParameters();
 		
-		if (params[0] instanceof BlockedByBzBug){
-			BlockedByBzBug bbb = (BlockedByBzBug)params[0];
+		if (params.length > 0 && params[0] instanceof BzBugDependency){
+			BzBugDependency bbb = (BzBugDependency)params[0];
 			lookupBugAndSkipIfOpen(bbb.getBugId());
 			//if we get here, we need to extract items into the list of params
+			log.finer("Extracting parameters: " + Arrays.deepToString(bbb.getParameters()));
 			result.setParameters(bbb.getParameters());
 			/*
 			 * save the bug number in a hashtable here, otherwise the info is lost
@@ -95,7 +99,13 @@ public class BugzillaTestNGListener implements IResultListener{
 	}
 
 	protected void lookupBugAndSkipIfOpen(String number){
-		BzChecker.bzState state = bzChecker.getBugState(number);
+		BzChecker.bzState state; 
+		try {
+			state = bzChecker.getBugState(number);
+		}catch(XmlRpcException xre) {
+			log.log(Level.WARNING, "Could not determine the state of bug " + number + ". Assuming test needs to be run.", xre);
+			return;
+		}
 		if (! (state.equals(BzChecker.bzState.ON_QA) ||
 				state.equals(BzChecker.bzState.VERIFIED) ||
 				state.equals(BzChecker.bzState.RELEASE_PENDING) ||
@@ -121,7 +131,14 @@ public class BugzillaTestNGListener implements IResultListener{
 			Matcher m = p.matcher(group);
 			if (m.find()){
 				String number = m.group(1);
-				BzChecker.bzState state = bzChecker.getBugState(number);
+				BzChecker.bzState state;
+				try {
+					state = bzChecker.getBugState(number);
+				}
+				catch(XmlRpcException xre) {
+					log.log(Level.WARNING, "Could not determine the state of bug " + number + ". It may need to be closed if is hasn't been already.", xre);
+					break;
+				}
 				if (group.startsWith(VERIFIES_BUG)) {
 					log.fine("This test verifies bugzilla bug #"+ number);
 					if (state.equals(BzChecker.bzState.ON_QA)){
@@ -151,6 +168,15 @@ public class BugzillaTestNGListener implements IResultListener{
 	}
 	
 	protected void verifyComment(String bugNumber, ITestResult result){
+		//first check if this has been tested already.  if so, do nothing
+		try {
+			if (bzChecker.getBugField(bugNumber, "keywords").toString().indexOf(AUTO_VERIFIED) != -1 ) {
+				log.info("Bug " + bugNumber + " already has the AutoVerified keyword.");
+				return;
+			}
+		} catch(Exception e) {
+			log.log(Level.WARNING, "Could not determine if bug " + bugNumber + " has been marked AutoVerified yet.",e);
+		}
 		StringBuffer sb = new StringBuffer();
 		bzChecker.login(System.getProperty("bugzilla.login"), System.getProperty("bugzilla.password"));
 		sb.append("Verified by Automated Test " + result.getName() + " parameters: (" + Arrays.deepToString(result.getParameters()) + ")\n");
@@ -158,7 +184,7 @@ public class BugzillaTestNGListener implements IResultListener{
 		if (log != null)
 		sb.append("Automation log:\n");
 		sb.append(AbstractTestProcedureHandler.getActiveLog());
-		
+		bzChecker.addKeywords(bugNumber, AUTO_VERIFIED);
 		bzChecker.addComment(bugNumber, sb.toString());
 		bzTests.remove(result.getParameters());
 	}

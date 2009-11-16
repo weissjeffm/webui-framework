@@ -17,10 +17,6 @@ package com.redhat.qe.auto.testng;
  */
 public class BlockedByBzBug extends BzBugDependency{
 
-	protected String bugId = null;
-	protected Object[] params = null;
-	
-
 	public BlockedByBzBug(String bugId, Object... params) {
 		super();
 		this.bugId = bugId;
