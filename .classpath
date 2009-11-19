@@ -21,5 +21,6 @@
 	</classpathentry>
 	<classpathentry kind="lib" path="lib/google-collect-1.0-rc3.jar" sourcepath="lib-src/src-1.0-rc3.zip"/>
 	<classpathentry exported="true" kind="lib" path="lib/testng-5.9-jdk15.jar" sourcepath="lib-src/testng-5.9-src.jar"/>
+	<classpathentry kind="lib" path="lib/velocity-1.6.2-dep.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
