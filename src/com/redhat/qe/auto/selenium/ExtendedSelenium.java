@@ -219,6 +219,12 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 		return getText(element.getLocator());
 	}
 	
+	@Override
+	public String getText(String locator) {
+		highlight(locator);
+		return super.getText(locator);
+	}
+	
 	public String getSelectedLabel(Element element){
 		return getSelectedLabel(element.getLocator());
 	}
