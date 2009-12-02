@@ -15,6 +15,7 @@ import java.util.Date;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
 import org.testng.ITestResult;
 import org.testng.Reporter;
@@ -660,7 +661,8 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 		}catch(Exception e) {
 			log.log(Level.FINER, "Could not retrieve element type, perhaps it is not present: " + elementStr, e);
 		}
-		elementStr =elementStr.replaceAll("^" +elementType + " ", ""); //remove duplicate element type strings
+		elementStr =elementStr.replaceAll("^" +Pattern.quote(elementType) + " ", ""); //remove duplicate element type strings
+		
 		return elementType + ": " + elementStr;
 	}
 	
@@ -825,6 +827,10 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 	public static ExtendedSelenium newInstance(String serverHost, int serverPort, String browserStartCommand, String browserURL){
 		instance = new ExtendedSelenium(serverHost, serverPort, browserStartCommand, browserURL);
 		return instance;
+	}
+	
+	public static void main (String... args) {
+		System.out.println(Pattern.quote("^//td[(normalize-space(.)='jweiss-rhel1.usersys.redhat.com')]/..//input[@type='checkbox']"));
 	}
 	
 	
