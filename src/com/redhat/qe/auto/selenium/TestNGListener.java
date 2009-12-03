@@ -99,12 +99,12 @@ public class TestNGListener implements IResultListener, ISuiteListener {
 	
 	public void onConfigurationSkip(ITestResult result) {
 		System.out.println();
-		log.fine("========= Configuration skipped: " + result.getName());
+		log.info("========= Configuration skipped: " + result.getName());
 	}
 
 	
 	public void onConfigurationSuccess(ITestResult result) {
-		log.finer("========= Configuration completed: " + result.getName());
+		log.fine("========= Configuration completed: " + result.getName());
 	}
 
 	@Override
