@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -44,18 +45,29 @@ public class SSHCommandRunner implements Runnable {
 	
 	
 	public SSHCommandRunner(String server,
-							String user,
-							File sshPemFile,
-							String password,
-							String command) throws IOException{
+			String user,
+			File sshPemFile,
+			String passphrase,
+			String command) throws IOException{
 		super();
 		Connection newConn = new Connection(server);
 		newConn.connect();
-		newConn.authenticateWithPublicKey(user, sshPemFile, password);
+		if (!newConn.authenticateWithPublicKey(user, sshPemFile, passphrase)) {
+			throw new RuntimeException("Could not log in to " + newConn.getHostname() + " with the given credentials ("+user+").");
+		}
+
 		this.connection = newConn;
 		this.command = command;
 	}
-	
+
+	public SSHCommandRunner(String server,
+			String user,
+			String sshPemFile,
+			String passphrase,
+			String command) throws IOException{
+		this(server, user, new File(sshPemFile), passphrase, command);
+	}
+
 	
 	public void run() {
 		try {
