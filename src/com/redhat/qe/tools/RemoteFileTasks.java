@@ -14,12 +14,12 @@ public class RemoteFileTasks {
 	}
 	
 	public static int grepFile (SSHCommandRunner runner, String filePath, String searchTerm) {
-		return runCommand(runner, "grep " + searchTerm + " " + filePath, Level.INFO);
+		return runCommand(runner, "grep -E '" + searchTerm + "' " + filePath, Level.INFO);
 	}
 	
 	public static int runCommand(SSHCommandRunner runner, String command, Level loglevel){
 		runner.reset();
-		runner.setCommand("grep -E '" + searchTerm + "' " + filePath);
+		runner.setCommand(command);
 		runner.run();
 		log.log(loglevel, "Running Command (on hostname "+runner.getConnection().getHostname()+"): " + runner.getCommand());
 		int returnCode = runner.waitFor();
