@@ -19,7 +19,7 @@ public class RemoteFileTasks {
 	
 	public static int runCommand(SSHCommandRunner runner, String command, Level loglevel){
 		runner.reset();
-		runner.setCommand(command);
+		runner.setCommand("grep -E '" + searchTerm + "' " + filePath);
 		runner.run();
 		log.log(loglevel, "Running Command (on hostname "+runner.getConnection().getHostname()+"): " + runner.getCommand());
 		int returnCode = runner.waitFor();
