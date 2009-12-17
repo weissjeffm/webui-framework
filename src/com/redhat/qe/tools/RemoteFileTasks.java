@@ -36,6 +36,6 @@ public class RemoteFileTasks {
 		if (newValue == null)
 			return runAugeasCommand(runner, String.format("rm %s", augeusPath), MyLevel.ACTION);
 		else
-			return runAugeasCommand(runner, String.format("set %s %s", augeusPath, newValue), MyLevel.ACTION);
+			return runAugeasCommand(runner, String.format("set %s '%s'", augeusPath, newValue), MyLevel.ACTION);
 	}
 }
