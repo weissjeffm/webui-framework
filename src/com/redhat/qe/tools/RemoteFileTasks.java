@@ -27,5 +27,15 @@ public class RemoteFileTasks {
 		log.fine("Stderr: "+runner.getStderr());
 		return returnCode;
 	}
+	
+	public static int runAugeasCommand(SSHCommandRunner runner, String command, Level loglevel){
+		return runCommand(runner, "augtool " + command, loglevel);
+	}
 
+	public static int updateAugeasConfig(SSHCommandRunner runner, String augeusPath, String newValue){
+		if (newValue == null)
+			return runAugeasCommand(runner, String.format("rm %s", augeusPath), MyLevel.ACTION);
+		else
+			return runAugeasCommand(runner, String.format("set %s %s", augeusPath, newValue), MyLevel.ACTION);
+	}
 }
