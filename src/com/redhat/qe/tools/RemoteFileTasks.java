@@ -29,7 +29,7 @@ public class RemoteFileTasks {
 	}
 	
 	public static int runAugeasCommand(SSHCommandRunner runner, String command, Level loglevel){
-		return runCommand(runner, "augtool " + command, loglevel);
+		return runCommand(runner, String.format("echo -e \"%s\nsave\n\" | augtool", command), loglevel);
 	}
 
 	public static int updateAugeasConfig(SSHCommandRunner runner, String augeusPath, String newValue){
