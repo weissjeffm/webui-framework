@@ -17,6 +17,20 @@ public class RemoteFileTasks {
 		return runCommand(runner, "grep -E '" + searchTerm + "' " + filePath, Level.INFO);
 	}
 	
+	/**
+	 * Test for the existence of a file.
+	 * @param runner
+	 * @param filePath - full path to the file
+	 * @return 1 (file exists), 0 (file does not exist), -1 (could not determine existence)
+	 * @author jsefler
+	 */
+	public static int testFileExists (SSHCommandRunner runner, String filePath) {
+		runCommand(runner, "test -e "+filePath+" && echo 1 || echo 0", Level.INFO);
+		if (runner.getStdout().trim().equals("1")) return 1;
+		if (runner.getStdout().trim().equals("0")) return 0;
+		return -1;
+	}
+	
 	public static int runCommand(SSHCommandRunner runner, String command, Level loglevel){
 		runner.reset();
 		runner.setCommand(command);
