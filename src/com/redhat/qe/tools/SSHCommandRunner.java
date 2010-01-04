@@ -17,6 +17,7 @@ import com.trilead.ssh2.StreamGobbler;
 public class SSHCommandRunner implements Runnable {
 
 	protected Connection connection;
+	protected String user = null;
 	
 
 	protected Session session;
@@ -57,6 +58,7 @@ public class SSHCommandRunner implements Runnable {
 		}
 
 		this.connection = newConn;
+		this.user = user;
 		this.command = command;
 	}
 
@@ -69,12 +71,15 @@ public class SSHCommandRunner implements Runnable {
 	}
 
 	
-	public void run() {
+	public void run(Level level) {
 		try {
 			/*
 			 * Sync'd block prevents other threads from getting the streams before they've been set up here.
 			 */
 			synchronized (lock) {
+//				log.info("SSH: Running '"+this.command+"' on '"+this.connection.getHostname()+"'");
+				if (this.user!=null)	log.log(level,"ssh "+this.user+"@"+this.connection.getHostname()+" "+this.command);
+				else					log.log(level,"ssh "+              this.connection.getHostname()+" "+this.command);
 				// sshSession.requestDumbPTY();
 				session = connection.openSession();
 				//session.startShell();
@@ -82,12 +87,15 @@ public class SSHCommandRunner implements Runnable {
 				out = new StreamGobbler(session.getStdout());
 				err = new StreamGobbler(session.getStderr());
 			}
-			
+
 			
 
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
+	}
+	public void run() {
+		run(Level.FINE);
 	}
 	
 	public int waitFor(){
@@ -105,6 +113,9 @@ public class SSHCommandRunner implements Runnable {
 		session.close();
 
 		kill=false;
+		
+		log.fine("ssh: Stdout: "+this.getStdout());
+		log.fine("ssh: Stderr: "+this.getStderr());
 		return exitCode;
 	}
 
@@ -220,12 +231,12 @@ public class SSHCommandRunner implements Runnable {
 	 * @param command command to execute
 	 * @return output as String[], stdout in 0 pos and stderr in 1 pos
 	 */
-	public String[] executeViaSSHWithReturn(String hostname, 
+	public static String[] executeViaSSHWithReturn(String hostname, 
 			String user, String command){
 		SSHCommandRunner runner = null;
 		SplitStreamLogger logger;
 
-		log.info("SSH: Running '"+command+"' on '"+hostname+"'");
+//		log.info("SSH: Running '"+command+"' on '"+hostname+"'"); // moved log.info into run() method - jsefler 1/4/2010
 		try{
 			runner = new SSHCommandRunner(hostname,
 					user,
@@ -243,7 +254,7 @@ public class SSHCommandRunner implements Runnable {
 		return new String[] {logger.getStdout(), logger.getStderr()};
 	}
 	
-	private String[] failSSH(){
+	private static String[] failSSH(){
 		return new String[] {"fail", "fail"};
 	}
 	

@@ -34,11 +34,8 @@ public class RemoteFileTasks {
 	public static int runCommand(SSHCommandRunner runner, String command, Level loglevel){
 		runner.reset();
 		runner.setCommand(command);
-		runner.run();
-		log.log(loglevel, "Running Command (on hostname "+runner.getConnection().getHostname()+"): " + runner.getCommand());
+		runner.run(loglevel);
 		int returnCode = runner.waitFor();
-		log.fine("Stdout: "+runner.getStdout());
-		log.fine("Stderr: "+runner.getStderr());
 		return returnCode;
 	}
 	
