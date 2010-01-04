@@ -8,6 +8,7 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Serializable;
+import java.net.URI;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -774,7 +775,7 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 		
 		//embed link in testng report
 		Reporter.setCurrentTestResult(result);
-		Reporter.log("<a href='" + new File(fullpath).toURI().toURL() + "'>Screenshot</a>");
+		Reporter.log("<a href='" + String.format("../screenshots/%s", outFileName) + "'>Screenshot</a>");
 	}
 	
 	protected void pngRemoteScreenCapture(String filepath) throws Exception{
