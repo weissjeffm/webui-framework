@@ -32,10 +32,6 @@ public class SSHCommandRunner implements Runnable {
 	protected String command = null;
 	protected Object lock = new Object();
 	
-	//empty constructor, needed for rho
-	public SSHCommandRunner() {
-	}
-	
 
 	public SSHCommandRunner(Connection connection,
 			String command) {
