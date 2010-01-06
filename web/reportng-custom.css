@@ -1,23 +1,23 @@
 .ACTION {
-background-image:url(file:/home/weissj/workspace/webui-framework/web/action.png);
+background-image:url(action.png);
 background-repeat:no-repeat;
 font-size:1em;
 padding-left:19px;
 }
 .ASSERT {
-background-image:url(file:/home/weissj/workspace/webui-framework/web/assert.png);
+background-image:url(assert.png);
 background-repeat:no-repeat;
 font-size:1em;
 padding-left:19px;
 }
 .ASSERTFAIL {
-background-image:url(file:/home/weissj/workspace/webui-framework/web/assertfail.png);
+background-image:url(assertfail.png);
 background-repeat:no-repeat;
 font-size:1em;
 padding-left:19px;
 }
 .SEVERE {
-background-image:url(file:/home/weissj/workspace/webui-framework/web/severe.png);
+background-image:url(severe.png);
 background-repeat:no-repeat;
 font-size:1em;
 padding-left:19px;
