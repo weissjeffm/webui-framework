@@ -67,7 +67,7 @@ public class TestNGListener implements IResultListener, ISuiteListener {
 	
 	public void onTestSkipped(ITestResult result) {
 		if (result.getThrowable() instanceof SkipException){
-			log.log(Level.INFO, "========= Skipping test due to SkipException: " + result.getName(),result.getThrowable());
+			log.log(Level.INFO, "========= Skipping test " + result.getName() + ": " + result.getThrowable().getMessage(),result.getThrowable());
 		}
 		else {
 			log.fine("========= Skipping Test: " + result.getName());
