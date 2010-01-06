@@ -1,0 +1,47 @@
+.ACTION {
+background-image:url(file:/home/weissj/workspace/webui-framework/web/action.png);
+background-repeat:no-repeat;
+font-size:1em;
+padding-left:19px;
+}
+.ASSERT {
+background-image:url(file:/home/weissj/workspace/webui-framework/web/assert.png);
+background-repeat:no-repeat;
+font-size:1em;
+padding-left:19px;
+}
+.ASSERTFAIL {
+background-image:url(file:/home/weissj/workspace/webui-framework/web/assertfail.png);
+background-repeat:no-repeat;
+font-size:1em;
+padding-left:19px;
+}
+.SEVERE {
+background-image:url(file:/home/weissj/workspace/webui-framework/web/severe.png);
+background-repeat:no-repeat;
+font-size:1em;
+padding-left:19px;
+}
+.WARNING {
+font-size:0.9em;
+padding-left:1.7em;
+}
+.INFO {
+font-size:0.9em;
+padding-left:1.7em;
+}
+.FINE {
+font-size:0.7em;
+padding-left:2.3em;
+color:#777777;
+}
+.FINER {
+font-size:0.7em;
+padding-left:4em;
+color:#999999;
+}
+.FINEST {
+font-size:0.6em;
+padding-left:4em;;
+color:#AAAAAA;
+}

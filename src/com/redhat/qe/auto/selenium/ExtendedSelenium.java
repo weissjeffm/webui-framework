@@ -775,7 +775,7 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 		
 		//embed link in testng report
 		Reporter.setCurrentTestResult(result);
-		Reporter.log("<a href='" + String.format("../screenshots/%s", outFileName) + "'>Screenshot</a>");
+		Reporter.log("<div class='INFO'> <a href='" + String.format("../../screenshots/%s", outFileName) + "'>Screenshot</a></div>");
 	}
 	
 	protected void pngRemoteScreenCapture(String filepath) throws Exception{

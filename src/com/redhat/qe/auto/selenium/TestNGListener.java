@@ -58,7 +58,11 @@ public class TestNGListener implements IResultListener, ISuiteListener {
 		catch(Exception e){
 			log.log(Level.FINE, "Unable to capture screenshot.", e);
 		}
-		log.log(Level.SEVERE, "Test failed: "+ result.getName(), result.getThrowable());
+		Throwable err = result.getThrowable();
+		Level level = Level.SEVERE;
+		if (err != null && err instanceof AssertionError)
+			level = MyLevel.ASSERTFAIL;
+		log.log(level, "Test failed: "+ result.getName(), err);
 	}
 	
 	public void onTestSkipped(ITestResult result) {
@@ -80,7 +84,7 @@ public class TestNGListener implements IResultListener, ISuiteListener {
 	public  void onTestSuccess(ITestResult result) {
 		Throwable throwable = result.getThrowable();
 		if (throwable != null){
-			log.log(MyLevel.ACTION, "Expected exception of " + throwable.getClass().getName() + " '" + throwable.getMessage() + "' was in fact thrown." );
+			log.log(MyLevel.ASSERT, "Expected exception of " + throwable.getClass().getName() + " '" + throwable.getMessage() + "' was in fact thrown." );
 		}
 		log.fine("========= Test Passed: " + result.getName());
 	}
