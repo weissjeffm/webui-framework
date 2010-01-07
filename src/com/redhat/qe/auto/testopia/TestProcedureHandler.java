@@ -1,8 +1,7 @@
 package com.redhat.qe.auto.testopia;
 
+import java.util.logging.Level;
 import java.util.logging.LogRecord;
-
-import com.redhat.qe.auto.selenium.MyLevel;
 
 /**
  * @author jweiss
@@ -15,7 +14,7 @@ public class TestProcedureHandler extends AbstractTestProcedureHandler {
 	protected StringBuffer sb = new StringBuffer();
 
 	public TestProcedureHandler() {
- 		setLevel(MyLevel.INFO);
+ 		setLevel(Level.INFO);
 		setFormatter(new TestProcedureFormatter());	
     }
 	
