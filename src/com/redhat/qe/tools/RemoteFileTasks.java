@@ -1,11 +1,9 @@
 package com.redhat.qe.tools;
 
-import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
 import com.redhat.qe.auto.selenium.LogMessageUtil;
-import com.redhat.qe.auto.selenium.MyLevel;
 
 public class RemoteFileTasks {
 	protected static Logger log = Logger.getLogger(RemoteFileTasks.class.getName());
