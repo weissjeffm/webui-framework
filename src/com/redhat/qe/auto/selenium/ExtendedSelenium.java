@@ -23,6 +23,7 @@ import org.testng.Reporter;
 
 import com.thoughtworks.selenium.CommandProcessor;
 import com.thoughtworks.selenium.DefaultSelenium;
+import com.thoughtworks.selenium.SeleniumException;
 
 /**
  * This class extends the DefaultSelenium functionality.  It 
@@ -330,7 +331,17 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 		// if the locator is not present, then it is effectively invisible
 		if (!super.isElementPresent(locator)) return;
 		log.info("Wait for element to be invisible '" + locator  + "', with timeout of " + timeout + ".");
-		super.waitForCondition("!selenium.isVisible(\"" + locator + "\");", timeout);
+		try{
+			super.waitForCondition("!selenium.isVisible(\"" + locator + "\");", timeout);
+		}
+		catch(SeleniumException e){
+			if (e.getMessage().contains("not found")){
+				log.fine("Element '"+locator+"' annihilated from page; assuming that this constitutes invisibility");
+				return;
+			}
+			else
+				throw e;
+		}
 	}
 	
 	public void waitForInvisible(Element element, String timeout){
@@ -768,6 +779,7 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 	public void testNGScreenCapture(ITestResult result) throws Exception{
 		String dirName = System.getProperty("selenium.screenshot.dir", System.getProperty("user.dir") + File.separator
 				+ "screenshots");
+		mkdir(dirName);
 		Date rightNow = new Date();
 		String outFileName = dateFormat.format(rightNow) + "-" + result.getTestClass().getName() + "." + result.getMethod().getMethodName() + ".png";
 		String fullpath = dirName + File.separator + outFileName;
