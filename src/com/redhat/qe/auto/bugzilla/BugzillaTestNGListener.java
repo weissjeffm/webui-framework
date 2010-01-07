@@ -112,7 +112,7 @@ public class BugzillaTestNGListener implements IResultListener{
 				state.equals(BzChecker.bzState.POST) ||
 				state.equals(BzChecker.bzState.CLOSED))){
 			// the bug is not ready to retest
-			throw new SkipException("This test is blocked by bz bug " + number + ", which is currently " + state.toString());
+			throw new SkipException("This test is blocked by "+state.toString()+" Bugzilla bug "+number+".  (<a href=https://bugzilla.redhat.com/show_bug.cgi?id="+number+">https://bugzilla.redhat.com/show_bug.cgi?id="+number+"</a>)");
 		}
 	}
 	
