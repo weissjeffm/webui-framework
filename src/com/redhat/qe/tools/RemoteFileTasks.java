@@ -27,7 +27,7 @@ public class RemoteFileTasks {
 	 * @author jsefler
 	 */
 	public static int deleteLines (SSHCommandRunner runner, String filePath, String containingText) {
-		return runCommand(runner, "sed -i '/"+containingText+"/d' " + filePath, MyLevel.ACTION);
+		return runCommand(runner, "sed -i '/"+containingText+"/d' " + filePath, LogMessageUtil.action());
 	}
 	
 	/**
