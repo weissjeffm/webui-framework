@@ -37,13 +37,13 @@ public class TestNGListener implements IResultListener, ISuiteListener {
 	//Override TestNG's Test Listener methods so Selenium can log and screenshot properly
 
 	public void onFinish(ITestContext context){
-		log.log(Level.FINE, "Finished TestNG Script: " + context.getName(), LogMessageStyle.Banner);
+		log.log(Level.FINE, "Finished TestNG Script: " + context.getName(), LogMessageUtil.Style.Banner);
 		System.out.println();
 	}
 	
 	public void onStart(ITestContext context) {
 		System.out.println();
-		log.log(Level.FINE, "Starting TestNG Script: " + context.getName(), LogMessageStyle.Banner);
+		log.log(Level.FINE, "Starting TestNG Script: " + context.getName(), LogMessageUtil.Style.Banner);
 	}
 	
 	public void onTestFailedButWithinSuccessPercentage(ITestResult result) {
@@ -61,20 +61,21 @@ public class TestNGListener implements IResultListener, ISuiteListener {
 			log.log(Level.FINE, "Unable to capture screenshot.", e);
 		}
 		Throwable err = result.getThrowable();
-		Level level = Level.SEVERE;
+		LogRecord logRecord = new LogRecord(Level.SEVERE, "Test failed: "+ result.getName());
+		logRecord.setThrown(err);
 		if (err != null && err instanceof AssertionError)
-			level = MyLevel.ASSERTFAIL;
-		log.log(level, "Test failed: "+ result.getName(), err);
+			logRecord.setParameters(new Object[] {LogMessageUtil.Style.AssertFailed});
+		log.log(logRecord);
 	}
 	
 	public void onTestSkipped(ITestResult result) {
 		if (result.getThrowable() instanceof SkipException){
 			LogRecord r= new LogRecord(Level.INFO,  "Skipping test " + result.getName() + ": " + result.getThrowable().getMessage());
-			r.setParameters(new Object[]{LogMessageStyle.Banner});
+			r.setParameters(new Object[]{LogMessageUtil.Style.Banner});
 			log.log(r);
 		}
 		else {
-			log.log(Level.FINE, "Skipping Test: " + result.getName(), LogMessageStyle.Banner);
+			log.log(Level.FINE, "Skipping Test: " + result.getName(), LogMessageUtil.Style.Banner);
 		}
 	}
 	
@@ -82,18 +83,18 @@ public class TestNGListener implements IResultListener, ISuiteListener {
 		Reporter.setCurrentTestResult(result);
 		System.out.println();
 
-		log.log(Level.FINE, "Starting Test: " + result.getName(), LogMessageStyle.Banner);
+		log.log(Level.FINE, "Starting Test: " + result.getName(), LogMessageUtil.Style.Banner);
 	}
 	
 	public  void onTestSuccess(ITestResult result) {
 		Throwable throwable = result.getThrowable();
 		if (throwable != null){
-			log.log(MyLevel.ASSERT, "Expected exception of " + throwable.getClass().getName() + " '" + throwable.getMessage() + "' was in fact thrown." );
+			log.log(Level.INFO, "Expected exception of " + throwable.getClass().getName() + " '" + throwable.getMessage() + "' was in fact thrown." , LogMessageUtil.Style.Asserted);
 		}
 		String params = "";
 		if (result.getParameters() != null && result.getParameters().length > 0)
 				params = "(" + Arrays.deepToString(result.getParameters()) + ")";
-		log.log(Level.FINE, String.format("Test Passed: %s%s", result.getName(), params), LogMessageStyle.Banner);
+		log.log(Level.FINE, String.format("Test Passed: %s%s", result.getName(), params), LogMessageUtil.Style.Banner);
 	}
 
 	
@@ -111,22 +112,22 @@ public class TestNGListener implements IResultListener, ISuiteListener {
 	
 	public void onConfigurationSkip(ITestResult result) {
 		System.out.println();
-		log.log(Level.INFO, "Configuration skipped: " + result.getName(), LogMessageStyle.Banner);
+		log.log(Level.INFO, "Configuration skipped: " + result.getName(), LogMessageUtil.Style.Banner);
 	}
 
 	
 	public void onConfigurationSuccess(ITestResult result) {
-		log.log(Level.FINE, "Configuration completed: " + result.getName(), LogMessageStyle.Banner);
+		log.log(Level.FINE, "Configuration completed: " + result.getName(), LogMessageUtil.Style.Banner);
 	}
 
 	@Override
 	public void onFinish(ISuite suite) {
-		log.log(Level.FINE, "Finishing TestNG Suite:" + suite.getName(), LogMessageStyle.Banner);
+		log.log(Level.FINE, "Finishing TestNG Suite:" + suite.getName(), LogMessageUtil.Style.Banner);
 	}
 
 	@Override
 	public void onStart(ISuite suite) {
-		log.log(Level.FINE, "Starting TestNG Suite:" +suite.getName(), LogMessageStyle.Banner);
+		log.log(Level.FINE, "Starting TestNG Suite:" +suite.getName(), LogMessageUtil.Style.Banner);
 	}
 	
 	protected void screencap(ITestResult result) throws Exception{

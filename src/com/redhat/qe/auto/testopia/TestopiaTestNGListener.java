@@ -32,7 +32,7 @@ import testopia.API.TestPlan;
 import testopia.API.TestRun;
 import testopia.API.TestopiaException;
 
-import com.redhat.qe.auto.selenium.LogFormatter;
+import com.redhat.qe.auto.selenium.ConsoleLogFormatter;
 
 /**
  * @author jweiss
@@ -466,7 +466,7 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 	//FIXME this is just temporary for testing
 	private static void setLogConfig(){
 		Logger.getLogger("").setLevel(Level.ALL);
-		Logger.getLogger("").getHandlers()[0].setFormatter(new LogFormatter());
+		Logger.getLogger("").getHandlers()[0].setFormatter(new ConsoleLogFormatter());
 		Logger.getLogger("").getHandlers()[0].setLevel(Level.ALL);
 		log.info("Hello");
 	}

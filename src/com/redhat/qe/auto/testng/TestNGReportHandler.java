@@ -5,7 +5,7 @@ import java.util.logging.LogRecord;
 
 import org.testng.Reporter;
 
-import com.redhat.qe.auto.selenium.LogMessageStyle;
+import com.redhat.qe.auto.selenium.LogMessageUtil;
 
 public class TestNGReportHandler extends Handler {
 
@@ -26,7 +26,7 @@ public class TestNGReportHandler extends Handler {
 		String css_class = record.getLevel().toString();
 		if (record.getParameters() != null)
 			for (Object param: record.getParameters()){
-				if (param.equals(LogMessageStyle.Banner))
+				if (param.equals(LogMessageUtil.Style.Banner))
 					css_class += " banner";
 			}
 		Reporter.log("<div class='" + css_class + "'>"+record.getMessage() + "</div>");

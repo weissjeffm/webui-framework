@@ -1,20 +1,23 @@
 package com.redhat.qe.tools;
 
 import java.util.logging.Level;
+import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
+import com.redhat.qe.auto.selenium.LogMessageUtil;
 import com.redhat.qe.auto.selenium.MyLevel;
 
 public class RemoteFileTasks {
-	
 	protected static Logger log = Logger.getLogger(RemoteFileTasks.class.getName());
 
+	
+	
 	public static int searchReplaceFile (SSHCommandRunner runner, String filePath, String sedSearch, String sedReplace) {
-		return runCommand(runner, "sed -i 's/"+sedSearch+"/"+sedReplace+"/g' " + filePath, MyLevel.ACTION);
+		return runCommand(runner, "sed -i 's/"+sedSearch+"/"+sedReplace+"/g' " + filePath, LogMessageUtil.action());
 	}
 	
 	public static int grepFile (SSHCommandRunner runner, String filePath, String searchTerm) {
-		return runCommand(runner, "grep -E '" + searchTerm + "' " + filePath, Level.INFO);
+		return runCommand(runner, "grep -E '" + searchTerm + "' " + filePath, LogMessageUtil.info());
 	}
 	
 	/**
@@ -25,28 +28,28 @@ public class RemoteFileTasks {
 	 * @author jsefler
 	 */
 	public static int testFileExists (SSHCommandRunner runner, String filePath) {
-		runCommand(runner, "test -e "+filePath+" && echo 1 || echo 0", Level.INFO);
+		runCommand(runner, "test -e "+filePath+" && echo 1 || echo 0", LogMessageUtil.info());
 		if (runner.getStdout().trim().equals("1")) return 1;
 		if (runner.getStdout().trim().equals("0")) return 0;
 		return -1;
 	}
 	
-	public static int runCommand(SSHCommandRunner runner, String command, Level loglevel){
+	public static int runCommand(SSHCommandRunner runner, String command, LogRecord logRecord){
 		runner.reset();
 		runner.setCommand(command);
-		runner.run(loglevel);
+		runner.run(logRecord);
 		int returnCode = runner.waitFor();
 		return returnCode;
 	}
 	
-	public static int runAugeasCommand(SSHCommandRunner runner, String command, Level loglevel){
-		return runCommand(runner, String.format("echo -e \"%s\nsave\n\" | augtool", command), loglevel);
+	public static int runAugeasCommand(SSHCommandRunner runner, String command, LogRecord logRecord){
+		return runCommand(runner, String.format("echo -e \"%s\nsave\n\" | augtool", command), LogMessageUtil.action());
 	}
 
 	public static int updateAugeasConfig(SSHCommandRunner runner, String augeusPath, String newValue){
 		if (newValue == null)
-			return runAugeasCommand(runner, String.format("rm %s", augeusPath), MyLevel.ACTION);
+			return runAugeasCommand(runner, String.format("rm %s", augeusPath), LogMessageUtil.action());
 		else
-			return runAugeasCommand(runner, String.format("set %s '%s'", augeusPath, newValue), MyLevel.ACTION);
+			return runAugeasCommand(runner, String.format("set %s '%s'", augeusPath, newValue), LogMessageUtil.action());
 	}
 }

@@ -6,9 +6,10 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.redhat.qe.auto.selenium.MyLevel;
+import com.redhat.qe.auto.selenium.LogMessageUtil;
 
 
 
@@ -626,7 +627,7 @@ public class Assert {
   }
   
   protected static void pass(String message){
-	  log.log(MyLevel.ASSERT, "Asserted: " + message);
+	  log.log(Level.INFO, "Asserted: " + message, LogMessageUtil.Style.Asserted);
   }
  
   /**

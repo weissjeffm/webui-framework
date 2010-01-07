@@ -2,9 +2,9 @@ package com.redhat.qe.auto.testopia;
 
 import java.util.logging.LogRecord;
 
-import com.redhat.qe.auto.selenium.LogFormatter;
+import com.redhat.qe.auto.selenium.ConsoleLogFormatter;
 
-public class TestProcedureFormatter extends LogFormatter {
+public class TestProcedureFormatter extends ConsoleLogFormatter {
 
 	@Override
 	public String format(LogRecord record) {

@@ -14,7 +14,7 @@ import java.util.logging.LogRecord;
  * @author jweiss
  *
  */
-public class LogFormatter extends Formatter {
+public class ConsoleLogFormatter extends Formatter {
 
 	private static final DateFormat sdf = new SimpleDateFormat("yyyyMMddHHmm:ss.SSS");
 	
@@ -27,7 +27,7 @@ public class LogFormatter extends Formatter {
 		if (record.getThrown() != null) throwable = throwableToString(record.getThrown())  + "\n";
 		if (record.getParameters() != null)
 			for (Object param: record.getParameters()){
-				if (param.equals(LogMessageStyle.Banner))
+				if (param.equals(LogMessageUtil.Style.Banner))
 					message = "======= " + message;
 			}
 		

@@ -7,8 +7,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 import java.util.logging.Level;
+import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
+import com.redhat.qe.auto.selenium.LogMessageUtil;
 import com.trilead.ssh2.ChannelCondition;
 import com.trilead.ssh2.Connection;
 import com.trilead.ssh2.Session;
@@ -67,15 +69,20 @@ public class SSHCommandRunner implements Runnable {
 	}
 
 	
-	public void run(Level level) {
+	public void run(LogRecord logRecord) {
 		try {
+			if (logRecord == null) logRecord = LogMessageUtil.fine();
+			
 			/*
 			 * Sync'd block prevents other threads from getting the streams before they've been set up here.
 			 */
 			synchronized (lock) {
 //				log.info("SSH: Running '"+this.command+"' on '"+this.connection.getHostname()+"'");
-				if (this.user!=null)	log.log(level,"ssh "+this.user+"@"+this.connection.getHostname()+" "+this.command);
-				else					log.log(level,"ssh "+              this.connection.getHostname()+" "+this.command);
+				String message;
+				if (this.user!=null) message = "ssh "+ user +"@"+ connection.getHostname()+" "+ command;
+				else message = "ssh "+ connection.getHostname()+ " " + command;
+				logRecord.setMessage(message);
+				log.log(logRecord);
 				// sshSession.requestDumbPTY();
 				session = connection.openSession();
 				//session.startShell();
@@ -91,7 +98,7 @@ public class SSHCommandRunner implements Runnable {
 		}
 	}
 	public void run() {
-		run(Level.FINE);
+		run(LogMessageUtil.fine());
 	}
 	
 	public int waitFor(){
