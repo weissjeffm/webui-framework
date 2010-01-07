@@ -109,9 +109,9 @@ public class SSHCommandRunner implements Runnable {
 		session.close();
 
 		kill=false;
-		
-		log.fine("ssh: Stdout: "+this.getStdout());
-		log.fine("ssh: Stderr: "+this.getStderr());
+		//FIXME these log statements need to be moved where they wont cause the error below wdh 1/5/09
+	//	log.fine("ssh: Stdout: "+this.getStdout());  //was causing java.io.IOException: This StreamGobbler is closed.
+	//	log.fine("ssh: Stderr: "+this.getStderr());  //was causing java.io.IOException: This StreamGobbler is closed.
 		return exitCode;
 	}
 
@@ -237,11 +237,11 @@ public class SSHCommandRunner implements Runnable {
 			runner = new SSHCommandRunner(hostname,
 					user,
 					new File(System.getProperty("user.dir")+"/.ssh/id_auto_dsa"),
-					System.getProperty("user.pass"),command);
+					System.getProperty("jon.server.sshkey.passphrase"),command);
 			runner.run();
 			logger = new SplitStreamLogger(runner);
 			logger.log();
-			runner.waitFor();
+			runner.waitFor();  
 		}
 		catch (Exception e){
 			log.log(Level.INFO, "SSH command failed:", e);

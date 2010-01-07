@@ -626,7 +626,7 @@ public class Assert {
   }
   
   protected static void pass(String message){
-	  log.log(MyLevel.ACTION, "Asserted: " + message);
+	  log.log(MyLevel.ASSERT, "Asserted: " + message);
   }
  
   /**
