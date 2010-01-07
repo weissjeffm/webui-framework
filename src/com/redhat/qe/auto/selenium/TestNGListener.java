@@ -51,6 +51,12 @@ public class TestNGListener implements IResultListener, ISuiteListener {
 	}	
 	
 	public void onTestFailure(ITestResult result) {
+		Throwable err = result.getThrowable();
+		LogRecord logRecord = new LogRecord(Level.SEVERE, "Test failed: "+ result.getName());
+		logRecord.setThrown(err);
+		if (err != null && err instanceof AssertionError)
+			logRecord.setParameters(new Object[] {LogMessageUtil.Style.AssertFailed});
+		log.log(logRecord);
 		try {
 			screencap(result);
 		}
@@ -60,12 +66,7 @@ public class TestNGListener implements IResultListener, ISuiteListener {
 		catch(Exception e){
 			log.log(Level.FINE, "Unable to capture screenshot.", e);
 		}
-		Throwable err = result.getThrowable();
-		LogRecord logRecord = new LogRecord(Level.SEVERE, "Test failed: "+ result.getName());
-		logRecord.setThrown(err);
-		if (err != null && err instanceof AssertionError)
-			logRecord.setParameters(new Object[] {LogMessageUtil.Style.AssertFailed});
-		log.log(logRecord);
+
 	}
 	
 	public void onTestSkipped(ITestResult result) {

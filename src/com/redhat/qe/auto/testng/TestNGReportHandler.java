@@ -28,6 +28,12 @@ public class TestNGReportHandler extends Handler {
 			for (Object param: record.getParameters()){
 				if (param.equals(LogMessageUtil.Style.Banner))
 					css_class += " banner";
+				if (param.equals(LogMessageUtil.Style.Action))
+					css_class += " ACTION";
+				if (param.equals(LogMessageUtil.Style.Asserted))
+					css_class += " ASSERT";
+				if (param.equals(LogMessageUtil.Style.AssertFailed))
+					css_class += " ASSERTFAIL";
 			}
 		Reporter.log("<div class='" + css_class + "'>"+record.getMessage() + "</div>");
 	}
