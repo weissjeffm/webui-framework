@@ -19,6 +19,18 @@ public class RemoteFileTasks {
 	}
 	
 	/**
+	 * Use sed to delete lines from a file.
+	 * @param runner
+	 * @param filePath
+	 * @param containingText - delete lines containing a match to this text
+	 * @return - exit code from sed
+	 * @author jsefler
+	 */
+	public static int deleteLines (SSHCommandRunner runner, String filePath, String containingText) {
+		return runCommand(runner, "sed -i '/"+containingText+"/d' " + filePath, MyLevel.ACTION);
+	}
+	
+	/**
 	 * Test for the existence of a file.
 	 * @param runner
 	 * @param filePath - full path to the file

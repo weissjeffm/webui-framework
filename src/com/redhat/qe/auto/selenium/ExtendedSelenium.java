@@ -679,8 +679,12 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 		}catch(Exception e) {
 			log.log(Level.FINER, "Could not retrieve element type, perhaps it is not present: " + elementStr, e);
 		}
-		elementStr =elementStr.replaceAll("^" +Pattern.quote(elementType) + " ", ""); //remove duplicate element type strings
-		
+		//remove duplicate element type strings to avoid logs like... Click on link: link in table... ->  Click on link: in table...
+		elementStr=elementStr.replaceAll("^" +Pattern.quote(elementType) + " ", ""); 
+
+		//remove duplicate element type strings to avoid logs like... Click on submit button: button in table... ->  Click on submit button: in table...  (jsefler 1/7/2010)
+		if (elementType.contains(" ")) elementStr=elementStr.replaceAll("^" +Pattern.quote(elementType.substring(elementType.lastIndexOf(" ")).trim()) + " ", ""); 
+
 		return elementType + ": " + elementStr;
 	}
 	
@@ -850,6 +854,11 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 	
 	public static void main (String... args) {
 		System.out.println(Pattern.quote("^//td[(normalize-space(.)='jweiss-rhel1.usersys.redhat.com')]/..//input[@type='checkbox']"));
+	
+		String elementType = "submit button", elementStr="button in a table";
+		if (elementType.contains(" ")) elementStr=elementStr.replaceAll("^" +Pattern.quote(elementType.substring(elementType.lastIndexOf(" ")).trim()) + " ", ""); 
+
+		
 	}
 	
 	
