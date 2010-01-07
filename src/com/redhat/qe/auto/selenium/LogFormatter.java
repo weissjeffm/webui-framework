@@ -23,8 +23,15 @@ public class LogFormatter extends Formatter {
 	public String format(LogRecord record) {
 		String date = sdf.format(new Date(record.getMillis()));
 		String throwable = "";
+		String message = record.getMessage();
 		if (record.getThrown() != null) throwable = throwableToString(record.getThrown())  + "\n";
-		return date + " - " + record.getLevel() + ": " + record.getMessage() + " (" + record.getSourceClassName() + "." 
+		if (record.getParameters() != null)
+			for (Object param: record.getParameters()){
+				if (param.equals(LogMessageStyle.Banner))
+					message = "======= " + message;
+			}
+		
+		return date + " - " + record.getLevel() + ": " + message + " (" + record.getSourceClassName() + "." 
 		+ record.getSourceMethodName() + ")\n" + throwable;
 	}
 
