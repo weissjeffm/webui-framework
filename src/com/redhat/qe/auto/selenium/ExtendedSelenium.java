@@ -782,7 +782,7 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 	
 	public void testNGScreenCapture(ITestResult result) throws Exception{
 		String dirName = System.getProperty("selenium.screenshot.dir", System.getProperty("user.dir") + File.separator
-				+ "screenshots");
+				+ "test-output" + File.separator + "screenshots");
 		mkdir(dirName);
 		Date rightNow = new Date();
 		String outFileName = dateFormat.format(rightNow) + "-" + result.getTestClass().getName() + "." + result.getMethod().getMethodName() + ".png";
