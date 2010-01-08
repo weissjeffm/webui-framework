@@ -38,25 +38,25 @@ line-height: 1.3;
 color:#AAAAAA;
 }
 .SEVERE {
-background-image:url(severe.png);
+background-image:url(/images/webui-framework/severe.png);
 background-repeat:no-repeat;
 font-size:1em;
 padding-left:19px;
 }
 .ACTION {
-background-image:url(action.png);
+background-image:url(/images/webui-framework/action.png);
 background-repeat:no-repeat;
 font-size:1em;
 padding-left:19px;
 }
 .ASSERT {
-background-image:url(assert.png);
+background-image:url(/images/webui-framework/assert.png);
 background-repeat:no-repeat;
 font-size:1em;
 padding-left:19px;
 }
 .ASSERTFAIL {
-background-image:url(assertfail.png);
+background-image:url(/images/webui-framework/assertfail.png);
 background-repeat:no-repeat;
 font-size:1em;
 padding-left:19px;
