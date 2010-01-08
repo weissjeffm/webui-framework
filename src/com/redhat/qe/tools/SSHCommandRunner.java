@@ -78,9 +78,8 @@ public class SSHCommandRunner implements Runnable {
 			 */
 			synchronized (lock) {
 //				log.info("SSH: Running '"+this.command+"' on '"+this.connection.getHostname()+"'");
-				String message;
+				String message = "ssh "+ connection.getHostname()+ " " + command;
 				if (this.user!=null) message = "ssh "+ user +"@"+ connection.getHostname()+" "+ command;
-				else message = "ssh "+ connection.getHostname()+ " " + command;
 				logRecord.setMessage(message);
 				log.log(logRecord);
 				// sshSession.requestDumbPTY();
@@ -116,9 +115,9 @@ public class SSHCommandRunner implements Runnable {
 		session.close();
 
 		kill=false;
-		//FIXME these log statements need to be moved where they wont cause the error below wdh 1/5/09
-	//	log.fine("ssh: Stdout: "+this.getStdout());  //was causing java.io.IOException: This StreamGobbler is closed.
-	//	log.fine("ssh: Stderr: "+this.getStderr());  //was causing java.io.IOException: This StreamGobbler is closed.
+		//FIXME these log statements need to be moved where they wont cause this error (wdh 1/5/09): java.io.IOException: This StreamGobbler is closed.
+	//	log.fine("ssh: Stdout: "+this.getStdout());
+	//	log.fine("ssh: Stderr: "+this.getStderr());
 		return exitCode;
 	}
 
