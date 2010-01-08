@@ -10,18 +10,36 @@ public class RemoteFileTasks {
 
 	
 	
-	public static int searchReplaceFile (SSHCommandRunner runner, String filePath, String sedSearch, String sedReplace) {
-		return runCommand(runner, "sed -i 's/"+sedSearch+"/"+sedReplace+"/g' " + filePath, LogMessageUtil.action());
-	}
-	
-	public static int grepFile (SSHCommandRunner runner, String filePath, String searchTerm) {
-		return runCommand(runner, "grep -E '" + searchTerm + "' " + filePath, LogMessageUtil.info());
+	/**
+	 * Use sed to search and replace content within a file.<br>
+	 * sed -i 's/regexp/replacement/g' filePath
+	 * @param runner
+	 * @param filePath - absolute path to the file to be searched and replaced
+	 * @param regexp - the regular expression used to match a pattern for replacement
+	 * @param replacement - the replacement content
+	 * @return - exit code from sed
+	 */
+	public static int searchReplaceFile (SSHCommandRunner runner, String filePath, String regexp, String replacement) {
+		return runCommand(runner, "sed -i 's/"+regexp+"/"+replacement+"/g' " + filePath, LogMessageUtil.action());
 	}
 	
 	/**
-	 * Use sed to delete lines from a file.
+	 * Use grep to search for the existence of an extended regular expression within a file.<br>
+	 * grep -E 'searchTerm' filePath
 	 * @param runner
-	 * @param filePath
+	 * @param filePath - absolute path to the file to be searched
+	 * @param pattern - an  extended  regular  expression (man grep for help)
+	 * @return - exit code from grep
+	 */
+	public static int grepFile (SSHCommandRunner runner, String filePath, String pattern) {
+		return runCommand(runner, "grep -E '" + pattern + "' " + filePath, LogMessageUtil.info());
+	}
+	
+	/**
+	 * Use sed to delete lines from a file.<br>
+	 * sed -i '/containingText/d' filePath
+	 * @param runner
+	 * @param filePath - absolute path to the file from which lines will be deleted
 	 * @param containingText - delete lines containing a match to this text
 	 * @return - exit code from sed
 	 * @author jsefler
@@ -31,9 +49,10 @@ public class RemoteFileTasks {
 	}
 	
 	/**
-	 * Test for the existence of a file.
+	 * Test for the existence of a file.<br>
+	 * test -e filePath && echo 1 || echo 0
 	 * @param runner
-	 * @param filePath - full path to the file
+	 * @param filePath - absolute path to the file to test for existence
 	 * @return 1 (file exists), 0 (file does not exist), -1 (could not determine existence)
 	 * @author jsefler
 	 */
