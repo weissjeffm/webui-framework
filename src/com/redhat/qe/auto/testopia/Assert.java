@@ -28,6 +28,10 @@ public class Assert {
   protected Assert() {
     // hide constructor
   }
+  
+  static public void assertMatch(String actual, String regex){
+	  assertTrue(actual.matches(regex), String.format("'%s' matches regex '%s'", actual, regex)); 
+  }
  
   /**
    * Asserts that a condition is true and passes the message. If it isn't,
