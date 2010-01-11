@@ -83,8 +83,7 @@ public class TestNGListener implements IResultListener, ISuiteListener {
 	public  void onTestStart(ITestResult result) {
 		Reporter.setCurrentTestResult(result);
 		System.out.println();
-
-		log.log(Level.FINE, "Starting Test: " + result.getName(), LogMessageUtil.Style.Banner);
+		log.log(Level.FINE, String.format("Starting Test: %s%s", result.getName(), getParameters(result)), LogMessageUtil.Style.Banner);
 	}
 	
 	public  void onTestSuccess(ITestResult result) {
@@ -92,12 +91,16 @@ public class TestNGListener implements IResultListener, ISuiteListener {
 		if (throwable != null){
 			log.log(Level.INFO, "Expected exception of " + throwable.getClass().getName() + " '" + throwable.getMessage() + "' was in fact thrown." , LogMessageUtil.Style.Asserted);
 		}
-		String params = "";
-		if (result.getParameters() != null && result.getParameters().length > 0)
-				params = "(" + Arrays.deepToString(result.getParameters()) + ")";
-		log.log(Level.FINE, String.format("Test Passed: %s%s", result.getName(), params), LogMessageUtil.Style.Banner);
+		log.log(Level.FINE, String.format("Test Passed: %s%s", result.getName(), getParameters(result)), LogMessageUtil.Style.Banner);
 	}
 
+	public String getParameters(ITestResult result) {
+		String params = "";
+		Object[] parameters = result.getParameters();
+		if (parameters != null && parameters.length > 0)
+			params = "(" + Arrays.deepToString(parameters) + ")";
+		return params;
+	}
 	
 	public void onConfigurationFailure(ITestResult result) {
 		try {
