@@ -29,8 +29,12 @@ public class Assert {
     // hide constructor
   }
   
+  static public void assertMatch(String actual, String regex, String where){
+	  assertTrue(actual.matches(regex), String.format("%s'%s' matches regex '%s'", where + " ", actual, regex)); 
+  }
+ 
   static public void assertMatch(String actual, String regex){
-	  assertTrue(actual.matches(regex), String.format("'%s' matches regex '%s'", actual, regex)); 
+	  assertMatch(actual, regex, ""); 
   }
  
   /**
