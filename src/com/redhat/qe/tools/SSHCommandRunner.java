@@ -101,10 +101,10 @@ public class SSHCommandRunner implements Runnable {
 	}
 	
 	public int waitFor(){
-		return waitForSecs(-1);
+		return waitForSecs(-1).intValue();
 	}
 	
-	public int waitForSecs(int timeout){
+	public Integer waitForSecs(int timeout){
 		/*getStderr();
 		getStdout();*/
 		//causes problem when another thread is reading the 'live' output.
@@ -115,10 +115,11 @@ public class SSHCommandRunner implements Runnable {
 		 res = session.waitForCondition(ChannelCondition.EXIT_STATUS, 1000);
 		 if (timeout != -1)
 			 if(++elapsed == timeout)
-				 break;
+				 kill = true;
 		}
-		
-		int exitCode = session.getExitStatus();
+		Integer exitCode = null;
+		if (!kill)
+			exitCode = session.getExitStatus();
 		session.close();
 
 		kill=false;
