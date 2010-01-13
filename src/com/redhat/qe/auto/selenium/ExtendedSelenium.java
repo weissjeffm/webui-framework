@@ -707,7 +707,7 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 		}
 		catch (Exception e){
 			//if attributes can't be retrieved, log and return the locator
-			log.log(Level.FINER, "Can't retrieve attributes for locator: " + locator, e);
+			log.log(Level.FINEST, "Can't retrieve attributes for locator: " + locator, e);
 			return locator;
 		}
 		String tagName = attrs.getProperty("tagName").toLowerCase();
@@ -791,7 +791,7 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 		
 		//embed link in testng report
 		Reporter.setCurrentTestResult(result);
-		String screenshotLinkUrl = System.getProperty("selenium.screenshot.linkUrl", "../screenshots");
+		String screenshotLinkUrl = System.getProperty("selenium.screenshot.link.path", "../screenshots");
 		Reporter.log("<a href='" + String.format("%s/%s", screenshotLinkUrl, outFileName) + "'>Screenshot</a>");
 	}
 	

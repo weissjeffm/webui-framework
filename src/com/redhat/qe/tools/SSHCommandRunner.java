@@ -100,22 +100,39 @@ public class SSHCommandRunner implements Runnable {
 		run(LogMessageUtil.fine());
 	}
 	
-	public int waitFor(){
+	public Integer waitFor(){
+		return waitForWithTimeout(null);
+	}
+	
+	/**
+	 * @param timeoutMS - time out, in milliseconds
+	 * @return null if command was interrupted or timedout, the command return code otherwise
+	 */
+	public Integer waitForWithTimeout(Long timeoutMS){
 		/*getStderr();
 		getStdout();*/
 		//causes problem when another thread is reading the 'live' output.
 		
 		int res = 0;
-		while (!kill && ((res & ChannelCondition.EXIT_STATUS) == 0)){
-		 res = session.waitForCondition(ChannelCondition.EXIT_STATUS, 1000);
-		 
+		long startTime = System.currentTimeMillis();
+		while (!kill && 
+				((res & ChannelCondition.EXIT_STATUS) == 0) &&
+				(timeoutMS != null && System.currentTimeMillis() - startTime < timeoutMS)){
+			res = session.waitForCondition(ChannelCondition.EXIT_STATUS, 1000);
 		}
-		
-		int exitCode = session.getExitStatus();
+		Integer exitCode = null;
+		if (!kill && (timeoutMS != null && System.currentTimeMillis() - startTime < timeoutMS))
+			exitCode = session.getExitStatus();
 		session.close();
 
 		kill=false;
 		return exitCode;
+	}
+	
+	public boolean isDone(){
+		if (session == null)
+			return false;
+		return (session.getExitStatus() != 0);
 	}
 
 	protected String convertStreamToString(InputStream is) {
@@ -249,6 +266,24 @@ public class SSHCommandRunner implements Runnable {
 	 */
 	public static String[] executeViaSSHWithReturn(String hostname, 
 			String user, String command){
+		return executeViaSSHWithReturnWithTimeout(hostname,
+				user,
+				command,
+				-1);
+	}
+	
+	/**
+	 * Runs a command via SSH as specified user, logs all output to INFO
+	 * logging level, returns String[] containing stdout in 0 position
+	 * and stderr in 1 position
+	 * @param hostname hostname of system
+	 * @param user user to execute command as
+	 * @param command command to execute
+	 * @param timeout amount of time to wait for command completion, in seconds
+	 * @return output as String[], stdout in 0 pos and stderr in 1 pos
+	 */
+	public static String[] executeViaSSHWithReturnWithTimeout(String hostname,
+			String user, String command, long timeoutMS){
 		SSHCommandRunner runner = null;
 		SplitStreamLogger logger;
 
@@ -261,7 +296,12 @@ public class SSHCommandRunner implements Runnable {
 			runner.run();
 			logger = new SplitStreamLogger(runner);
 			logger.log();
-			runner.waitFor();  
+			Integer exitcode = runner.waitForWithTimeout(timeoutMS);
+			
+			if (exitcode == null){
+				log.log(Level.INFO, "SSH command did not complete within timeout window");
+				return failSSH();
+			}
 		}
 		catch (Exception e){
 			log.log(Level.INFO, "SSH command failed:", e);
