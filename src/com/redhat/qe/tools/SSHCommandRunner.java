@@ -115,9 +115,6 @@ public class SSHCommandRunner implements Runnable {
 		session.close();
 
 		kill=false;
-		//FIXME these log statements need to be moved where they wont cause this error (wdh 1/5/09): java.io.IOException: This StreamGobbler is closed.
-	//	log.fine("ssh: Stdout: "+this.getStdout());
-	//	log.fine("ssh: Stderr: "+this.getStderr());
 		return exitCode;
 	}
 
@@ -181,9 +178,26 @@ public class SSHCommandRunner implements Runnable {
 	}
 	
 	public void runCommand(String command){
+		runCommand(command,LogMessageUtil.fine());
+	}
+	
+	public void runCommand(String command, LogRecord logRecord){
 		reset();
 		this.command = command;
-		run();
+		run(logRecord);
+	}
+	
+	public int runCommandAndWait(String command){
+		return runCommandAndWait(command,LogMessageUtil.fine());
+	}
+	
+	public int runCommandAndWait(String command, LogRecord logRecord){
+		runCommand(command,logRecord);
+		int exitCode = waitFor();
+		log.fine("Stdout: "+this.getStdout());
+		log.fine("Stderr: "+this.getStderr());
+		return exitCode;
+		
 	}
 	
 	/**

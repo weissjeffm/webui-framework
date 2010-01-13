@@ -20,7 +20,7 @@ public class RemoteFileTasks {
 	 * @return - exit code from sed
 	 */
 	public static int searchReplaceFile (SSHCommandRunner runner, String filePath, String regexp, String replacement) {
-		return runCommand(runner, "sed -i 's/"+regexp+"/"+replacement+"/g' " + filePath, LogMessageUtil.action());
+		return runCommandAndWait(runner, "sed -i 's/"+regexp+"/"+replacement+"/g' " + filePath, LogMessageUtil.action());
 	}
 	
 	/**
@@ -32,7 +32,7 @@ public class RemoteFileTasks {
 	 * @return - exit code from grep
 	 */
 	public static int grepFile (SSHCommandRunner runner, String filePath, String pattern) {
-		return runCommand(runner, "grep -E '" + pattern + "' " + filePath, LogMessageUtil.info());
+		return runCommandAndWait(runner, "grep -E '" + pattern + "' " + filePath, LogMessageUtil.info());
 	}
 	
 	/**
@@ -45,7 +45,7 @@ public class RemoteFileTasks {
 	 * @author jsefler
 	 */
 	public static int deleteLines (SSHCommandRunner runner, String filePath, String containingText) {
-		return runCommand(runner, "sed -i '/"+containingText+"/d' " + filePath, LogMessageUtil.action());
+		return runCommandAndWait(runner, "sed -i '/"+containingText+"/d' " + filePath, LogMessageUtil.action());
 	}
 	
 	/**
@@ -57,22 +57,24 @@ public class RemoteFileTasks {
 	 * @author jsefler
 	 */
 	public static int testFileExists (SSHCommandRunner runner, String filePath) {
-		runCommand(runner, "test -e "+filePath+" && echo 1 || echo 0", LogMessageUtil.info());
+		runCommandAndWait(runner, "test -e "+filePath+" && echo 1 || echo 0", LogMessageUtil.info());
 		if (runner.getStdout().trim().equals("1")) return 1;
 		if (runner.getStdout().trim().equals("0")) return 0;
 		return -1;
 	}
 	
-	public static int runCommand(SSHCommandRunner runner, String command, LogRecord logRecord){
-		runner.reset();
-		runner.setCommand(command);
-		runner.run(logRecord);
-		int returnCode = runner.waitFor();
-		return returnCode;
+	public static int runCommandAndWait(SSHCommandRunner runner, String command, LogRecord logRecord){
+//		runner.reset();
+//		runner.setCommand(command);
+//		runner.run(logRecord);
+//		int returnCode = runner.waitFor();
+//		
+//		return returnCode;
+		return runner.runCommandAndWait(command,logRecord);
 	}
 	
 	public static int runAugeasCommand(SSHCommandRunner runner, String command, LogRecord logRecord){
-		return runCommand(runner, String.format("echo -e \"%s\nsave\n\" | augtool", command), LogMessageUtil.action());
+		return runCommandAndWait(runner, String.format("echo -e \"%s\nsave\n\" | augtool", command), LogMessageUtil.action());
 	}
 
 	public static int updateAugeasConfig(SSHCommandRunner runner, String augeusPath, String newValue){
