@@ -64,13 +64,8 @@ public class RemoteFileTasks {
 	}
 	
 	public static int runCommandAndWait(SSHCommandRunner runner, String command, LogRecord logRecord){
-//		runner.reset();
-//		runner.setCommand(command);
-//		runner.run(logRecord);
-//		int returnCode = runner.waitFor();
-//		
-//		return returnCode;
 		return runner.runCommandAndWait(command,logRecord);
+		//return runner.runCommandAndWait(command,Long.valueOf(30000),logRecord);	// timeout after 30 sec
 	}
 	
 	public static int runAugeasCommand(SSHCommandRunner runner, String command, LogRecord logRecord){
