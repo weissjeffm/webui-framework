@@ -100,8 +100,8 @@ public class SSHCommandRunner implements Runnable {
 		run(LogMessageUtil.fine());
 	}
 	
-	public int waitFor(){
-		return waitForSecs(-1).intValue();
+	public Integer waitFor(){
+		return waitForSecs(-1);
 	}
 	
 	public Integer waitForSecs(int timeout){
