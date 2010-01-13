@@ -707,7 +707,7 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 		}
 		catch (Exception e){
 			//if attributes can't be retrieved, log and return the locator
-			log.log(Level.FINER, "Can't retrieve attributes for locator: " + locator, e);
+			log.log(Level.FINEST, "Can't retrieve attributes for locator: " + locator, e);
 			return locator;
 		}
 		String tagName = attrs.getProperty("tagName").toLowerCase();
