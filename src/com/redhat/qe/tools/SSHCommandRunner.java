@@ -101,24 +101,27 @@ public class SSHCommandRunner implements Runnable {
 	}
 	
 	public Integer waitFor(){
-		return waitForSecs(-1);
+		return waitForWithTimeout(null);
 	}
 	
-	public Integer waitForSecs(int timeout){
+	/**
+	 * @param timeoutMS - time out, in milliseconds
+	 * @return null if command was interrupted or timedout, the command return code otherwise
+	 */
+	public Integer waitForWithTimeout(Long timeoutMS){
 		/*getStderr();
 		getStdout();*/
 		//causes problem when another thread is reading the 'live' output.
 		
 		int res = 0;
-		int elapsed = 0;
-		while (!kill && ((res & ChannelCondition.EXIT_STATUS) == 0)){
-		 res = session.waitForCondition(ChannelCondition.EXIT_STATUS, 1000);
-		 if (timeout != -1)
-			 if(++elapsed == timeout)
-				 kill = true;
+		long startTime = System.currentTimeMillis();
+		while (!kill && 
+				((res & ChannelCondition.EXIT_STATUS) == 0) &&
+				(timeoutMS != null && System.currentTimeMillis() - startTime < timeoutMS)){
+			res = session.waitForCondition(ChannelCondition.EXIT_STATUS, 1000);
 		}
 		Integer exitCode = null;
-		if (!kill)
+		if (!kill && (timeoutMS != null && System.currentTimeMillis() - startTime < timeoutMS))
 			exitCode = session.getExitStatus();
 		session.close();
 
@@ -266,7 +269,7 @@ public class SSHCommandRunner implements Runnable {
 	 * @return output as String[], stdout in 0 pos and stderr in 1 pos
 	 */
 	public static String[] executeViaSSHWithReturnWithTimeout(String hostname,
-			String user, String command, int timeoutSecs){
+			String user, String command, long timeoutMS){
 		SSHCommandRunner runner = null;
 		SplitStreamLogger logger;
 
@@ -279,7 +282,7 @@ public class SSHCommandRunner implements Runnable {
 			runner.run();
 			logger = new SplitStreamLogger(runner);
 			logger.log();
-			Integer exitcode = runner.waitForSecs(timeoutSecs);
+			Integer exitcode = runner.waitForWithTimeout(timeoutMS);
 			
 			if (exitcode == null){
 				log.log(Level.INFO, "SSH command did not complete within timeout window");
