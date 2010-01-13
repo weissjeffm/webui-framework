@@ -1,6 +1,6 @@
 .resultsTable
 .method {
-	width: 9em;
+	width: 0;
 	padding-right: 0;
 }
 .resultsTable
@@ -8,8 +8,14 @@
 	width: 4em;
 	padding-left: 0.3em;
 	padding-right: 0;
+	padding-top: 1.3em;
 }
-
+.testOutput {
+	padding-top: 2em;
+}
+td.result {
+	padding-top: 1.5em;
+}
 
 .WARNING {
 font-size:0.9em;
@@ -66,3 +72,4 @@ padding-left:19px;
 background-color: #EEEEEE;
 text-align: center;
 }
+
