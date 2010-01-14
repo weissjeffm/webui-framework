@@ -204,20 +204,20 @@ public class SSHCommandRunner implements Runnable {
 		run(logRecord);
 	}
 	
-	public int runCommandAndWait(String command){
+	public Integer runCommandAndWait(String command){
 		return runCommandAndWait(command,null,LogMessageUtil.fine());
 	}
 	
-	public int runCommandAndWait(String command, Long timeoutMS){
+	public Integer runCommandAndWait(String command, Long timeoutMS){
 		return runCommandAndWait(command,timeoutMS,LogMessageUtil.fine());
 	}
 	
-	public int runCommandAndWait(String command, LogRecord logRecord){
+	public Integer runCommandAndWait(String command, LogRecord logRecord){
 		return runCommandAndWait(command,null,logRecord);
 	}
-	public int runCommandAndWait(String command, Long timeoutMS, LogRecord logRecord){
+	public Integer runCommandAndWait(String command, Long timeoutMS, LogRecord logRecord){
 		runCommand(command,logRecord);
-		int exitCode = waitForWithTimeout(timeoutMS);
+		Integer exitCode = waitForWithTimeout(timeoutMS);
 		log.fine("Stdout: "+this.getStdout());
 		log.fine("Stderr: "+this.getStderr());
 		return exitCode;
