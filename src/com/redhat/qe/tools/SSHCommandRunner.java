@@ -114,14 +114,18 @@ public class SSHCommandRunner implements Runnable {
 		//causes problem when another thread is reading the 'live' output.
 		
 		int res = 0;
+		boolean timedOut = false;
 		long startTime = System.currentTimeMillis();
 		while (!kill && 
-				((res & ChannelCondition.EXIT_STATUS) == 0) &&
-				(timeoutMS != null && System.currentTimeMillis() - startTime < timeoutMS)){
+				((res & ChannelCondition.EXIT_STATUS) == 0)){
+			if (timeoutMS != null && System.currentTimeMillis() - startTime > timeoutMS) {
+				timedOut = true;
+				break;
+			}
 			res = session.waitForCondition(ChannelCondition.EXIT_STATUS, 1000);
 		}
 		Integer exitCode = null;
-		if (!kill && (timeoutMS != null && System.currentTimeMillis() - startTime < timeoutMS))
+		if (! (kill || timedOut))
 			exitCode = session.getExitStatus();
 		session.close();
 
@@ -307,31 +311,15 @@ public class SSHCommandRunner implements Runnable {
 	 * @param args
 	 */
 	public static void main(String[] args) throws Exception{
-		try {
-			String autoProp = System.getProperty("automation.dir");
-			String fn ="";
-			if (autoProp != null) {
-				fn = autoProp + File.separator + "log.properties";
-			}
-			else {
-				 String autoSubdir = System.getProperty("auto.subdir", "");
-				 fn = System.getProperty("user.dir") + File.separator + autoSubdir + File.separator + "log.properties";
-			}
-			//LogManager.getLogManager().readConfiguration(new FileInputStream(fn));
-			//log.fine("Loaded logger configuration.");
-		} catch (Exception e) {
-			System.err.println("Failed to load log settings.");
-			e.printStackTrace();
-			//log.log(Level.WARNING,
-			//		"Unable to read logging settings.  Keeping default.", e);
-		}
-		/*SSHCommandRunner runner = new SSHCommandRunner("witte.usersys.redhat.com", "jonqa", "dog8code", "java -Dcom.sun.management.jmxremote.port=1500 -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false -cp /tmp DummyJVM");
-		Connection conn =runner.connect();*/
-		//String jh = runner.getStdout().trim();
-		Connection conn = new Connection("jweiss-rhel2.usersys.redhat.com");
+
+		Connection conn = new Connection("jweiss-rhel3.usersys.redhat.com");
 		conn.connect();
 		if (!conn.authenticateWithPassword("jonqa", "dog8code"))
 			throw new IllegalStateException("Authentication failed.");
+		SSHCommandRunner runner = new SSHCommandRunner(conn, "sleep 3");
+		runner.run();
+		Integer exitcode = runner.waitForWithTimeout(null);
+		System.out.println("exit code: " + exitcode);
 		/*SCPClient scp = new SCPClient(conn);
 		scp.put(System.getProperty("user.dir")+ "/../jon-2.0/bin/DummyJVM.class", "/tmp");
 		SSHCommandRunner jrunner = new SSHCommandRunner(conn, "java -Dcom.sun.management.jmxremote.port=1500 -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false -cp /tmp DummyJVM");
@@ -355,10 +343,10 @@ public class SSHCommandRunner implements Runnable {
 		jrunner.waitFor();*/
 		
 		
-		SSHCommandRunner jrunner = new SSHCommandRunner(conn, "grep sdf /tmp/sdsdfs");
+		/*SSHCommandRunner jrunner = new SSHCommandRunner(conn, "grep sdf /tmp/sdsdfs");
 
 		jrunner.run();
-		System.out.println(jrunner.waitFor());
+		System.out.println(jrunner.waitFor());*/
 	/*	System.out.println("Output: " + runner.getStdout());
 		System.out.println("Stderr: " + runner.getStderr());*/
 
