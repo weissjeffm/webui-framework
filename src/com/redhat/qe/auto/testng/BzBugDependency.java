@@ -31,6 +31,7 @@ public abstract class BzBugDependency {
 	public String toString(){
 		StringBuffer sb = new StringBuffer();
 		for (Object param: params){
+			if (param==null) param = "null";
 			sb.append(param.toString() + "," );
 		}
 		sb.append(" **" + type.getDescription() + " " + bugId);
