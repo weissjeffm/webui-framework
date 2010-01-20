@@ -25,6 +25,16 @@ public class SCPTools {
 		this.server = server;
 	}
 	
+	public SCPTools(String server,
+			String user,
+			String sshPemFileLoc,
+			String password){
+		this.userName = user;
+		this.sshPemFile = new File(sshPemFileLoc);
+		this.password = password;
+		this.server = server;
+	}
+	
 	public boolean sendFile(String source, String dest){
 		Connection newConn = new Connection(server);
 		log.info("SCP: Copying "+source+" to "+this.server+":"+dest);
