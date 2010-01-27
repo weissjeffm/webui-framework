@@ -14,11 +14,9 @@ import org.testng.ITestResult;
 import org.testng.SkipException;
 import org.testng.internal.IResultListener;
 
-import com.redhat.qe.auto.testng.BlockedByBzBug;
 import com.redhat.qe.auto.testng.BzBugDependency;
 import com.redhat.qe.auto.testng.BzChecker;
 import com.redhat.qe.auto.testopia.AbstractTestProcedureHandler;
-import com.redhat.qe.auto.testopia.TestProcedureHandler;
 
 public class BugzillaTestNGListener implements IResultListener{
 	private static final String AUTO_VERIFIED = "AutoVerified";
@@ -66,10 +64,9 @@ public class BugzillaTestNGListener implements IResultListener{
 		 * if the test is in a group "blockedByBug-xxxxxx" and the bug is not in
 		 * ON_QA, VERIFIED, RELEASE_PENDING, POST, CLOSED then skip it 
 		 */
-		if (bzChecker == null) {
-			bzChecker = new BzChecker();
-			bzChecker.init();
-		}
+		
+		bzChecker = BzChecker.getInstance();
+	
 		String[] groups = result.getMethod().getGroups();
 		
 		Pattern p = Pattern.compile("[" + VERIFIES_BUG + "|" + BLOCKED_BY_BUG +"]-(\\d+)");
@@ -98,30 +95,28 @@ public class BugzillaTestNGListener implements IResultListener{
 		}
 	}
 
-	protected void lookupBugAndSkipIfOpen(String number){
-		BzChecker.bzState state; 
+	protected void lookupBugAndSkipIfOpen(String bugId){
+		BzChecker.bzState state;
+		boolean isBugOpen;
 		try {
-			state = bzChecker.getBugState(number);
-		}catch(XmlRpcException xre) {
-			log.log(Level.WARNING, "Could not determine the state of bug " + number + ". Assuming test needs to be run.", xre);
+			state = bzChecker.getBugState(bugId);
+			isBugOpen = bzChecker.isBugOpen(bugId);
+		} catch(XmlRpcException xre) {
+			log.log(Level.WARNING, "Could not determine the state of Bugzilla bug "+bugId+". Assuming test needs to be run.", xre);
 			return;
 		}
-		if (! (state.equals(BzChecker.bzState.ON_QA) ||
-				state.equals(BzChecker.bzState.VERIFIED) ||
-				state.equals(BzChecker.bzState.RELEASE_PENDING) ||
-				state.equals(BzChecker.bzState.POST) ||
-				state.equals(BzChecker.bzState.CLOSED))){
-			// the bug is not ready to retest
-			throw new SkipException("This test is blocked by "+state.toString()+" Bugzilla bug "+number+".  (https://bugzilla.redhat.com/show_bug.cgi?id="+number+")");
+		
+		// throw a skip exception when the bug is open
+		if (isBugOpen) {
+			throw new SkipException("This test is blocked by "+state.toString()+" Bugzilla bug "+bugId+".  (https://bugzilla.redhat.com/show_bug.cgi?id="+bugId+")");
 		}
 	}
+
 	
 	@Override
 	public void onTestSuccess(ITestResult result) {
-		if (bzChecker == null) {
-			bzChecker = new BzChecker();
-			bzChecker.init();
-		}
+		bzChecker = BzChecker.getInstance();
+		
 		//FIXME this method needs some work
 		
 		//if the test is in a group "verifiesBug-xxxxxx" and the bug is in ON_QA, close it

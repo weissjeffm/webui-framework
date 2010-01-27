@@ -12,6 +12,7 @@ import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 import org.apache.xmlrpc.XmlRpcException;
+import org.testng.SkipException;
 
 import testopia.API.Session;
 import testopia.API.TestopiaObject;
@@ -19,7 +20,8 @@ import testopia.API.TestopiaObject;
 /**
  * Example code to retrieve a bugzilla bug's status, given its ID.  This is for future use with testng, 
  * so that testng can decide whether to execute a test, based on the group annotation (which may contain
- * a bug id), and the status of that bug.  If the status is ON_QA, for example, it can be tested.
+ * a bug id), and the status of that bug.  If the status is ON_QA, for example, it can be tested.<br>
+ * Example Usage: if (BzChecker.getInstance().getBugState("12345") == BzChecker.bzState.ON_QA) {...
  * @author weissj
  *
  */
@@ -29,17 +31,27 @@ public class BzChecker {
 	
 	protected static Logger log = Logger.getLogger(BzChecker.class.getName());
 	protected Bug bug;
-	public BzChecker() {
-		
+	
+	protected static BzChecker instance = null;
+	
+	private BzChecker() {		
 	}
 	
-	public void init() {
+	private void init() {
 		bug = new Bug();
 		try {
 			bug.connectBZ();
 		}catch(Exception e){
 			throw new RuntimeException("Could not initialize BzChecker." ,e);
 		}
+	}
+
+	public static BzChecker getInstance(){
+		if (instance == null)	{
+			instance = new BzChecker();
+			instance.init();
+		}
+		return instance;
 	}
 	
 	public bzState getBugState(String bugId) throws XmlRpcException{
@@ -111,6 +123,27 @@ public class BzChecker {
 		catch(Exception e){
 			throw new RuntimeException("Could not " + (add? "add":"remove") + " keywords for bug " + bugId ,e);
 		}	
+	}
+	
+	/**
+	 * @param bugId
+	 * @return
+	 * 	 	true (when bug is NOT in any of these states: ON_QA, VERIFIED, RELEASE_PENDING, POST, CLOSED)<br>
+	 * 		false (when IS in any one of these states: ON_QA, VERIFIED, RELEASE_PENDING, POST, CLOSED)<br>
+	 * @throws XmlRpcException - when the bug state cannot be determined.
+	 */
+	public boolean isBugOpen(String bugId) throws XmlRpcException {
+		
+		BzChecker.bzState state = getBugState(bugId);
+		if (!(	state.equals(BzChecker.bzState.ON_QA) ||
+				state.equals(BzChecker.bzState.VERIFIED) ||
+				state.equals(BzChecker.bzState.RELEASE_PENDING) ||
+				state.equals(BzChecker.bzState.POST) ||
+				state.equals(BzChecker.bzState.CLOSED))) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 	public class Bug extends TestopiaObject{
