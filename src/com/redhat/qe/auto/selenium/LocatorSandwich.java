@@ -1,7 +1,5 @@
 package com.redhat.qe.auto.selenium;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * A LocatorSandwich is used to define a functional selenium locator when creating an Element.

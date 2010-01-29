@@ -14,11 +14,9 @@ import org.testng.ITestResult;
 import org.testng.SkipException;
 import org.testng.internal.IResultListener;
 
-import com.redhat.qe.auto.testng.BlockedByBzBug;
 import com.redhat.qe.auto.testng.BzBugDependency;
 import com.redhat.qe.auto.testng.BzChecker;
 import com.redhat.qe.auto.testopia.AbstractTestProcedureHandler;
-import com.redhat.qe.auto.testopia.TestProcedureHandler;
 
 public class BugzillaTestNGListener implements IResultListener{
 	private static final String AUTO_VERIFIED = "AutoVerified";

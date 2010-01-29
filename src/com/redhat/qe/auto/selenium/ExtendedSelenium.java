@@ -8,7 +8,6 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Serializable;
-import java.net.URI;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -66,7 +65,6 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 
 		// TODO this is ugly
 		TestNGListener.setScreenCaptureUtility(this);
-		sleep(3);
 		windowFocus();
 		windowMaximize();
 		String delay = System.getProperty("selenium.delay");
