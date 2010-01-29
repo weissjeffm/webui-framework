@@ -20,9 +20,8 @@ import java.net.MalformedURLException;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
-import redstone.xmlrpc.*;
+import redstone.xmlrpc.XmlRpcClient;
 
 /**
  * CobblerConnection - represents an authenticatable 
