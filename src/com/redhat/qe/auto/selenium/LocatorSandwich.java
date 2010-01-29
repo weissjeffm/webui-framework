@@ -40,10 +40,6 @@ public class LocatorSandwich implements LocatorStrategy {
 		this.topBun = topBun;
 	}
 	
-	/* (non-Javadoc)
-	 * @see com.redhat.qe.auto.selenium.LocatorStrategy#getLocator(java.lang.String[])
-	 */
-	@Override
 	public String getLocator(String... args) {
 		
 		// build the sandwich...
@@ -65,10 +61,6 @@ public class LocatorSandwich implements LocatorStrategy {
 		return locator;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.redhat.qe.auto.selenium.LocatorStrategy#getName()
-	 */
-	@Override
 	public String getName() {
 		return this.name;
 	}

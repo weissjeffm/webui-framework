@@ -10,7 +10,6 @@ public class StringSandwichLocatorStrategy implements LocatorStrategy {
 		this.bread = bread;
 	}
 	
-	@Override
 	public String getLocator(String... meat) {
 		//construct the sandwich - bread, meat, bread, meat, bread - until one runs out
 		//always end with bread unless there isn't enough bread.  
@@ -26,7 +25,6 @@ public class StringSandwichLocatorStrategy implements LocatorStrategy {
 		return sb.toString();
 	}
 
-	@Override
 	public String getName() {
 		return name;
 	}

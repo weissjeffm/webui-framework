@@ -30,11 +30,6 @@ public class LocatorTemplate implements LocatorStrategy {
 		this.template = template;
 	}
 	
-
-	/* (non-Javadoc)
-	 * @see com.redhat.qe.auto.selenium.LocatorStrategy#getLocator(java.lang.String[])
-	 */
-	@Override
 	public String getLocator(String... args) {
 		
 		String locator = this.template;
@@ -51,10 +46,6 @@ public class LocatorTemplate implements LocatorStrategy {
 		return locator;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.redhat.qe.auto.selenium.LocatorStrategy#getName()
-	 */
-	@Override
 	public String getName() {
 		return this.name;
 	}
