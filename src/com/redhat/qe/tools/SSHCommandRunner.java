@@ -278,7 +278,7 @@ public class SSHCommandRunner implements Runnable {
 		return executeViaSSHWithReturnWithTimeout(hostname,
 				user,
 				command,
-				-1);
+				null);
 	}
 	
 	/**
@@ -292,7 +292,7 @@ public class SSHCommandRunner implements Runnable {
 	 * @return output as String[], stdout in 0 pos and stderr in 1 pos
 	 */
 	public static String[] executeViaSSHWithReturnWithTimeout(String hostname,
-			String user, String command, long timeoutMS){
+			String user, String command, Long timeoutMS){
 		SSHCommandRunner runner = null;
 		SplitStreamLogger logger;
 
