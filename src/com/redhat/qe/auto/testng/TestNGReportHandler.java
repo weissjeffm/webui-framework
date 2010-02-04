@@ -36,19 +36,41 @@ public class TestNGReportHandler extends Handler {
 					css_class += " ASSERTFAIL";
 			}
 		//Reporter.log("<div class='" + css_class + "'>"+record.getMessage() + "</div>");
-		Reporter.log("<div class='" + css_class + "'>"+tagAllUrls(record.getMessage()) + "</div>");
+		Reporter.log("<div class='" + css_class + "'>"+tagAllUrls(escapeAllTags(record.getMessage())) + "</div>");
 	}
 	
+	/**
+	 * Search msg for all embedded url strings (e.g. http://www.redhat.com) and return a modified
+	 * msg with html links wrapped around the msg to make it clickable when viewed within a browser.
+	 * @param msg
+	 * @return
+	 * @author jsefler
+	 */
 	protected static String tagAllUrls(String msg) {
 		//String regex = "(http[s]?://[\\w\\d:/.$~\\-_?=&%#]+)";
 		String regex = "((http[s]?|ftp|gopher|telnet|file|notes|ms-help):(//)[\\w\\d:/.$~\\-_?=&%#;]+)"; // ((http[s]?|ftp|gopher|telnet|file|notes|ms-help):(//)[\w\d:/.$~\-_?=&%#;]+)
 		return msg.replaceAll(regex, "<a href=$1>$1</a>");
 	}
-
+	
+	/**
+	 * Search msg for all embedded html tags and escape their less than and greater than characters.
+	 * @param msg
+	 * @return - msg with all of its original html tags escaped.
+	 * @author jsefler 
+	 */
+	protected static String escapeAllTags(String msg) {
+		String regex = "<([^>]+)>";
+		return msg.replaceAll(regex, "&lt;$1&gt;");
+	}
 
 	public static void main(String[] args) {
 		String msg = "This is the url (http://foobar.com:7080/page?id=25&id256=%20) page.";
 		System.out.println("UNTAGGED: "+msg);
-		System.out.println("TAGGED:   "+tagAllUrls(msg));
+		System.out.println("  TAGGED: "+tagAllUrls(msg));
+		
+		String msg2 = "<div>ssh root@rlx-0-04 grep -E '\"<password>dog8code</password><foo><-hi>\"' <> /tmp/foo_-ds.xml </div> <foo> <bar/>  run.sh foo < /tmp; cat foo >> /tmp";
+		System.out.println("UNESCAPED: "+msg2);
+		System.out.println("  ESCAPED:   "+escapeAllTags(msg2));
+
 	}
 }
