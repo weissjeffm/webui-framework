@@ -325,16 +325,23 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 		super.waitForCondition("selenium.isElementPresent(\"" + element.getLocator() + "\");", timeout);
 	}
 	
+	/**
+	 * Wait for an element to be invisible.<br>
+	 * Note: On an AJAXy page, an element can exist and be invisible.
+	 * @param locator - element locator path to wait for
+	 * @param timeout - milliseconds
+	 * @author jsefler
+	 */
 	public void waitForInvisible(String locator, String timeout){
 		// if the locator is not present, then it is effectively invisible
 		if (!super.isElementPresent(locator)) return;
-		log.info("Wait for element to be invisible '" + locator  + "', with timeout of " + timeout + ".");
+		log.finer("Wait for element to be invisible '"+locator+"', with timeout of "+timeout+".");
 		try{
-			super.waitForCondition("!selenium.isVisible(\"" + locator + "\");", timeout);
+			super.waitForCondition("!selenium.isVisible(\""+locator+"\");", timeout);
 		}
 		catch(SeleniumException e){
 			if (e.getMessage().contains("not found")){
-				log.fine("Element '"+locator+"' annihilated from page; assuming that this constitutes invisibility");
+				log.finest("Element '"+locator+"' is not present; effectively this constitutes invisibility");
 				return;
 			}
 			else
@@ -344,6 +351,23 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 	
 	public void waitForInvisible(Element element, String timeout){
 		waitForInvisible(element.getLocator(), timeout);
+	}
+	
+	/**
+	 * Wait for an element to be visible.<br>
+	 * Note: On an AJAXy page, an element can exist and be invisible.
+	 * @param locator - element locator path to wait for
+	 * @param timeout - milliseconds
+	 * @author jsefler
+	 */
+	public void waitForVisible(String locator, String timeout){
+		log.finer("Wait for element to be visible '" + locator  + "', with timeout of " + timeout + ".");
+		super.waitForCondition("selenium.isElementPresent(\""+locator+"\");", timeout); // first wait for its existence
+		super.waitForCondition("selenium.isVisible(\""+locator+"\");", timeout); // then wait for its visibility
+	}
+	
+	public void waitForVisible(Element element, String timeout){
+		waitForVisible(element.getLocator(), timeout);
 	}
 	
 	@Override
