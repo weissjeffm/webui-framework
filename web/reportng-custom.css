@@ -68,3 +68,6 @@ padding-left:19px;
 background-color:#EEEEEE;
 text-align:center;
 }
+.testOutput .startTest {
+visibility:hidden;
+}

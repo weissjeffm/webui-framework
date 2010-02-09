@@ -4,7 +4,7 @@ import java.util.logging.Level;
 import java.util.logging.LogRecord;
 
 public class LogMessageUtil {
-	public enum Style {Banner, Action, Asserted, AssertFailed};
+	public enum Style {Banner, Action, Asserted, AssertFailed, StartTest};
 	
 	public static LogRecord info() {
 		return new LogRecord(Level.INFO, "");

@@ -86,7 +86,9 @@ public class TestNGListener implements IResultListener, ISuiteListener {
 	
 	public  void onTestStart(ITestResult result) {
 		Reporter.setCurrentTestResult(result);
-		log.log(Level.FINE, String.format("Starting Test: %s%s", result.getName(), getParameters(result)), LogMessageUtil.Style.Banner);
+		LogRecord r= new LogRecord(Level.FINE, String.format("Starting Test: %s%s", result.getName(), getParameters(result)));
+		r.setParameters(new Object[]{LogMessageUtil.Style.Banner, LogMessageUtil.Style.StartTest});
+		log.log(r);
 	}
 	
 	public  void onTestSuccess(ITestResult result) {
