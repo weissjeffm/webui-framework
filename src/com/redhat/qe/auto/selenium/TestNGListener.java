@@ -86,7 +86,7 @@ public class TestNGListener implements IResultListener, ISuiteListener {
 	
 	public  void onTestStart(ITestResult result) {
 		Reporter.setCurrentTestResult(result);
-		LogRecord r= new LogRecord(Level.FINE, String.format("Starting Test: %s%s", result.getName(), getParameters(result)));
+		LogRecord r= new LogRecord(Level.INFO, String.format("Starting Test: %s%s", result.getName(), getParameters(result)));
 		r.setParameters(new Object[]{LogMessageUtil.Style.Banner, LogMessageUtil.Style.StartTest});
 		log.log(r);
 	}
@@ -97,7 +97,7 @@ public class TestNGListener implements IResultListener, ISuiteListener {
 		if (throwable != null){
 			log.log(Level.INFO, "Expected exception of " + throwable.getClass().getName() + " '" + throwable.getMessage() + "' was in fact thrown." , LogMessageUtil.Style.Asserted);
 		}
-		log.log(Level.FINE, String.format("Test Passed: %s%s", result.getName(), getParameters(result)), LogMessageUtil.Style.Banner);
+		log.log(Level.INFO, String.format("Test Passed: %s%s", result.getName(), getParameters(result)), LogMessageUtil.Style.Banner);
 	}
 
 	public String getParameters(ITestResult result) {

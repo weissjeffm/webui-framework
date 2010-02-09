@@ -68,6 +68,12 @@ padding-left:19px;
 background-color:#EEEEEE;
 /*text-align:center;*/
 }
+
+/*don't show the start messages in the summary, they're extraneous */
 .testOutput .startTest {
-visibility:hidden;
+display:none;
+}
+
+.startTest {
+margin-top:20px;
 }
