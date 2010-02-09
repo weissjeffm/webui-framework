@@ -443,6 +443,7 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 	}
 	
 	public void checkUncheck(Element element, boolean check){
+		log.log(Level.INFO, (check? "Check":"Uncheck ") + element, LogMessageUtil.Style.Action);
 		checkUncheck(element.getLocator(), check);
 	}
 	
@@ -450,7 +451,11 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 		if (isChecked(locator) != check) {
 			highlight(locator);
 			super.click(locator);
-			if (isChecked(locator) != check) super.check(locator); //just to be sure
+			if (isChecked(locator) != check) {
+				if (check) 
+					super.check(locator); //just to be sure
+				else super.uncheck(locator);
+			}
 		}
 		else {
 			log.log(Level.FINE, getDescription(locator) + " is already " + (check ? "checked.": "unchecked."));
