@@ -97,9 +97,11 @@ public class BugzillaTestNGListener implements IResultListener{
 
 	protected void lookupBugAndSkipIfOpen(String bugId){
 		BzChecker.bzState state;
+		String summary;
 		boolean isBugOpen;
 		try {
 			state = bzChecker.getBugState(bugId);
+			summary = bzChecker.getBugField(bugId, "summary").toString();
 			isBugOpen = bzChecker.isBugOpen(bugId);
 		} catch(XmlRpcException xre) {
 			log.log(Level.WARNING, "Could not determine the state of Bugzilla bug "+bugId+". Assuming test needs to be run.", xre);
@@ -108,7 +110,7 @@ public class BugzillaTestNGListener implements IResultListener{
 		
 		// throw a skip exception when the bug is open
 		if (isBugOpen) {
-			throw new SkipException("This test is blocked by "+state.toString()+" Bugzilla bug "+bugId+".  (https://bugzilla.redhat.com/show_bug.cgi?id="+bugId+")");
+			throw new SkipException("This test is blocked by "+state.toString()+" Bugzilla bug '"+ summary +"'.  (https://bugzilla.redhat.com/show_bug.cgi?id="+bugId+")");
 		}
 	}
 
