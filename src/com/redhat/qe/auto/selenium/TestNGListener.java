@@ -37,13 +37,11 @@ public class TestNGListener implements IResultListener, ISuiteListener {
 	//Override TestNG's Test Listener methods so Selenium can log and screenshot properly
 
 	public void onFinish(ITestContext context){
-		log.log(Level.FINE, "Finished TestNG Script: " + context.getName(), LogMessageUtil.Style.Banner);
-		System.out.println();
+		log.log(Level.INFO, "Finished TestNG Script: " + context.getName(), LogMessageUtil.Style.Banner);
 	}
 	
 	public void onStart(ITestContext context) {
-		System.out.println();
-		log.log(Level.FINE, "Starting TestNG Script: " + context.getName(), LogMessageUtil.Style.Banner);
+		log.log(Level.INFO, "Starting TestNG Script: " + context.getName(), LogMessageUtil.Style.Banner);
 	}
 	
 	public void onTestFailedButWithinSuccessPercentage(ITestResult result) {
@@ -134,12 +132,12 @@ public class TestNGListener implements IResultListener, ISuiteListener {
 
 	@Override
 	public void onFinish(ISuite suite) {
-		log.log(Level.FINE, "Finishing TestNG Suite:" + suite.getName(), LogMessageUtil.Style.Banner);
+		log.log(Level.INFO, "Finishing TestNG Suite:" + suite.getName(), LogMessageUtil.Style.Banner);
 	}
 
 	@Override
 	public void onStart(ISuite suite) {
-		log.log(Level.FINE, "Starting TestNG Suite:" +suite.getName(), LogMessageUtil.Style.Banner);
+		log.log(Level.INFO, "Starting TestNG Suite:" +suite.getName(), LogMessageUtil.Style.Banner);
 	}
 	
 	protected void screencap(ITestResult result) throws Exception{
