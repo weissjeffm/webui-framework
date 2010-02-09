@@ -78,9 +78,11 @@ public class TestNGListener implements IResultListener, ISuiteListener {
 			log.log(r);
 		}
 		else {
-			log.log(Level.FINE, "Skipping Test: " + result.getName(), LogMessageUtil.Style.Banner);
+			log.log(Level.INFO, "Skipping Test " + result.getName() + ":  Unsatisfied dependency", LogMessageUtil.Style.Banner);
 		}
 	}
+	
+	
 	
 	public  void onTestStart(ITestResult result) {
 		Reporter.setCurrentTestResult(result);
