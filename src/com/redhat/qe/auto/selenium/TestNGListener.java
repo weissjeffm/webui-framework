@@ -51,6 +51,7 @@ public class TestNGListener implements IResultListener, ISuiteListener {
 	}	
 	
 	public void onTestFailure(ITestResult result) {
+		Reporter.setCurrentTestResult(result);
 		Throwable err = result.getThrowable();
 		LogRecord logRecord = new LogRecord(Level.SEVERE, "Test failed: "+ result.getName());
 		logRecord.setThrown(err);
@@ -70,6 +71,7 @@ public class TestNGListener implements IResultListener, ISuiteListener {
 	}
 	
 	public void onTestSkipped(ITestResult result) {
+		Reporter.setCurrentTestResult(result);
 		if (result.getThrowable() instanceof SkipException){
 			LogRecord r= new LogRecord(Level.INFO,  "Skipping test " + result.getName() + ": " + result.getThrowable().getMessage());
 			r.setParameters(new Object[]{LogMessageUtil.Style.Banner});
@@ -82,11 +84,11 @@ public class TestNGListener implements IResultListener, ISuiteListener {
 	
 	public  void onTestStart(ITestResult result) {
 		Reporter.setCurrentTestResult(result);
-		System.out.println();
 		log.log(Level.FINE, String.format("Starting Test: %s%s", result.getName(), getParameters(result)), LogMessageUtil.Style.Banner);
 	}
 	
 	public  void onTestSuccess(ITestResult result) {
+		Reporter.setCurrentTestResult(result);
 		Throwable throwable = result.getThrowable();
 		if (throwable != null){
 			log.log(Level.INFO, "Expected exception of " + throwable.getClass().getName() + " '" + throwable.getMessage() + "' was in fact thrown." , LogMessageUtil.Style.Asserted);
@@ -103,6 +105,7 @@ public class TestNGListener implements IResultListener, ISuiteListener {
 	}
 	
 	public void onConfigurationFailure(ITestResult result) {
+		Reporter.setCurrentTestResult(result);
 		try {
 			screencap(result);
 		}
@@ -115,12 +118,13 @@ public class TestNGListener implements IResultListener, ISuiteListener {
 
 	
 	public void onConfigurationSkip(ITestResult result) {
-		System.out.println();
+		Reporter.setCurrentTestResult(result);
 		log.log(Level.INFO, "Configuration skipped: " + result.getName(), LogMessageUtil.Style.Banner);
 	}
 
 	
 	public void onConfigurationSuccess(ITestResult result) {
+		Reporter.setCurrentTestResult(result);
 		log.log(Level.FINE, "Configuration completed: " + result.getName(), LogMessageUtil.Style.Banner);
 	}
 
