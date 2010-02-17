@@ -1,14 +1,36 @@
 package com.redhat.qe.tools;
 
+import java.io.File;
+import java.io.IOException;
+
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
 import com.redhat.qe.auto.selenium.LogMessageUtil;
+import com.trilead.ssh2.Connection;
+import com.trilead.ssh2.SCPClient;
 
 public class RemoteFileTasks {
 	protected static Logger log = Logger.getLogger(RemoteFileTasks.class.getName());
 
 	
+	
+	/**
+	 * Create a file on a remote machine with given contents
+	 * @param conn - A connection object already created to connect to ssh server
+	 * @param filePath - path to the file you want to create (including dir and filename)
+	 * @param contents - contents of the file you want to create
+	 * @throws IOException
+	 * @author jweiss
+	 */
+	public static void createFile(Connection conn, String filePath, String contents) throws IOException  {
+		String dir = new File(filePath).getParent();
+		String fn =  new File(filePath).getName();
+		
+		log.finer("Creating " + fn + " in " + dir + " on " + conn.getHostname());
+		SCPClient scp = new SCPClient(conn);
+		scp.put(contents.getBytes(), fn, dir);
+	}
 	
 	/**
 	 * Use sed to search and replace content within a file.<br>
