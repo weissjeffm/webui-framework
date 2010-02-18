@@ -12,8 +12,8 @@ package com.redhat.qe.auto.selenium;
  * is the final constant string that closes off the locator.
  * <br> Example:	<br> LocatorSandwich bigMac = new LocatorSandwich("Big Mac","(","|",")");
  * 					<br> bigMac.getLocator("a","b","c"));  // returns: (a|b|c)
+ *  				<br> bigMac.getLocator("a","b","c","d"));  // returns: (a|b|c|d)
  * 					<br>
- * WARNING: Due to the repeating nature of the middleBun in this strategy.  
  * @author jsefler
  * 
  */
