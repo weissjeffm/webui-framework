@@ -456,6 +456,7 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 			}
 		}
 		else {
+			highlight(locator);
 			log.log(Level.FINE, getDescription(locator) + " is already " + (check ? "checked.": "unchecked."));
 		}
 	}
