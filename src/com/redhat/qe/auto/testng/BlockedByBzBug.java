@@ -12,11 +12,19 @@ package com.redhat.qe.auto.testng;
  * work because the items will be extracted before the test starts, 
  * if it turns out the bug no longer blocks the test.  Otherwise
  * the test will be skipped and the parameters won't be used anyway.
+ 
  * @author weissj
  *
  */
 public class BlockedByBzBug extends BzBugDependency{
 
+	/**
+	 * * If you're getting IllegalArgumentException (or wrong number of arguments
+	 * being thrown by TestNG, you need to use the BugzillaTestNGListener, which
+	 * will unwrap the arguments before passing them to TestNG)
+	 * @param bugId
+	 * @param params
+	 */
 	public BlockedByBzBug(String bugId, Object... params) {
 		super();
 		this.bugId = bugId;
