@@ -367,6 +367,8 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 	}
 	
 	public void waitForVisible(Element element, String timeout){
+		if(this.isElementPresent(element))
+			return;
 		waitForVisible(element.getLocator(), timeout);
 	}
 	
