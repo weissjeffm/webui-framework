@@ -241,11 +241,15 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 		super.mouseOver(element.getLocator());
 	}
 
-	
+	@Override
+	public void keyPress(String locator, String keySequence) {
+		highlight(locator);
+		super.keyPress(locator,keySequence);
+	}
 	
 	public void keyPress(Element element, String keySequence) {
-		// TODO Auto-generated method stub
-		super.keyPress(element.getLocator(), keySequence);
+		log.log(Level.INFO, "Press and release key '"+keySequence+"' on " + getDescription(element), LogMessageUtil.Style.Action);
+		keyPress(element.getLocator(), keySequence);
 	}
 
 	/**
