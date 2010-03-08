@@ -112,6 +112,8 @@ public class BugzillaTestNGListener implements IResultListener{
 		if (isBugOpen) {
 			throw new SkipException("This test is blocked by "+state.toString()+" Bugzilla bug '"+ summary +"'.  (https://bugzilla.redhat.com/show_bug.cgi?id="+bugId+")");
 		}
+		else log.log(Level.INFO, "This test was previously blocked by "+state.toString()+" Bugzilla bug '"+ summary +"'.  (https://bugzilla.redhat.com/show_bug.cgi?id="+bugId+")");
+
 	}
 
 	

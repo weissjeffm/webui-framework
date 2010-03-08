@@ -38,6 +38,7 @@ public class LocatorSandwich implements LocatorStrategy {
 		this.topBun = topBun;
 	}
 	
+	@Override
 	public String getLocator(String... args) {
 		
 		// build the sandwich...
@@ -59,15 +60,18 @@ public class LocatorSandwich implements LocatorStrategy {
 		return locator;
 	}
 
+	@Override
 	public String getName() {
 		return this.name;
 	}
 	
-	/**
-	 * Warning! The return value from this call is ONLY valid when this locatorSandwich is made with two slices of meat.
-	 */
-	public String getTemplate() {
-		return this.getLocator("$1","$2");
+	@Override
+	public String getTemplate(String... args) {
+		String[] templateArgs = new String[args.length];
+		for (int i = 1; i <= args.length; i++) {
+			templateArgs[i-1]="$"+i;
+		}
+		return this.getLocator(templateArgs);
 	}
 
 
@@ -76,6 +80,7 @@ public class LocatorSandwich implements LocatorStrategy {
 		
 		LocatorSandwich bigMac = new LocatorSandwich("Big Mac","(","|",")");
 		System.out.println("bigMac.getName= "+bigMac.getName());
+		System.out.println("bigMac.getTemplate= "+bigMac.getTemplate("a","b","c","d","e"));
 		System.out.println("bigMac.getTemplate= "+bigMac.getTemplate());
 		System.out.println("bigMac.getLocator= "+bigMac.getLocator());
 		System.out.println("bigMac.getLocator= "+bigMac.getLocator("a"));

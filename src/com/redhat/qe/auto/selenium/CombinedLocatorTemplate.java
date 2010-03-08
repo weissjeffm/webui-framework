@@ -12,18 +12,24 @@ import java.util.regex.Pattern;
  */
 public class CombinedLocatorTemplate extends LocatorTemplate {
 	
+	protected LocatorStrategy[] locatorStrategies = null;
+	
 	public CombinedLocatorTemplate(String name, LocatorStrategy... locatorStrategies) {
 		super(name, "");  // initialize the name (set the template at the end)
-		
+		this.locatorStrategies = locatorStrategies;
+	}
+	
+	@Override
+	public String getTemplate(String... args) {
 		// construct the combined template
 		StringBuffer combinedTemplate = new StringBuffer();
 		int numArgsInPriorLocatorStrategy =0;
 		for (LocatorStrategy locatorStrategy : locatorStrategies) {
-			String template = locatorStrategy.getTemplate();
+			String template = locatorStrategy.getTemplate(args);
 			combinedTemplate.append(increment(numArgsInPriorLocatorStrategy, template));
 			numArgsInPriorLocatorStrategy += countArgs(template);
 		}
-		this.template = combinedTemplate.toString(); // set the template
+		return combinedTemplate.toString();
 	}
 	
 	/**

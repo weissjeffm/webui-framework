@@ -30,9 +30,10 @@ public class LocatorTemplate implements LocatorStrategy {
 		this.template = template;
 	}
 	
+	@Override
 	public String getLocator(String... args) {
 		
-		String locator = this.template;
+		String locator = getTemplate(args);
 		for (int i=args.length; i>0; i--) { // count backwards to prevent aggressive replacements on a two digit number 
 			locator = locator.replaceAll("\\$"+i, args[i-1]);
 		}		
@@ -46,11 +47,13 @@ public class LocatorTemplate implements LocatorStrategy {
 		return locator;
 	}
 
+	@Override
 	public String getName() {
 		return this.name;
 	}
 	
-	public String getTemplate() {
+	@Override
+	public String getTemplate(String... args) {
 		return this.template;
 	}
 

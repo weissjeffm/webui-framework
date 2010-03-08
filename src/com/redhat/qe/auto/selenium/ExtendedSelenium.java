@@ -241,11 +241,15 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 		super.mouseOver(element.getLocator());
 	}
 
-	
+	@Override
+	public void keyPress(String locator, String keySequence) {
+		highlight(locator);
+		super.keyPress(locator,keySequence);
+	}
 	
 	public void keyPress(Element element, String keySequence) {
-		// TODO Auto-generated method stub
-		super.keyPress(element.getLocator(), keySequence);
+		log.log(Level.INFO, "Press and release key '"+keySequence+"' on " + getDescription(element), LogMessageUtil.Style.Action);
+		keyPress(element.getLocator(), keySequence);
 	}
 
 	/**
@@ -427,7 +431,6 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 	}
 	
 	public void check(Element element){
-		//log.log(Level.INFO, "Check " + element, LogMessageUtil.Style.Action);
 		checkUncheck(element, true);
 	}
 	
@@ -438,12 +441,11 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 	}
 	
 	public void uncheck(Element element){
-		//log.log(Level.INFO, "Uncheck " + element, LogMessageUtil.Style.Action);
 		checkUncheck(element, false);
 	}
 	
 	public void checkUncheck(Element element, boolean check){
-		log.log(Level.INFO, (check? "Check":"Uncheck ") + element, LogMessageUtil.Style.Action);
+		log.log(Level.INFO, (check? "Check ":"Uncheck ") + element, LogMessageUtil.Style.Action);
 		checkUncheck(element.getLocator(), check);
 	}
 	
@@ -458,6 +460,7 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 			}
 		}
 		else {
+			highlight(locator);
 			log.log(Level.FINE, getDescription(locator) + " is already " + (check ? "checked.": "unchecked."));
 		}
 	}

@@ -5,11 +5,12 @@ public class StringSandwichLocatorStrategy implements LocatorStrategy {
 	protected String[] bread = null;
 	protected String name = null;
 	
-	public StringSandwichLocatorStrategy(String name, String...bread){
+	public StringSandwichLocatorStrategy(String name, String... bread){
 		this.name = name;
 		this.bread = bread;
 	}
 	
+	@Override
 	public String getLocator(String... meat) {
 		//construct the sandwich - bread, meat, bread, meat, bread - until one runs out
 		//always end with bread unless there isn't enough bread.  
@@ -25,11 +26,13 @@ public class StringSandwichLocatorStrategy implements LocatorStrategy {
 		return sb.toString();
 	}
 
+	@Override
 	public String getName() {
 		return name;
 	}
 	
-	public String getTemplate() {
+	@Override
+	public String getTemplate(String... args) {
 		String template=bread[0];
 		for (int i = 1; i < bread.length; i++) {
 			template += "$"+i+bread[i];

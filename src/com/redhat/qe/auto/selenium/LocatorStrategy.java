@@ -17,10 +17,13 @@ public interface LocatorStrategy {
 	
 	/**
 	 * Associated with a LocatorStrategy is a template that contains place holders
-	 * of the form $d that will be sequentially replaced with the arguments passed
+	 * of the form $d that will sequentially be replaced with the arguments passed
 	 * to method getLocator(String... args).  The following is an example template:
 	 * "//span[normalize-space(.)='$1']/../a[normalize-space(.)='$2']"
+	 * @param args - these are the arguments that will eventually be passed to
+	 *  getLocator(String... args).  They may or may not be needed to assemble the
+	 *  returned template.
 	 * @return - the template for this LocatorStrategy
 	 */
-	public String getTemplate();
+	public String getTemplate(String... args);
 }

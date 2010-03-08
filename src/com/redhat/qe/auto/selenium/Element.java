@@ -116,7 +116,7 @@ public class Element {
 					public String getName(){
 						return "my silly strategy"; }
 					@Override
-					public String getTemplate() {
+					public String getTemplate(String... args) {
 						return "//a[.='$1']";
 					}
 				}

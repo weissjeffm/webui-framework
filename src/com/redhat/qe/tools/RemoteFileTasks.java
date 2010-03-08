@@ -32,6 +32,22 @@ public class RemoteFileTasks {
 		scp.put(contents.getBytes(), fn, dir);
 	}
 	
+	
+	/**
+	 * Use echo to create a file with the given contents.  Then use chmod to give permissions to the file.
+	 * @param runner
+	 * @param filePath - absolute path to the file create
+	 * @param contents - contents of the file
+	 * @param perms - optional chmod options to apply to the filePath (e.g. "a+x")
+	 * @return - exit code
+	 * @author jsefler
+	 */
+	public static int createFile(SSHCommandRunner runner, String filePath, String contents, String perms) {
+		int exitCode = runCommandAndWait(runner, "echo -n -e '"+contents+"' > "+filePath, LogMessageUtil.action());
+		if (exitCode==0 && perms!=null) exitCode = runCommandAndWait(runner, "chmod "+perms+" "+filePath, LogMessageUtil.action());
+		return exitCode;
+	}
+	
 	/**
 	 * Copy file(s) onto a remote machine 
 	 * @param conn - A connection object already created to connect to ssh server
@@ -106,7 +122,7 @@ public class RemoteFileTasks {
 	}
 	
 	public static int runAugeasCommand(SSHCommandRunner runner, String command, LogRecord logRecord){
-		return runCommandAndWait(runner, String.format("echo -e \"%s\nsave\n\" | augtool", command), LogMessageUtil.action());
+		return runCommandAndWait(runner, String.format("echo -e \"%s\nsave\n\" | augtool", command), logRecord);
 	}
 
 	public static int updateAugeasConfig(SSHCommandRunner runner, String augeusPath, String newValue){
