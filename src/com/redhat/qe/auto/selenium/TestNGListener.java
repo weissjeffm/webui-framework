@@ -45,13 +45,13 @@ public class TestNGListener implements IResultListener, ISuiteListener {
 	}
 	
 	public void onTestFailedButWithinSuccessPercentage(ITestResult result) {
-		log.log(Level.WARNING, "Test failed (but within success percentage): "+ result.getName(), result.getThrowable());
+		log.log(Level.WARNING, "Test Failed (but within success percentage): "+ result.getName(), result.getThrowable());
 	}	
 	
 	public void onTestFailure(ITestResult result) {
 		Reporter.setCurrentTestResult(result);
 		Throwable err = result.getThrowable();
-		LogRecord logRecord = new LogRecord(Level.SEVERE, "Test failed: "+ result.getName());
+		LogRecord logRecord = new LogRecord(Level.SEVERE, "Test Failed: "+ result.getName());
 		logRecord.setThrown(err);
 		if (err != null && err instanceof AssertionError)
 			logRecord.setParameters(new Object[] {LogMessageUtil.Style.AssertFailed});
