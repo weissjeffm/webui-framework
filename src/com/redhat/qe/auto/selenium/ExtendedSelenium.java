@@ -427,7 +427,7 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 	}
 	
 	public void check(Element element){
-		log.log(Level.INFO, "Check " + element, LogMessageUtil.Style.Action);
+		//log.log(Level.INFO, "Check " + element, LogMessageUtil.Style.Action);
 		checkUncheck(element, true);
 	}
 	
@@ -438,7 +438,7 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 	}
 	
 	public void uncheck(Element element){
-		log.log(Level.INFO, "Uncheck " + element, LogMessageUtil.Style.Action);
+		//log.log(Level.INFO, "Uncheck " + element, LogMessageUtil.Style.Action);
 		checkUncheck(element, false);
 	}
 	

@@ -2,7 +2,7 @@ package com.redhat.qe.tools;
 
 import java.io.File;
 import java.io.IOException;
-
+import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
@@ -27,9 +27,24 @@ public class RemoteFileTasks {
 		String dir = new File(filePath).getParent();
 		String fn =  new File(filePath).getName();
 		
-		log.finer("Creating " + fn + " in " + dir + " on " + conn.getHostname());
+		log.log(Level.INFO, "Creating " + fn + " in " + dir + " on " + conn.getHostname(), LogMessageUtil.Style.Action);
 		SCPClient scp = new SCPClient(conn);
 		scp.put(contents.getBytes(), fn, dir);
+	}
+	
+	/**
+	 * Copy file(s) onto a remote machine 
+	 * @param conn - A connection object already created to connect to ssh server
+	 * @param dest -  path where the file(s) should go on the remote machine (must be dir)
+	 * @param source - one or more paths to the file(s) you want to copy to the remote dir
+	 * @throws IOException
+	 * @author jweiss
+	 */
+	public static void copyFile(Connection conn, String dest, String... sources ) throws IOException  {
+		for (String source: sources)
+			log.log(Level.INFO, "Copying " + source + " to " + dest + " on " + conn.getHostname(), LogMessageUtil.Style.Action);
+		SCPClient scp = new SCPClient(conn);
+		scp.put(sources, dest);
 	}
 	
 	/**
