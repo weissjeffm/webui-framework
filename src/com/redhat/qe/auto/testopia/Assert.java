@@ -457,6 +457,8 @@ public class Assert {
   static public void assertNotSame(Object actual, Object expected, String message) {
     if(expected == actual) {
       failSame(actual, expected, message);
+    } else {
+    	pass(message);
     }
   }
  
