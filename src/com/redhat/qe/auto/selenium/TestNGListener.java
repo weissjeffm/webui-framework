@@ -141,6 +141,10 @@ public class TestNGListener implements IResultListener, ISuiteListener {
 	}
 	
 	protected void screencap(ITestResult result) throws Exception{
+		if (sc==null) {
+			log.log(Level.FINE, "No ScreenCaptureUtility has been set.", LogMessageUtil.Style.Banner);
+			return;
+		}
 		if (sc instanceof ITestNGScreenCapture){
 			((ITestNGScreenCapture) sc).testNGScreenCapture(result);
 		}
