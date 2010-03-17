@@ -8,6 +8,8 @@ import java.util.Date;
 import java.util.logging.Formatter;
 import java.util.logging.LogRecord;
 
+import com.redhat.qe.auto.testng.LogMessageUtil;
+
 /**
  * A Formatter for java logging, to print nice timestamped 
  * lines to stdout/stderr.

@@ -5,7 +5,6 @@ import java.util.logging.LogRecord;
 
 import org.testng.Reporter;
 
-import com.redhat.qe.auto.selenium.LogMessageUtil;
 
 public class TestNGReportHandler extends Handler {
 
