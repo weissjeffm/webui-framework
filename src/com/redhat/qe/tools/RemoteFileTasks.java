@@ -23,15 +23,18 @@ public class RemoteFileTasks {
 	 * @throws IOException
 	 * @author jweiss
 	 */
-	public static void createFile(Connection conn, String filePath, String contents) throws IOException  {
+	public static void createFile(Connection conn, String filePath, String contents, String mode) throws IOException  {
 		String dir = new File(filePath).getParent();
 		String fn =  new File(filePath).getName();
 		
 		log.log(Level.INFO, "Creating " + fn + " in " + dir + " on " + conn.getHostname(), LogMessageUtil.Style.Action);
 		SCPClient scp = new SCPClient(conn);
-		scp.put(contents.getBytes(), fn, dir);
+		scp.put(contents.getBytes(), fn, dir, mode);
 	}
-	
+
+	public static void createFile(Connection conn, String filePath, String contents) throws IOException  {
+		createFile(conn, filePath, contents, "0755");
+	}
 	
 	/**
 	 * Use echo to create a file with the given contents.  Then use chmod to give permissions to the file.
