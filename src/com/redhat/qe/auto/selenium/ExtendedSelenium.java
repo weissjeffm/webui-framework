@@ -20,6 +20,7 @@ import java.util.regex.Pattern;
 import org.testng.ITestResult;
 import org.testng.Reporter;
 
+import com.redhat.qe.auto.testng.LogMessageUtil;
 import com.thoughtworks.selenium.CommandProcessor;
 import com.thoughtworks.selenium.DefaultSelenium;
 import com.thoughtworks.selenium.SeleniumException;

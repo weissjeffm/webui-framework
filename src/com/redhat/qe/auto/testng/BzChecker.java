@@ -160,6 +160,10 @@ public class BzChecker {
 			session = new Session(null, null, new URL(BZ_URL));
 			try {
 				session.init();
+				// initiate a login here because some bugzilla projects (e.g. Cloud Enablement Tools) are not anonymously
+				// readable which will result in org.apache.xmlrpc.XmlRpcException: You are not authorized to access bug #
+				// when calling lookupBugAndSkipIfOpen.  For reliability, we need to login.  jsefler 3/16/09
+				login(System.getProperty("bugzilla.login"), System.getProperty("bugzilla.password"));
 			}
 			catch(Exception e){
 				log.log(Level.FINE, "Couldn't set up bugzilla connection.", e);

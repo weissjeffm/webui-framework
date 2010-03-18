@@ -1,4 +1,4 @@
-package com.redhat.qe.auto.selenium;
+package com.redhat.qe.auto.testng;
 
 import java.util.logging.Level;
 import java.util.logging.LogRecord;

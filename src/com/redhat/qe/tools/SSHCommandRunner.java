@@ -9,7 +9,7 @@ import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
-import com.redhat.qe.auto.selenium.LogMessageUtil;
+import com.redhat.qe.auto.testng.LogMessageUtil;
 import com.trilead.ssh2.ChannelCondition;
 import com.trilead.ssh2.Connection;
 import com.trilead.ssh2.Session;
