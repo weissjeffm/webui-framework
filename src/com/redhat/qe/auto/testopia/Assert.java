@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
 import com.redhat.qe.auto.testng.LogMessageUtil;
 
@@ -30,7 +31,9 @@ public class Assert {
   }
   
   static public void assertMatch(String actual, String regex, String where){
-	  assertTrue(actual.matches(regex), String.format("%s'%s' matches regex '%s'", where + " ", actual, regex)); 
+	  Pattern p = Pattern.compile(regex, Pattern.MULTILINE | Pattern.DOTALL);
+	  
+	  assertTrue(p.matcher(actual).matches(), String.format("%s'%s' matches regex '%s'", where + " ", actual, regex)); 
   }
  
   static public void assertMatch(String actual, String regex){
