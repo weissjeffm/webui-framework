@@ -7,11 +7,14 @@ import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
 import com.redhat.qe.auto.testng.LogMessageUtil;
+import com.redhat.qe.auto.testopia.Assert;
 import com.trilead.ssh2.Connection;
 import com.trilead.ssh2.SCPClient;
 
 public class RemoteFileTasks {
 	protected static Logger log = Logger.getLogger(RemoteFileTasks.class.getName());
+	protected static final String stdoutFile	= "/tmp/stdout";
+	protected static final String stderrFile	= "/tmp/stderr";
 
 	
 	
@@ -133,5 +136,32 @@ public class RemoteFileTasks {
 			return runAugeasCommand(runner, String.format("rm %s", augeusPath), LogMessageUtil.action());
 		else
 			return runAugeasCommand(runner, String.format("set %s '%s'", augeusPath, newValue), LogMessageUtil.action());
+	}
+	
+	
+	/**
+	 * Use the sshCommandRunner to execute the given command and verify the output
+	 * contains am expected grep expression.
+	 * @param sshCommandRunner - ssh runner with an existing connection to a remote machine
+	 * @param command - command to execute with options
+	 * @param stdoutGrepExpression - if !null, stdout is asserted to contain a match to this grep expression
+	 * @param stderrGrepExpression - if !null, stderr is asserted to contain a match to this grep expression
+	 * @param expectedExitCode - expected exit code from the command (usually 0 on success, non-0 on failure)
+	 * @author jsefler
+	 */
+	public static void runCommandAndAssert(SSHCommandRunner sshCommandRunner, String command, String stdoutGrepExpression, String stderrGrepExpression, int expectedExitCode) {
+
+		//String runCommand = String.format("(%s | tee %s) 3>&1 1>&2 2>&3 | tee %s", command, stdoutFile, stderrFile);	// the problem with this is that the exit code is lost
+		String runCommand = String.format("%s 1>%s 2>%s", command, stdoutFile, stderrFile);
+		Assert.assertEquals(sshCommandRunner.runCommandAndWait(runCommand),Integer.valueOf(expectedExitCode));
+		if (stdoutGrepExpression!=null) {
+			sshCommandRunner.runCommandAndWait("echo 'Stdout from: "+command+"'; cat "+stdoutFile);	// cheap way to log stdoutFile
+			Assert.assertEquals(RemoteFileTasks.grepFile(sshCommandRunner, stdoutFile, stdoutGrepExpression),0,"Stdout contains a match grepping for extended regular expression '"+stdoutGrepExpression+"' (0 means match)");
+		}
+		if (stderrGrepExpression!=null) {
+			sshCommandRunner.runCommandAndWait("echo 'Stdout from: "+command+"'; cat "+stderrFile);	// cheap way to log stderrFile
+			Assert.assertEquals(RemoteFileTasks.grepFile(sshCommandRunner, stderrFile, stderrGrepExpression),0,"Stderr contains a match grepping for extended regular expression '"+stderrGrepExpression+"' (0 means match)");
+		}
+
 	}
 }
