@@ -15,8 +15,9 @@ public abstract class TestScript {
 
 	protected static Logger log = Logger.getLogger(TestScript.class.getName());
 	protected static String defaultPropertiesFile; 
-	
+	protected static boolean initialized = false;
 	public TestScript() {
+		if (initialized) return; //only need to run this stuff once per jvm
 		
 		String propFile ="";
 			
@@ -74,6 +75,8 @@ public abstract class TestScript {
 		for (Object key: keyList){
 			log.finer("Property("+key+")= "+System.getProperty((String) key));
 		}
+		
+		initialized = true;
 		
 	}
 		
