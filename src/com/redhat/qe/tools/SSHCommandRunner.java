@@ -340,7 +340,7 @@ public class SSHCommandRunner implements Runnable {
 		Integer exitcode = runner.waitForWithTimeout(null);
 		System.out.println("exit code: " + exitcode);
 		/*SCPClient scp = new SCPClient(conn);
-		scp.put(System.getProperty("user.dir")+ "/../jon-2.0/bin/DummyJVM.class", "/tmp");
+		scp.put(System.getProperty("user.dir")+ "/../jon/bin/DummyJVM.class", "/tmp");
 		SSHCommandRunner jrunner = new SSHCommandRunner(conn, "java -Dcom.sun.management.jmxremote.port=1500 -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false -cp /tmp DummyJVM");
 
 		jrunner.run();

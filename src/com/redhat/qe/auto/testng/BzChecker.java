@@ -236,7 +236,7 @@ public class BzChecker {
 	
 	public static void main(String[] args) throws Exception{
 		try {
-			LogManager.getLogManager().readConfiguration(new FileInputStream("/home/weissj/workspace/automatjon/jon-2.0/log.properties"));
+			LogManager.getLogManager().readConfiguration(new FileInputStream("/home/weissj/workspace/automatjon/jon/log.properties"));
 		}catch(Exception e){
 			System.err.println("Unable to read log config file.");
 		}
