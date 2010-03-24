@@ -157,7 +157,7 @@ public class RemoteFileTasks {
 		if (exitCode!=expectedExitCode) {
 			sshCommandRunner.runCommandAndWait("echo 'Stdout from: "+command+"'; cat "+stdoutFile);	// cheap way to log stdoutFile
 			sshCommandRunner.runCommandAndWait("echo 'Stderr from: "+command+"'; cat "+stderrFile);	// cheap way to log stderrFile		
-		}		Assert.assertEquals(sshCommandRunner.runCommandAndWait(runCommand),Integer.valueOf(expectedExitCode));
+		}	Assert.assertEquals(exitCode,expectedExitCode);
 		if (stdoutGrepExpression!=null) {
 			sshCommandRunner.runCommandAndWait("echo 'Stdout from: "+command+"'; cat "+stdoutFile);	// cheap way to log stdoutFile
 			Assert.assertEquals(RemoteFileTasks.grepFile(sshCommandRunner, stdoutFile, stdoutGrepExpression),0,"Stdout contains a match grepping for extended regular expression '"+stdoutGrepExpression+"' (0 means match)");
