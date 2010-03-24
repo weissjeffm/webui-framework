@@ -56,16 +56,37 @@ public class RemoteFileTasks {
 	/**
 	 * Copy file(s) onto a remote machine 
 	 * @param conn - A connection object already created to connect to ssh server
-	 * @param dest -  path where the file(s) should go on the remote machine (must be dir)
+	 * @param destDir -  path where the file(s) should go on the remote machine (must be dir)
 	 * @param source - one or more paths to the file(s) you want to copy to the remote dir
 	 * @throws IOException
 	 * @author jweiss
 	 */
-	public static void copyFile(Connection conn, String dest, String... sources ) throws IOException  {
+	public static void copyFiles(Connection conn, String destDir, String... sources ) throws IOException  {
 		for (String source: sources)
-			log.log(Level.INFO, "Copying " + source + " to " + dest + " on " + conn.getHostname(), LogMessageUtil.Style.Action);
+			log.log(Level.INFO, "Copying " + source + " to " + destDir + " on " + conn.getHostname(), LogMessageUtil.Style.Action);
 		SCPClient scp = new SCPClient(conn);
-		scp.put(sources, dest);
+		scp.put(sources, destDir);
+	}
+	
+	/**
+	 * @param conn - A connection object already created to connect to ssh server
+	 * @param source - path to the file you want to copy
+	 * @param dest - full path to the destination where you want the file to go 
+	 * 	(if path ends in trailing slash, it's assumed to be a dir, and the source filename is used) 
+	 * @throws IOException
+	 * @author jweiss
+	 */
+	public static void copyFile(Connection conn, String source, String dest) throws IOException  {
+		log.log(Level.INFO, "Copying " + source + " to " + dest + " on " + conn.getHostname(), LogMessageUtil.Style.Action);
+		SCPClient scp = new SCPClient(conn);
+		if (dest.endsWith("/")) {
+			scp.put(new String[] {source}, null, dest, "0755");
+		}
+		else {
+			String destDir = new File(dest).getParentFile().getCanonicalPath();
+			String destFile = new File(dest).getName();
+			scp.put(new String[] {source}, new String[] {destFile}, destDir, "0755");
+		}
 	}
 	
 	/**
