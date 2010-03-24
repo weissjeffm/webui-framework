@@ -13,9 +13,11 @@ import com.redhat.qe.tools.compare.CollectionSorter;
 
 public abstract class TestScript {
 
-	protected static Logger log = Logger.getLogger(TestScript.class.getName());
-	protected static String defaultPropertiesFile; 
 	protected static boolean initialized = false;
+	protected static Logger log = Logger.getLogger(TestScript.class.getName());
+	protected static final String defaultAutomationPropertiesFile=System.getenv("HOME")+"/automation.properties"; 
+	protected static final String defaultLogPropertiesFile=System.getProperty("user.home")+ "/log.properties"; 
+	
 	public TestScript() {
 		if (initialized) return; //only need to run this stuff once per jvm
 		
@@ -26,7 +28,7 @@ public abstract class TestScript {
 			Thread.currentThread().setContextClassLoader(ClassLoader.getSystemClassLoader());
 			
 			
-			propFile = System.getProperty("log.propertiesfile", System.getProperty("user.home")+ "/log.properties" );
+			propFile = System.getProperty("log.propertiesfile", defaultLogPropertiesFile);
 			if (! new File(propFile).exists()) {
 				log.fine("No log.propertiesfile specified, nor found in HOME dir, trying to use default in project.");
 				propFile = "log.properties";
@@ -48,8 +50,8 @@ public abstract class TestScript {
 			propFile = (System.getProperty("automation.propertiesfile"));
 			
 			if(propFile == null || propFile.length() == 0){
-				log.info("System property automation.propertiesfile is not set.  Defaulting to "+ defaultPropertiesFile);
-				propFile = defaultPropertiesFile;
+				log.info("System property automation.propertiesfile is not set.  Defaulting to "+ defaultAutomationPropertiesFile);
+				propFile = defaultAutomationPropertiesFile;
 			}
 			Properties p = new Properties();
 			p.load(new FileInputStream(propFile));
