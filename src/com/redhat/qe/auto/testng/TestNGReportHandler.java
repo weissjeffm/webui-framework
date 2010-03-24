@@ -37,7 +37,7 @@ public class TestNGReportHandler extends Handler {
 					css_class += " ASSERTFAIL";
 			}
 		//Reporter.log("<div class='" + css_class + "'>"+record.getMessage() + "</div>");
-		Reporter.log("<div class='" + css_class + "'>"+tagAllUrls(escapeAllTags(record.getMessage())) + "</div>");
+		Reporter.log("<div class='" + css_class + "'>"+tagAllUrls(addLineBreaks(escapeAllTags(record.getMessage()))) + "</div>");
 	}
 	
 	/**
@@ -62,6 +62,10 @@ public class TestNGReportHandler extends Handler {
 	protected static String escapeAllTags(String msg) {
 		String regex = "<([^>]+)>";
 		return msg.replaceAll(regex, "&lt;$1&gt;");
+	}
+	
+	protected static String addLineBreaks(String msg) {
+		return msg.replaceAll("\r\n", "<br/>").replaceAll("\n", "<br/>");
 	}
 
 	public static void main(String[] args) {
