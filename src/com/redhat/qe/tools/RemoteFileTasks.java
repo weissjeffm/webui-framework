@@ -73,10 +73,11 @@ public class RemoteFileTasks {
 	 * @param source - path to the file you want to copy
 	 * @param dest - full path to the destination where you want the file to go 
 	 * 	(if path ends in trailing slash, it's assumed to be a dir, and the source filename is used) 
+	 * @param mask - permissions on file, eg, "0755"
 	 * @throws IOException
 	 * @author jweiss
 	 */
-	public static void copyFile(Connection conn, String source, String dest) throws IOException  {
+	public static void copyFile(Connection conn, String source, String dest, String mask) throws IOException  {
 		log.log(Level.INFO, "Copying " + source + " to " + dest + " on " + conn.getHostname(), LogMessageUtil.Style.Action);
 		SCPClient scp = new SCPClient(conn);
 		if (dest.endsWith("/")) {
@@ -85,7 +86,7 @@ public class RemoteFileTasks {
 		else {
 			String destDir = new File(dest).getParentFile().getCanonicalPath();
 			String destFile = new File(dest).getName();
-			scp.put(new String[] {source}, new String[] {destFile}, destDir, "0755");
+			scp.put(new String[] {source}, new String[] {destFile}, destDir, mask);
 		}
 	}
 	
