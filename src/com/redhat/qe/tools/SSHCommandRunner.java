@@ -243,7 +243,7 @@ public class SSHCommandRunner implements Runnable {
 		}
 		Integer exitCode = waitForWithTimeout(timeoutMS);
 		if (!liveLogOutput){
-			log.fine("Stderr: "+this.getStderr());
+			log.log(logRecord.getLevel(), "Stderr: "+this.getStderr());
 			log.log(logRecord.getLevel(), "Stdout: "+this.getStdout());
 		}
 		return exitCode;
