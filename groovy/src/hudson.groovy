@@ -28,8 +28,8 @@ setupClasspath([webuiFramework, automationDir])
 
 masterXmlFile = args[0]
 
-def testng = Class.forName("org.testng.TestNG").newInstance();
-def outputDir
+testng = Class.forName("org.testng.TestNG").newInstance();
+outputDir = null
 
 if (args.length > 1) {
 	testToRun = args[1]
@@ -39,9 +39,9 @@ if (args.length > 1) {
 	
 	def ourSuite = Class.forName("org.testng.xml.XmlSuite").newInstance()
 	def newTest = Class.forName("org.testng.xml.XmlTest").getConstructor(Class.forName("org.testng.xml.XmlSuite")).newInstance(ourSuite)
-	
-	testng = setOutputDir()
-	
+
+	addListeners()	
+	setOutputDir()
 	
 	//clone the test
 	newTest.setXmlPackages(ourTest.getXmlPackages())
@@ -55,7 +55,6 @@ if (args.length > 1) {
 	
 	//debug for testng
 	//testng.setVerbose(10)
-	testng = addListeners(testng)	
 
 	testng.run()
 }
@@ -66,7 +65,8 @@ else runTestNG(masterXmlFile)
 def runTestNG(String suiteFile){
 	def testng = Class.forName("org.testng.TestNG").newInstance();
 	testng.setTestSuites([suiteFile])
-	testng = addListeners().setOutputDir()	
+	addListeners()
+	setOutputDir()	
 	testng.run()	
 	return !testng.hasFailure()
 }
@@ -77,7 +77,6 @@ def setOutputDir(){
 	if (outputDir != null) {
 		testng.setOutputDirectory(outputDir)
 	}
-	return testng
 }
 def makeJunitReport(){
 	//generate junit report
@@ -97,7 +96,6 @@ def addListeners(){
 	testng.addListener((Object)Class.forName("com.redhat.qe.auto.bugzilla.BugzillaTestNGListener").newInstance());
 	testng.addListener((Object)Class.forName("org.uncommons.reportng.HTMLReporter").newInstance());
 	testng.addListener((Object)Class.forName("org.uncommons.reportng.JUnitXMLReporter").newInstance());
-	return testng
 }
 
 def String pathToFileURL(String path){
