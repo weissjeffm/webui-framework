@@ -208,23 +208,48 @@ public class SSHCommandRunner implements Runnable {
 	}
 	
 	public Integer runCommandAndWait(String command){
-		return runCommandAndWait(command,null,LogMessageUtil.fine());
+		return runCommandAndWait(command,null,LogMessageUtil.fine(), false);
+	}
+	
+	public Integer runCommandAndWait(String command, boolean liveLogOutput){
+		return runCommandAndWait(command,null,LogMessageUtil.fine(), liveLogOutput);
 	}
 	
 	public Integer runCommandAndWait(String command, Long timeoutMS){
-		return runCommandAndWait(command,timeoutMS,LogMessageUtil.fine());
+		return runCommandAndWait(command,timeoutMS,LogMessageUtil.fine(), false);
 	}
 	
 	public Integer runCommandAndWait(String command, LogRecord logRecord){
-		return runCommandAndWait(command,null,logRecord);
+		return runCommandAndWait(command,null,logRecord, false);
 	}
-	public Integer runCommandAndWait(String command, Long timeoutMS, LogRecord logRecord){
+	
+	/**
+	 * @param command - the remote command to run
+	 * @param timeoutMS - abort if command doesn't complete in this many milliseconds 
+	 * 	(null means wait for command to complete, no matter how long it takes) 
+	 * @param logRecord - a log record whose Level and Parameters will be used to do all
+	 * the command output logging.  eg, a logRecord whose Level is INFO means log all the
+	 * output at INFO level.  
+	 * @param liveLogOutput - if true, log output as the command runs.  Good for long running
+	 * commands, or commands that could potentially hang or timeout.  If false, don't log 
+	 * any output until the command has finished running.
+	 * @return the integer return code of the command
+	 */ 
+	public Integer runCommandAndWait(String command, Long timeoutMS, LogRecord logRecord, boolean liveLogOutput){
 		runCommand(command,logRecord);
+		if (liveLogOutput){
+			SplitStreamLogger logger = new SplitStreamLogger(this);
+			logger.log(logRecord.getLevel(), Level.SEVERE);
+		}
 		Integer exitCode = waitForWithTimeout(timeoutMS);
-		log.fine("Stdout: "+this.getStdout());
-		log.fine("Stderr: "+this.getStderr());
+		if (!liveLogOutput){
+			log.fine("Stderr: "+this.getStderr());
+			log.log(logRecord.getLevel(), "Stdout: "+this.getStdout());
+		}
 		return exitCode;
 	}
+	
+	
 	
 	/**
 	 * Stop waiting for the command to complete.
