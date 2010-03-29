@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.redhat.qe.auto.testng.LogMessageUtil;
@@ -30,16 +31,71 @@ public class Assert {
     // hide constructor
   }
   
-  static public void assertMatch(String actual, String regex, String where){
-	  Pattern p = Pattern.compile(regex, Pattern.MULTILINE | Pattern.DOTALL);
-	  
-	  assertTrue(p.matcher(actual).matches(), String.format("%s'%s' matches regex '%s'", where + " ", actual, regex)); 
-  }
- 
-  static public void assertMatch(String actual, String regex){
-	  assertMatch(actual, regex, ""); 
-  }
- 
+	static public void assertMatch(String actual, String regex, String where, String msg) {
+		if (msg==null) msg = String.format("%s'%s' matches regex '%s'", where+" ", actual, regex);
+		Pattern p = Pattern.compile(regex, Pattern.MULTILINE | Pattern.DOTALL);
+		assertTrue(p.matcher(actual).matches(), msg); 
+	}
+
+	static public void assertMatch(String actual, String regex, String where){
+		assertMatch(actual, regex, where, null);
+	}
+
+	static public void assertMatch(String actual, String regex){
+		assertMatch(actual, regex, ""); 
+	}
+
+	static public void assertNoMatch(String actual, String regex, String where, String msg) {
+		if (msg==null) msg = String.format("%s'%s' does NOT match regex '%s'", where+" ", actual, regex);
+		Pattern p = Pattern.compile(regex, Pattern.MULTILINE | Pattern.DOTALL);
+		assertFalse(p.matcher(actual).matches(), msg); 
+	}
+
+	static public void assertNoMatch(String actual, String regex, String where){
+		assertNoMatch(actual, regex, where, null); 
+	}
+
+	static public void assertNoMatch(String actual, String regex){
+		assertNoMatch(actual, regex, ""); 
+	}
+	
+	
+	static public void assertContainsMatch(String actual, String regex, String where, String msg) {
+		if (msg==null) msg = String.format("%s'%s' contains matches to regex '%s'", where+" ", actual, regex);
+
+		Pattern pattern = Pattern.compile(regex, Pattern.MULTILINE | Pattern.DOTALL);
+		Matcher matcher = pattern.matcher(actual);
+		Assert.assertTrue(matcher.find(),msg); 
+
+		log.fine("Matches: ");
+		do {
+			log.fine(matcher.group());
+		} while (matcher.find());
+	}
+
+	static public void assertContainsMatch(String actual, String regex, String where) {
+		assertContainsMatch(actual, regex, where, null);
+	}
+
+	static public void assertContainsMatch(String actual, String regex) {
+		assertContainsMatch(actual, regex, "");
+	}
+
+	static public void assertContainsNoMatch(String actual, String regex, String where, String msg) {
+		if (msg==null) msg = String.format("%s'%s' does NOT match regex '%s'", where+" ", actual, regex);
+		Pattern pattern = Pattern.compile(regex, Pattern.MULTILINE | Pattern.DOTALL);
+		assertFalse(pattern.matcher(actual).find(), msg);
+	}
+
+	static public void assertContainsNoMatch(String actual, String regex, String where) {
+		assertContainsNoMatch(actual, regex, where, null);
+	}
+
+	static public void assertContainsNoMatch(String actual, String regex) {
+		assertContainsNoMatch(actual, regex, "");
+	}
+	
+	
   /**
    * Asserts that a condition is true and passes the message. If it isn't,
    * an AssertionError, with the given message, is thrown.
