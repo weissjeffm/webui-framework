@@ -40,7 +40,7 @@ if (args.length() > 1) {
 	
 	
 	//set the output dir
-	outputDir = System.getProperty("testng.outputdir")
+	outputDir = System.getProperty("testng.outputdir", "$automationDir/test-output")
 	if (outputDir != null) {
 		testng.setOutputDirectory(outputDir)
 	}
