@@ -7,8 +7,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import com.redhat.qe.auto.testng.LogMessageUtil;
 import com.redhat.qe.auto.testopia.Assert;
