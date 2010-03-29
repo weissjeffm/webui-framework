@@ -54,7 +54,7 @@ if (args.length > 1) {
 	testng.setXmlSuites([ourSuite])	
 }
 else {
-	testng.setTestSuites([suiteFile])
+	testng.setTestSuites([masterXmlFile])
 }
 
 testng.run()
