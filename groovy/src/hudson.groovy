@@ -12,8 +12,8 @@ println("workspace= "+workspace)
 println("user.dir= " + System.getProperty("user.dir"))
 
 
-automationDir = workspace + (System.getProperty("testng.project.dir", "/automatjon/jon"))
-webuiFramework = workspace + (System.getProperty("webui-framework.dir", "/webui-framework"))
+automationDir = workspace + "/" + (System.getProperty("testng.project.dir", "automatjon/jon"))
+webuiFramework = workspace + "/" + (System.getProperty("webui-framework.dir", "webui-framework"))
 System.setProperty("automation.dir",automationDir);
 
 //set reportng formatting options
