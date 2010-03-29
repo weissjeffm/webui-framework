@@ -1,8 +1,9 @@
+
 /*
  * Script that runs a testng suite or test within a suite
  * Args = xml-suite-file [optional-test-name]
  */
-import org.testng.TestNG
+
 
 ant = new AntBuilder();
 
@@ -85,7 +86,7 @@ def makeJunitReport(){
 	}
 }
 
-def addListeners(TestNG testng){
+def addListeners(testng){
 	// the object cast below is so the api doesn't get confused about which overloaded method we're calling
 	testng.addListener((Object)Class.forName("com.redhat.qe.auto.selenium.TestNGListener").newInstance());
 	testng.addListener((Object)Class.forName("com.redhat.qe.auto.bugzilla.BugzillaTestNGListener").newInstance());
