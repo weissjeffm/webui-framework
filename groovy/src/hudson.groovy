@@ -28,8 +28,10 @@ setupClasspath([webuiFramework, automationDir])
 
 masterXmlFile = args[0]
 
-testng = Class.forName("org.testng.TestNG").newInstance();
 outputDir = null
+testng = Class.forName("org.testng.TestNG").newInstance();
+addListeners()	
+setOutputDir()
 
 if (args.length > 1) {
 	testToRun = args[1]
@@ -40,8 +42,6 @@ if (args.length > 1) {
 	def ourSuite = Class.forName("org.testng.xml.XmlSuite").newInstance()
 	def newTest = Class.forName("org.testng.xml.XmlTest").getConstructor(Class.forName("org.testng.xml.XmlSuite")).newInstance(ourSuite)
 
-	addListeners()	
-	setOutputDir()
 	
 	//clone the test
 	newTest.setXmlPackages(ourTest.getXmlPackages())
@@ -51,32 +51,23 @@ if (args.length > 1) {
 	newTest.setName(ourTest.getName())
 	
 	ourSuite.setName("Hudson_Test_Suite")
-	testng.setXmlSuites([ourSuite])
-	
-	//debug for testng
-	//testng.setVerbose(10)
-
-	testng.run()
+	testng.setXmlSuites([ourSuite])	
 }
-else runTestNG(masterXmlFile)
+else {
+	testng.setTestSuites([suiteFile])
+}
 
+testng.run()
+!testng.hasFailure()
 /* ----- internal methods ----- */
 
-def runTestNG(String suiteFile){
-	def testng = Class.forName("org.testng.TestNG").newInstance();
-	testng.setTestSuites([suiteFile])
-	addListeners()
-	setOutputDir()	
-	testng.run()	
-	return !testng.hasFailure()
-}
 
 def setOutputDir(){
 	//set the output dir
 	outputDir = System.getProperty("testng.outputdir", "$automationDir/test-output")
-	if (outputDir != null) {
-		testng.setOutputDirectory(outputDir)
-	}
+	println("Setting testng output dir to " + outputDir)
+	testng.setOutputDirectory(outputDir)
+	
 }
 def makeJunitReport(){
 	//generate junit report
@@ -92,10 +83,12 @@ def makeJunitReport(){
 
 def addListeners(){
 	// the object cast below is so the api doesn't get confused about which overloaded method we're calling
-	testng.addListener((Object)Class.forName("com.redhat.qe.auto.selenium.TestNGListener").newInstance());
-	testng.addListener((Object)Class.forName("com.redhat.qe.auto.bugzilla.BugzillaTestNGListener").newInstance());
-	testng.addListener((Object)Class.forName("org.uncommons.reportng.HTMLReporter").newInstance());
-	testng.addListener((Object)Class.forName("org.uncommons.reportng.JUnitXMLReporter").newInstance());
+	listeners = ["com.redhat.qe.auto.selenium.TestNGListener", "com.redhat.qe.auto.bugzilla.BugzillaTestNGListener", 
+	             "org.uncommons.reportng.HTMLReporter", "org.uncommons.reportng.JUnitXMLReporter"]
+	listeners.each {
+		println("Adding testng listener $it")
+		testng.addListener((Object)Class.forName(it).newInstance());
+	}
 }
 
 def String pathToFileURL(String path){
