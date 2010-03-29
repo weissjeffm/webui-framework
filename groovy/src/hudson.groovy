@@ -29,7 +29,7 @@ setupClasspath([webuiFramework, automationDir])
 masterXmlFile = args[0]
 
 
-if (args.length() > 1) {
+if (args.length > 1) {
 	testToRun = args[1]
 	def testng = Class.forName("org.testng.TestNG").newInstance();
 	def parser = Class.forName("org.testng.xml.Parser").getConstructor(String.class).newInstance(masterXmlFile)
