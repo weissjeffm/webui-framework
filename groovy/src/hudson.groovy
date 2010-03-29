@@ -28,10 +28,11 @@ setupClasspath([webuiFramework, automationDir])
 
 masterXmlFile = args[0]
 
+def testng = Class.forName("org.testng.TestNG").newInstance();
+def outputDir
 
 if (args.length > 1) {
 	testToRun = args[1]
-	def testng = Class.forName("org.testng.TestNG").newInstance();
 	def parser = Class.forName("org.testng.xml.Parser").getConstructor(String.class).newInstance(masterXmlFile)
 	def masterXmlSuite = parser.parse().iterator().next();
 	def ourTest = masterXmlSuite.getTests().find { it.getName() == testToRun }
@@ -39,12 +40,8 @@ if (args.length > 1) {
 	def ourSuite = Class.forName("org.testng.xml.XmlSuite").newInstance()
 	def newTest = Class.forName("org.testng.xml.XmlTest").getConstructor(Class.forName("org.testng.xml.XmlSuite")).newInstance(ourSuite)
 	
+	testng = setOutputDir()
 	
-	//set the output dir
-	outputDir = System.getProperty("testng.outputdir", "$automationDir/test-output")
-	if (outputDir != null) {
-		testng.setOutputDirectory(outputDir)
-	}
 	
 	//clone the test
 	newTest.setXmlPackages(ourTest.getXmlPackages())
@@ -69,24 +66,32 @@ else runTestNG(masterXmlFile)
 def runTestNG(String suiteFile){
 	def testng = Class.forName("org.testng.TestNG").newInstance();
 	testng.setTestSuites([suiteFile])
-	testng = addListeners(testng)	
+	testng = addListeners().setOutputDir()	
 	testng.run()	
 	return !testng.hasFailure()
 }
 
+def setOutputDir(){
+	//set the output dir
+	outputDir = System.getProperty("testng.outputdir", "$automationDir/test-output")
+	if (outputDir != null) {
+		testng.setOutputDirectory(outputDir)
+	}
+	return testng
+}
 def makeJunitReport(){
 	//generate junit report
 	junitDir = "test-output-junit"
 	ant.mkdir(dir: junitDir)
 	ant.junitreport(todir: junitDir) {
-		fileset(dir: "test-output"){
+		fileset(dir: outputDir){
 			include(name: "**/*.xml")
 			exclude(name: "**/testng-failed.xml")
 		}
 	}
 }
 
-def addListeners(testng){
+def addListeners(){
 	// the object cast below is so the api doesn't get confused about which overloaded method we're calling
 	testng.addListener((Object)Class.forName("com.redhat.qe.auto.selenium.TestNGListener").newInstance());
 	testng.addListener((Object)Class.forName("com.redhat.qe.auto.bugzilla.BugzillaTestNGListener").newInstance());
