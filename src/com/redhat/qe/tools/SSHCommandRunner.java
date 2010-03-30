@@ -96,7 +96,7 @@ public class SSHCommandRunner implements Runnable {
 		}
 	}
 	public void run() {
-		run(LogMessageUtil.fine());
+		run(LogMessageUtil.action());
 	}
 	
 	public Integer waitFor(){
