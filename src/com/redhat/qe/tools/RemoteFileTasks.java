@@ -189,6 +189,27 @@ public class RemoteFileTasks {
 			sshCommandRunner.runCommandAndWait("echo 'Stderr from: "+command+"'; cat "+stderrFile);	// cheap way to log stderrFile
 			Assert.assertEquals(RemoteFileTasks.grepFile(sshCommandRunner, stderrFile, stderrGrepExpression),0,"Stderr contains a match grepping for extended regular expression '"+stderrGrepExpression+"' (0 means match)");
 		}
-
+	}
+	
+	/**
+	 * Occasionally, you may need to run commands, expecting a nonzero exit code.
+	 * 
+	 * If you run into this situation, this is your method.
+	 * @param sshCommandRunner your preferred sshCommandRunner
+	 * @param command - command to execute with options
+	 * @author ssalevan
+	 */
+	public static void runCommandExpectingNonzeroExit(SSHCommandRunner sshCommandRunner, String command){
+		Assert.assertNotSame(sshCommandRunner.runCommandAndWait(command),
+				0,
+				"Command returns nonzero error code: "+command);
+	}
+	
+	public static void runCommandExpectingNoTracebacks(SSHCommandRunner sshCommandRunner, String command){
+		int exitCode = sshCommandRunner.runCommandAndWait(command);
+		Assert.assertFalse(sshCommandRunner.getStdout().toLowerCase().contains("traceback"),
+				"Traceback string not in stdout");
+		Assert.assertFalse(sshCommandRunner.getStderr().toLowerCase().contains("traceback"),
+				"Traceback string not in stderr");
 	}
 }
