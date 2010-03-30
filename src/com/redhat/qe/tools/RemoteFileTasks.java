@@ -158,46 +158,6 @@ public class RemoteFileTasks {
 			return runAugeasCommand(runner, String.format("set %s '%s'", augeusPath, newValue), LogMessageUtil.action());
 	}
 	
-//  FIXME DELETEME... REPLACED BY runCommandAndAssert(SSHCommandRunner sshCommandRunner, String command, Integer exitCode, List<String> stdoutRegexs, List<String> stderrRegexs)
-//	@Deprecated
-	public static final String stdoutFile	= "/tmp/stdout";
-//	@Deprecated
-	public static final String stderrFile	= "/tmp/stderr";
-	/**
-	 * Use the sshCommandRunner to execute the given command and verify the output
-	 * contains an expected grep expression.  Moreover, the stdout and stderr strings are
-	 * redirected to this.stdoutFile and this.stderrFile which you can subsequently
-	 * use for further post processing before the next call to runCommandAndAssert(...).
-	 * @param command - command to execute with options
-	 * @param stdoutGrepExpression - if !null, stdout is asserted to contain a match to this grep expression
-	 * @param stderrGrepExpression - if !null, stderr is asserted to contain a match to this grep expression
-	 * @param expectedExitCode - expected exit code from the command (usually 0 on success, non-0 on failure)
-	 * @author jsefler
-	 */
-//	@Deprecated
-	public static void runCommandAndAssert(SSHCommandRunner sshCommandRunner, String command, String stdoutGrepExpression, String stderrGrepExpression, int expectedExitCode) {
-		log.warning("DO NOT USE THIS METHOD RemoteFileTasks.runCommandAndAssert(...).  MIGRATE YOUR CODE TO REPLACEMENT METHOD RemoteFileTasks.runCommandAndAssert(SSHCommandRunner sshCommandRunner, String command, Integer exitCode, String stdoutRegex, String stderrRegex)");
-
-		//String runCommand = String.format("(%s | tee %s) 3>&1 1>&2 2>&3 | tee %s", command, stdoutFile, stderrFile);	// the problem with this is that the exit code is lost
-		String runCommand = String.format("%s 1>%s 2>%s", command, stdoutFile, stderrFile);
-		int exitCode = sshCommandRunner.runCommandAndWait(runCommand);
-		if (exitCode!=expectedExitCode) {
-			sshCommandRunner.runCommandAndWait("echo 'Stdout from: "+command+"'; cat "+stdoutFile);	// cheap way to log stdoutFile
-			sshCommandRunner.runCommandAndWait("echo 'Stderr from: "+command+"'; cat "+stderrFile);	// cheap way to log stderrFile		
-		}
-		Assert.assertEquals(exitCode,expectedExitCode);
-		if (stdoutGrepExpression!=null) {
-			sshCommandRunner.runCommandAndWait("echo 'Stdout from: "+command+"'; cat "+stdoutFile);	// cheap way to log stdoutFile
-			Assert.assertEquals(RemoteFileTasks.grepFile(sshCommandRunner, stdoutFile, stdoutGrepExpression),0,"Stdout contains a match grepping for extended regular expression '"+stdoutGrepExpression+"' (0 means match)");
-		}
-		if (stderrGrepExpression!=null) {
-			sshCommandRunner.runCommandAndWait("echo 'Stderr from: "+command+"'; cat "+stderrFile);	// cheap way to log stderrFile
-			Assert.assertEquals(RemoteFileTasks.grepFile(sshCommandRunner, stderrFile, stderrGrepExpression),0,"Stderr contains a match grepping for extended regular expression '"+stderrGrepExpression+"' (0 means match)");
-		}
-	}
-//^ FIXME DELETEME... REPLACED BY runCommandAndAssert(SSHCommandRunner sshCommandRunner, String command, Integer exitCode, List<String> stdoutRegexs, List<String> stderrRegexs)
-
-	
 	
 	/**
 	 * Use the sshCommandRunner to execute the given command and verify that stdout and stderr
