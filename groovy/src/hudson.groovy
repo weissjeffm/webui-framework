@@ -58,6 +58,7 @@ else {
 }
 
 testng.run()
+makeJunitReport()
 !testng.hasFailure()
 /* ----- internal methods ----- */
 
@@ -71,7 +72,7 @@ def setOutputDir(){
 }
 def makeJunitReport(){
 	//generate junit report
-	junitDir = "test-output-junit"
+	junitDir = "${automationDir}/test-output-junit"
 	ant.mkdir(dir: junitDir)
 	ant.junitreport(todir: junitDir) {
 		fileset(dir: outputDir){
