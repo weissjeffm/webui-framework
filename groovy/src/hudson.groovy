@@ -66,7 +66,7 @@ makeJunitReport()
 def setOutputDir(){
 	//set the output dir
 	outputDir = System.getProperty("testng.outputdir", "$automationDir/test-output")
-	println("Setting testng output dir to " + outputDir)
+	println("Setting testng output dir to $outputDir")
 	testng.setOutputDirectory(outputDir)
 	
 }
