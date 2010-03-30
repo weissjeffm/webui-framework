@@ -96,7 +96,7 @@ public class SSHCommandRunner implements Runnable {
 		}
 	}
 	public void run() {
-		run(LogMessageUtil.fine());
+		run(LogMessageUtil.action());
 	}
 	
 	public Integer waitFor(){
@@ -114,18 +114,20 @@ public class SSHCommandRunner implements Runnable {
 		
 		int res = 0;
 		boolean timedOut = false;
+		int cond = ChannelCondition.EXIT_STATUS | ChannelCondition.EOF;
 		long startTime = System.currentTimeMillis();
 		while (!kill && 
-				((res & ChannelCondition.EXIT_STATUS) == 0)){
+				((res & cond) != cond)){
 			if (timeoutMS != null && System.currentTimeMillis() - startTime > timeoutMS) {
 				timedOut = true;
 				break;
 			}
-			res = session.waitForCondition(ChannelCondition.EXIT_STATUS, 1000);
+			res = session.waitForCondition(cond, 1000);
 		}
 		Integer exitCode = null;
 		if (! (kill || timedOut))
 			exitCode = session.getExitStatus();
+				
 		session.close();
 
 		kill=false;
@@ -243,7 +245,7 @@ public class SSHCommandRunner implements Runnable {
 		}
 		Integer exitCode = waitForWithTimeout(timeoutMS);
 		if (!liveLogOutput){
-			log.fine("Stderr: "+this.getStderr());
+			log.log(logRecord.getLevel(), "Stderr: "+this.getStderr());
 			log.log(logRecord.getLevel(), "Stdout: "+this.getStdout());
 		}
 		return exitCode;

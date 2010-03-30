@@ -2,6 +2,8 @@ package com.redhat.qe.tools;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
@@ -13,9 +15,6 @@ import com.trilead.ssh2.SCPClient;
 
 public class RemoteFileTasks {
 	protected static Logger log = Logger.getLogger(RemoteFileTasks.class.getName());
-	public static final String stdoutFile	= "/tmp/stdout";
-	public static final String stderrFile	= "/tmp/stderr";
-
 
 	/**
 	 * Create a file on a remote machine with given contents
@@ -161,36 +160,47 @@ public class RemoteFileTasks {
 	
 	
 	/**
-	 * Use the sshCommandRunner to execute the given command and verify the output
-	 * contains an expected grep expression.  Moreover, the stdout and stderr strings are
-	 * redirected to this.stdoutFile and this.stderrFile which you can subsequently
-	 * use for further post processing before the next call to runCommandAndAssert(...).
+	 * Use the sshCommandRunner to execute the given command and verify that stdout and stderr
+	 * contains one or more matches to an expected regex expression. <br>
+	 * Note: Assert.assertContainsMatch(...) will be used verify the output.  That means the regex
+	 * does not have to match the entire output to be a successful match.
+	 * @param sshCommandRunner
 	 * @param command - command to execute with options
-	 * @param stdoutGrepExpression - if !null, stdout is asserted to contain a match to this grep expression
-	 * @param stderrGrepExpression - if !null, stderr is asserted to contain a match to this grep expression
-	 * @param expectedExitCode - expected exit code from the command (usually 0 on success, non-0 on failure)
+	 * @param exitCode - expected exit code from the command (usually 0 on success, non-0 on failure)
+	 * @param stdoutRegexs - List of expected regex expressions.  Each regex is asserted  to match a substring from the command's stdout
+	 * @param stderrRegexs - List of expected regex expressions.  Each regex is asserted  to match a substring from the command's stderr
 	 * @author jsefler
 	 */
-	public static void runCommandAndAssert(SSHCommandRunner sshCommandRunner, String command, String stdoutGrepExpression, String stderrGrepExpression, int expectedExitCode) {
+	public static void runCommandAndAssert(SSHCommandRunner sshCommandRunner, String command, Integer exitCode, List<String> stdoutRegexs, List<String> stderrRegexs) {
 
-		//String runCommand = String.format("(%s | tee %s) 3>&1 1>&2 2>&3 | tee %s", command, stdoutFile, stderrFile);	// the problem with this is that the exit code is lost
-		String runCommand = String.format("%s 1>%s 2>%s", command, stdoutFile, stderrFile);
-		int exitCode = sshCommandRunner.runCommandAndWait(runCommand);
-		if (exitCode!=expectedExitCode) {
-			sshCommandRunner.runCommandAndWait("echo 'Stdout from: "+command+"'; cat "+stdoutFile);	// cheap way to log stdoutFile
-			sshCommandRunner.runCommandAndWait("echo 'Stderr from: "+command+"'; cat "+stderrFile);	// cheap way to log stderrFile		
+		Assert.assertEquals(sshCommandRunner.runCommandAndWait(command),exitCode);
+		if (stdoutRegexs!=null) {
+			for (String regex : stdoutRegexs) {
+				Assert.assertContainsMatch(sshCommandRunner.getStdout(),regex,"Stdout",String.format("Stdout from command '%s' contains a matches to regex '%s',",command,regex));
+			}
 		}
-		Assert.assertEquals(exitCode,expectedExitCode);
-		if (stdoutGrepExpression!=null) {
-			sshCommandRunner.runCommandAndWait("echo 'Stdout from: "+command+"'; cat "+stdoutFile);	// cheap way to log stdoutFile
-			Assert.assertEquals(RemoteFileTasks.grepFile(sshCommandRunner, stdoutFile, stdoutGrepExpression),0,"Stdout contains a match grepping for extended regular expression '"+stdoutGrepExpression+"' (0 means match)");
-		}
-		if (stderrGrepExpression!=null) {
-			sshCommandRunner.runCommandAndWait("echo 'Stderr from: "+command+"'; cat "+stderrFile);	// cheap way to log stderrFile
-			Assert.assertEquals(RemoteFileTasks.grepFile(sshCommandRunner, stderrFile, stderrGrepExpression),0,"Stderr contains a match grepping for extended regular expression '"+stderrGrepExpression+"' (0 means match)");
+		if (stderrRegexs!=null) {
+			for (String regex : stderrRegexs) {
+				Assert.assertContainsMatch(sshCommandRunner.getStderr(),regex,"Stderr",String.format("Stderr from command '%s' contains a matches to regex '%s',",command,regex));
+			}
 		}
 	}
-	
+	public static void runCommandAndAssert(SSHCommandRunner sshCommandRunner, String command, Integer exitCode, String stdoutRegex, String stderrRegex) {
+		List<String> stdoutRegexs = null;
+		if (stdoutRegex!=null) {
+			stdoutRegexs = new ArrayList<String>();	stdoutRegexs.add(stdoutRegex);
+		}
+		List<String> stderrRegexs = null;
+		if (stderrRegex!=null) {
+			stderrRegexs = new ArrayList<String>();	stderrRegexs.add(stderrRegex);
+		}
+		runCommandAndAssert(sshCommandRunner,command,exitCode,stdoutRegexs,stderrRegexs);
+	}
+
+	public static void runCommandAndAssert(SSHCommandRunner sshCommandRunner, String command, Integer exitCode) {
+		runCommandAndAssert(sshCommandRunner,command,exitCode,new ArrayList<String>(),new ArrayList<String>());
+	}
+
 	/**
 	 * Occasionally, you may need to run commands, expecting a nonzero exit code.
 	 * 
@@ -204,12 +214,12 @@ public class RemoteFileTasks {
 				0,
 				"Command returns nonzero error code: "+command);
 	}
-	
+
 	public static void runCommandExpectingNoTracebacks(SSHCommandRunner sshCommandRunner, String command){
 		int exitCode = sshCommandRunner.runCommandAndWait(command);
 		Assert.assertFalse(sshCommandRunner.getStdout().toLowerCase().contains("traceback"),
 				"Traceback string not in stdout");
 		Assert.assertFalse(sshCommandRunner.getStderr().toLowerCase().contains("traceback"),
-				"Traceback string not in stderr");
+				"Traceback string not in stderr");	
 	}
 }
