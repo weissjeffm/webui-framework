@@ -78,6 +78,7 @@ def makeJunitReport(){
 		fileset(dir: outputDir){
 			include(name: "**/*.xml")
 			exclude(name: "**/testng-failed.xml")
+			exclude(name: "xml/**")
 		}
 	}
 }
