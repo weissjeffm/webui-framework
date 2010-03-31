@@ -14,18 +14,18 @@ import java.util.logging.Logger;
  */
 public class SplitStreamLogger {
 
+	protected SSHCommandRunner runner=null;
 	protected InputStream stdout;
 	protected InputStream stderr;
 	protected static Logger log = Logger.getLogger(SplitStreamLogger.class.getName());
 
 	StreamLogger sl_out;
 	StreamLogger sl_err;
-	String remoteHost;
 	
 	public SplitStreamLogger(SSHCommandRunner runner){
+		this.runner = runner;
 		this.stdout = runner.getStdoutStream();
 		this.stderr = runner.getStdErrStream();
-		remoteHost = runner.getConnection().getHostname();
 	}
 	
 	public SplitStreamLogger(InputStream stdout, InputStream stderr){
@@ -34,8 +34,8 @@ public class SplitStreamLogger {
 	}
 	
 	public void log(Level outlevel, Level errlevel){
-		sl_out = new StreamLogger(stdout, outlevel);
-		sl_err = new StreamLogger(stderr, errlevel);
+		sl_out = new StreamLogger(stdout, outlevel,"Stdout");
+		sl_err = new StreamLogger(stderr, errlevel,"Stderr");
 		Thread out = new Thread(sl_out);
 		Thread err = new Thread(sl_err);
 		out.start();
@@ -55,11 +55,13 @@ public class SplitStreamLogger {
 	}
 		
 	class StreamLogger implements Runnable{
+		protected String name;
 		protected InputStream stream;
 		protected Level level;
 		protected StringBuffer sb = new StringBuffer();
-
-		public StreamLogger(InputStream stream, Level level){
+		
+		public StreamLogger(InputStream stream, Level level, String name){
+			this.name = name;
 			this.stream = stream;
 			this.level = level;
 		}
@@ -77,7 +79,8 @@ public class SplitStreamLogger {
 				while ((line = reader.readLine()) != null){
 					synchronized (sb) {
 						sb.append(line + "\n");
-						log.log(level, "[" + remoteHost + "]: " + line);
+						if (runner!=null)	log.log(level, String.format("[%s@%s] %s: %s", runner.user,runner.getConnection().getHostname(),name,line));
+						else				log.log(level, String.format("%s: %s", name,line));
 					}		
 				}
 			}

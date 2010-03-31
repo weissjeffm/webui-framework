@@ -241,12 +241,12 @@ public class SSHCommandRunner implements Runnable {
 		runCommand(command,logRecord);
 		if (liveLogOutput){
 			SplitStreamLogger logger = new SplitStreamLogger(this);
-			logger.log(logRecord.getLevel(), Level.SEVERE);
+			logger.log(logRecord.getLevel(), logRecord.getLevel());
 		}
 		Integer exitCode = waitForWithTimeout(timeoutMS);
 		if (!liveLogOutput){
-			log.log(logRecord.getLevel(), "Stderr: "+this.getStderr());
 			log.log(logRecord.getLevel(), "Stdout: "+this.getStdout());
+			log.log(logRecord.getLevel(), "Stderr: "+this.getStderr());
 		}
 		return exitCode;
 	}
