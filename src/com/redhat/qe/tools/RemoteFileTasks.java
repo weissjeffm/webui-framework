@@ -77,7 +77,7 @@ public class RemoteFileTasks {
 	 * @author jweiss
 	 */
 	public static void copyFile(Connection conn, String source, String dest, String mask) throws IOException  {
-		log.log(Level.INFO, "Copying " + source + " to " + dest + " on " + conn.getHostname(), LogMessageUtil.Style.Action);
+		log.log(Level.INFO, "Copying " + source + " to " + dest + " on " + conn.getHostname() + " with mask " + mask, LogMessageUtil.Style.Action);
 		SCPClient scp = new SCPClient(conn);
 		if (dest.endsWith("/")) {
 			scp.put(new String[] {source}, null, dest, "0755");
