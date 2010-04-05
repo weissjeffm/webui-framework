@@ -79,8 +79,10 @@ public class SplitStreamLogger {
 				while ((line = reader.readLine()) != null){
 					synchronized (sb) {
 						sb.append(line + "\n");
-						if (runner!=null)	log.log(level, String.format("[%s@%s] %s: %s", runner.user,runner.getConnection().getHostname(),name,line));
-						else				log.log(level, String.format("%s: %s", name,line));
+// The user@hostname information is already logged by the prior SSHCommandRunner call to run a command.  No need to log it again on every line of command output.  jsefler 4/5/2010
+//						if (runner!=null)	log.log(level, String.format("[%s@%s] %s: %s", runner.user,runner.getConnection().getHostname(),name,line));
+//						else				log.log(level, String.format("%s: %s", name,line));
+						log.log(level, String.format("%s: %s", name,line));
 					}		
 				}
 			}
