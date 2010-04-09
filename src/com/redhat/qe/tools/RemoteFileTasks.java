@@ -216,7 +216,11 @@ public class RemoteFileTasks {
 	}
 
 	public static void runCommandExpectingNoTracebacks(SSHCommandRunner sshCommandRunner, String command){
-		int exitCode = sshCommandRunner.runCommandAndWait(command);
+		runCommandExpectingNoTracebacks( sshCommandRunner, command,  null);
+	}
+	
+	public static void runCommandExpectingNoTracebacks(SSHCommandRunner sshCommandRunner, String command, Long timeout){
+		int exitCode = sshCommandRunner.runCommandAndWait(command,timeout);
 		Assert.assertFalse(sshCommandRunner.getStdout().toLowerCase().contains("traceback"),
 				"Traceback string not in stdout");
 		Assert.assertFalse(sshCommandRunner.getStderr().toLowerCase().contains("traceback"),
