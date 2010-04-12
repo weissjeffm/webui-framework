@@ -214,6 +214,23 @@ public class RemoteFileTasks {
 				0,
 				"Command returns nonzero error code: "+command);
 	}
+	
+	/**
+	 * Occasionally, you may need to run commands, expecting a nonzero exit code.
+	 * 
+	 * If you run into this situation, this is your method.
+	 * @param sshCommandRunner your preferred sshCommandRunner
+	 * @param command - command to execute with options
+	 * @param timeout - in milliseconds
+	 * @author whayutin
+	 */
+	public static void runCommandExpectingNonzeroExit(SSHCommandRunner sshCommandRunner, String command,Long timeout){
+		Assert.assertNotSame(sshCommandRunner.runCommandAndWait(command,timeout),
+				0,
+				"Command returns nonzero error code: "+command);
+	}
+	
+	
 
 	public static void runCommandExpectingNoTracebacks(SSHCommandRunner sshCommandRunner, String command){
 		runCommandExpectingNoTracebacks( sshCommandRunner, command,  null);
