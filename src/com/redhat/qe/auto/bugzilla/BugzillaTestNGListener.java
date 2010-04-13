@@ -2,6 +2,8 @@ package com.redhat.qe.auto.bugzilla;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -25,7 +27,7 @@ public class BugzillaTestNGListener implements IResultListener{
 	protected static Logger log = Logger.getLogger(BugzillaTestNGListener.class.getName());
 	protected static BzChecker bzChecker = null;
 	protected static Map<Object[], BzBugDependency> bzTests = new HashMap<Object[], BzBugDependency>();
-	
+	protected static HashSet<String> blockingBugs = new HashSet<String>();
 	@Override
 	public void onConfigurationFailure(ITestResult arg0) {
 	}
@@ -40,6 +42,14 @@ public class BugzillaTestNGListener implements IResultListener{
 
 	@Override
 	public void onFinish(ITestContext arg0) {
+		//https://bugzilla.redhat.com/buglist.cgi?bug_id=580127,538160,546399,546397,562302,544353,535788,535806,535576,556928,535327,568917,569563
+		StringBuffer sb = new StringBuffer("https://bugzilla.redhat.com/buglist.cgi?bug_id=");
+		Iterator<String> it = blockingBugs.iterator();
+		while (it.hasNext()){
+			sb.append(it.next());
+			if (it.hasNext()) sb.append(",");
+		}
+		log.log(Level.INFO, String.format("There were %d bugs blocking tests in this run: %s", blockingBugs.size(), sb.toString()));
 	}
 
 	@Override
@@ -110,6 +120,8 @@ public class BugzillaTestNGListener implements IResultListener{
 		
 		// throw a skip exception when the bug is open
 		if (isBugOpen) {
+			//add bug to list of blockers
+			blockingBugs.add(bugId);
 			throw new SkipException("This test is blocked by "+state.toString()+" Bugzilla bug '"+ summary +"'.  (https://bugzilla.redhat.com/show_bug.cgi?id="+bugId+")");
 		}
 		else log.log(Level.INFO, "This test was previously blocked by "+state.toString()+" Bugzilla bug '"+ summary +"'.  (https://bugzilla.redhat.com/show_bug.cgi?id="+bugId+")");
