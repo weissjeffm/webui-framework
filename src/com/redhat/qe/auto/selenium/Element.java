@@ -24,6 +24,7 @@ public class Element {
 	
 	public Element(LocatorStrategy locatorStrategy){
 		this.locatorStrategy = locatorStrategy;
+		this.locatorStrategyArgs = new String[]{};
 	}
 	public Element(LocatorStrategy locatorStrategy, String... locatorStrategyArgs){
 		this.locatorStrategy = locatorStrategy;
@@ -92,8 +93,10 @@ public class Element {
 		
 		if (locatorStrategy != null) {
 			sb.append(locatorStrategy.getName());
-			for (String arg:locatorStrategyArgs){
-				sb.append(" '" + arg + "'");
+			if (locatorStrategyArgs!=null) {
+				for (String arg:locatorStrategyArgs){
+					sb.append(" '" + arg + "'");
+				}
 			}
 			sb.append(". (");
 		}
