@@ -49,7 +49,7 @@ public class TestNGReportHandler extends Handler {
 	 */
 	protected static String tagAllUrls(String msg) {
 		//String regex = "(http[s]?://[\\w\\d:/.$~\\-_?=&%#]+)";
-		String regex = "((http[s]?|ftp|gopher|telnet|file|notes|ms-help):(//)[\\w\\d:/.$~\\-_?=&%#;]+)"; // ((http[s]?|ftp|gopher|telnet|file|notes|ms-help):(//)[\w\d:/.$~\-_?=&%#;]+)
+		String regex = "((http[s]?|ftp|gopher|telnet|file|notes|ms-help):(//)[\\w\\d:/.,$~\\-_?=&%#;]+)"; // ((http[s]?|ftp|gopher|telnet|file|notes|ms-help):(//)[\w\d:/.$~\-_?=&%#;]+)
 		return msg.replaceAll(regex, "<a href=$1>$1</a>");
 	}
 	
