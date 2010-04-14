@@ -180,7 +180,7 @@ public class Assert {
   static public void assertEquals(Object actual, Object expected, String message, boolean quiet) {
     if (  ((expected == null) && (actual == null)) || ((expected != null) && expected.equals(actual)) ) {
     	if (!quiet) {
-    		pass("Actual value of '" + actual + "' matches expected value" + (message == null ? "" : (": " + message)));
+    		pass("Actual value of '" + actual + "' matches expected value" + (message == null ? "." : (": " + message)));
     	}
     }
     else failNotEquals(actual, expected, message);

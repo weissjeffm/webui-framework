@@ -80,7 +80,7 @@ public class RemoteFileTasks {
 		log.log(Level.INFO, "Copying " + source + " to " + dest + " on " + conn.getHostname() + " with mask " + mask, LogMessageUtil.Style.Action);
 		SCPClient scp = new SCPClient(conn);
 		if (dest.endsWith("/")) {
-			scp.put(new String[] {source}, null, dest, "0755");
+			scp.put(new String[] {source}, null, dest, mask);
 		}
 		else {
 			String destDir = new File(dest).getParentFile().getCanonicalPath();
