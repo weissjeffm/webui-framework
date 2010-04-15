@@ -70,6 +70,8 @@ public class BugzillaTestNGListener implements IResultListener{
 
 	@Override
 	public void onTestStart(ITestResult result) {
+		if (result.getStatus() == ITestResult.SKIP) return;  //don't do anything if the test is skipping already
+		
 		/*
 		 * if the test is in a group "blockedByBug-xxxxxx" and the bug is not in
 		 * ON_QA, VERIFIED, RELEASE_PENDING, POST, CLOSED then skip it 
