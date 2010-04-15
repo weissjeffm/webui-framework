@@ -43,13 +43,15 @@ public class BugzillaTestNGListener implements IResultListener{
 	@Override
 	public void onFinish(ITestContext arg0) {
 		//https://bugzilla.redhat.com/buglist.cgi?bug_id=580127,538160,546399,546397,562302,544353,535788,535806,535576,556928,535327,568917,569563
-		StringBuffer sb = new StringBuffer("https://bugzilla.redhat.com/buglist.cgi?bug_id=");
-		Iterator<String> it = blockingBugs.iterator();
-		while (it.hasNext()){
-			sb.append(it.next());
-			if (it.hasNext()) sb.append(",");
+		if (blockingBugs.size() > 0) {
+			Iterator<String> it = blockingBugs.iterator();
+			StringBuffer sb = new StringBuffer("https://bugzilla.redhat.com/buglist.cgi?bug_id=");
+			while (it.hasNext()){
+				sb.append(it.next());
+				if (it.hasNext()) sb.append(",");
+			}
+			log.log(Level.INFO, String.format("There were %d bugs blocking tests in this run: %s", blockingBugs.size(), sb.toString()));
 		}
-		log.log(Level.INFO, String.format("There were %d bugs blocking tests in this run: %s", blockingBugs.size(), sb.toString()));
 	}
 
 	@Override
