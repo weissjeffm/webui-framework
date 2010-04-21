@@ -11,6 +11,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.xmlrpc.XmlRpcException;
+import org.testng.ISuite;
+import org.testng.ISuiteListener;
 import org.testng.ITestContext;
 import org.testng.ITestResult;
 import org.testng.SkipException;
@@ -20,7 +22,8 @@ import com.redhat.qe.auto.testng.BzBugDependency;
 import com.redhat.qe.auto.testng.BzChecker;
 import com.redhat.qe.auto.testopia.AbstractTestProcedureHandler;
 
-public class BugzillaTestNGListener implements IResultListener{
+public class BugzillaTestNGListener implements IResultListener, ISuiteListener{
+
 	private static final String AUTO_VERIFIED = "AutoVerified";
 	private static final String BLOCKED_BY_BUG = "blockedByBug";
 	private static final String VERIFIES_BUG = "verifiesBug";
@@ -42,16 +45,7 @@ public class BugzillaTestNGListener implements IResultListener{
 
 	@Override
 	public void onFinish(ITestContext arg0) {
-		//https://bugzilla.redhat.com/buglist.cgi?bug_id=580127,538160,546399,546397,562302,544353,535788,535806,535576,556928,535327,568917,569563
-		if (blockingBugs.size() > 0) {
-			Iterator<String> it = blockingBugs.iterator();
-			StringBuffer sb = new StringBuffer("https://bugzilla.redhat.com/buglist.cgi?bug_id=");
-			while (it.hasNext()){
-				sb.append(it.next());
-				if (it.hasNext()) sb.append(",");
-			}
-			log.log(Level.INFO, String.format("There were %d bugs blocking tests in this run: %s", blockingBugs.size(), sb.toString()));
-		}
+		
 	}
 
 	@Override
@@ -181,6 +175,27 @@ public class BugzillaTestNGListener implements IResultListener{
 			}
 		}
 	}
+	
+	@Override
+	public void onFinish(ISuite arg0) {
+		//https://bugzilla.redhat.com/buglist.cgi?bug_id=580127,538160,546399,546397,562302,544353,535788,535806,535576,556928,535327,568917,569563
+		if (blockingBugs.size() > 0) {
+			Iterator<String> it = blockingBugs.iterator();
+			StringBuffer sb = new StringBuffer("https://bugzilla.redhat.com/buglist.cgi?bug_id=");
+			while (it.hasNext()){
+				sb.append(it.next());
+				if (it.hasNext()) sb.append(",");
+			}
+			log.log(Level.INFO, String.format("There were %d bugs blocking tests in this run: %s", blockingBugs.size(), sb.toString()));
+		}
+	}
+
+	@Override
+	public void onStart(ISuite arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
 	
 	protected void verifyComment(String bugNumber, ITestResult result){
 		//first check if this has been tested already.  if so, do nothing
