@@ -4,14 +4,19 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.security.GeneralSecurityException;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 import org.apache.xmlrpc.XmlRpcException;
-import org.testng.SkipException;
 
 import testopia.API.Session;
 import testopia.API.TestopiaObject;
@@ -30,7 +35,13 @@ public class BzChecker {
 	
 	protected static Logger log = Logger.getLogger(BzChecker.class.getName());
 	protected Bug bug;
-	
+	protected static bzState[] defaultFixedBugStates = new bzState[] {
+			BzChecker.bzState.ON_QA,
+			BzChecker.bzState.VERIFIED,
+			BzChecker.bzState.RELEASE_PENDING,
+			BzChecker.bzState.POST,
+			BzChecker.bzState.CLOSED };
+	protected static bzState[] fixedBugStates;
 	protected static BzChecker instance = null;
 	
 	private BzChecker() {		
@@ -40,6 +51,14 @@ public class BzChecker {
 		bug = new Bug();
 		try {
 			bug.connectBZ();
+			
+			//read in custom "fixed" bug states if any
+			String fixedStates = System.getProperty("bugzilla.fixedBugStates");
+			if (fixedStates != null && fixedStates.length() >0) {
+				fixedBugStates = extractStates(fixedStates);
+			}
+			else fixedBugStates = defaultFixedBugStates;
+			
 		}catch(Exception e){
 			throw new RuntimeException("Could not initialize BzChecker." ,e);
 		}
@@ -132,19 +151,23 @@ public class BzChecker {
 	 * @throws XmlRpcException - when the bug state cannot be determined.
 	 */
 	public boolean isBugOpen(String bugId) throws XmlRpcException {
-		
 		BzChecker.bzState state = getBugState(bugId);
-		if (!(	state.equals(BzChecker.bzState.ON_QA) ||
-				state.equals(BzChecker.bzState.VERIFIED) ||
-				state.equals(BzChecker.bzState.RELEASE_PENDING) ||
-				state.equals(BzChecker.bzState.POST) ||
-				state.equals(BzChecker.bzState.CLOSED))) {
-			return true;
-		} else {
-			return false;
+		
+		for (bzState fixedBugState: fixedBugStates) {
+			if (state.equals(fixedBugState)) return false;
 		}
+		return true;
 	}
 	
+	
+	protected bzState[] extractStates(String states) {
+		String[] splits = states.split(",");
+		List<bzState> list = new ArrayList<bzState>();
+		for (String state: splits) {
+			list.add(bzState.valueOf(state.toUpperCase()));
+		}
+		return list.toArray(new bzState[] {});
+	}
 	public class Bug extends TestopiaObject{
 		private String BZ_URL;
 		//private StringAttribute bug_status = newStringAttribute("bug_status", null);
@@ -236,9 +259,14 @@ public class BzChecker {
 	
 	public static void main(String[] args) throws Exception{
 		try {
-			LogManager.getLogManager().readConfiguration(new FileInputStream("/home/weissj/workspace/automatjon/jon/log.properties"));
+			LogManager.getLogManager().readConfiguration(new FileInputStream("/home/jweiss/log.properties"));
 		}catch(Exception e){
 			System.err.println("Unable to read log config file.");
+		}
+		Properties p = new Properties();
+		p.load(new FileInputStream("/home/jweiss/automation.properties"));
+		for (Object key: p.keySet()){
+			System.setProperty((String)key, p.getProperty((String)(key)));
 		}
 		/*Bug myBug = new BzChecker().new Bug();
 		//List<>
@@ -262,6 +290,7 @@ public class BzChecker {
 		//checker.setBugState("470058", bzState.ON_QA);
 		//checker.addKeywords("470058", "AutoVerified");
 		log.info("Keywords: " + checker.getBugField("470058","keywords"));
+		log.info(""+checker.isBugOpen("571833"));
 		
 	}
 
