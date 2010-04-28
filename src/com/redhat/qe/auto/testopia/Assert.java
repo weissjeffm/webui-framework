@@ -63,7 +63,7 @@ public class Assert {
 	static public void assertContainsMatch(String actual, String regex, String where, String msg) {
 		if (msg==null) msg = String.format("%s'%s' contains matches to regex '%s'", where+" ", actual, regex);
 
-		Pattern pattern = Pattern.compile(regex, Pattern.MULTILINE | Pattern.DOTALL);
+		Pattern pattern = Pattern.compile(regex, Pattern.MULTILINE/* | Pattern.DOTALL*/);
 		Matcher matcher = pattern.matcher(actual);
 		Assert.assertTrue(matcher.find(),msg); 
 
