@@ -31,18 +31,14 @@ public class Assert {
     // hide constructor
   }
   
-	static public void assertMatch(String actual, String regex, String where, String msg) {
-		if (msg==null) msg = String.format("%s'%s' matches regex '%s'", where+" ", actual, regex);
+	static public void assertMatch(String actual, String regex, String descriptionOfText) {
+		String msg = String.format("%s'%s' matches regex '%s'", descriptionOfText+" ", actual, regex);
 		Pattern p = Pattern.compile(regex, Pattern.MULTILINE | Pattern.DOTALL);
 		assertTrue(p.matcher(actual).matches(), msg); 
 	}
 
-	static public void assertMatch(String actual, String regex, String where){
-		assertMatch(actual, regex, where, null);
-	}
-
 	static public void assertMatch(String actual, String regex){
-		assertMatch(actual, regex, ""); 
+		assertMatch(actual, regex, "Text "); 
 	}
 
 	static public void assertNoMatch(String actual, String regex, String where, String msg) {

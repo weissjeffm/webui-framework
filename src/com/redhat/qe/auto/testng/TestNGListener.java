@@ -97,7 +97,12 @@ public class TestNGListener implements IResultListener, ISuiteListener {
 	@Override
 	public void onConfigurationSkip(ITestResult result) {
 		Reporter.setCurrentTestResult(result);
-		log.log(Level.INFO, "Configuration skipped: " + result.getName(), LogMessageUtil.Style.Banner);
+		LogRecord l = new LogRecord(Level.INFO, "Configuration skipped: " + result.getName());
+		l.setParameters(new Object[] {LogMessageUtil.Style.Banner });
+		if (result.getThrowable() != null){
+			l.setThrown(result.getThrowable());
+		}
+		log.log(l);
 	}
 	
 	@Override

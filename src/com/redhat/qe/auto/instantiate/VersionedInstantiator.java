@@ -55,7 +55,12 @@ public class VersionedInstantiator {
 	
 	public Object getVersionedInstance(Class baseClass, Object... args) {
 		log.finer("Product version currently running is '" + runningVersion + "'.");
-		List<String> validVersions = getValidVersionList(packageMap.get(runningVersion));
+		String runningPkg = packageMap.get(runningVersion);
+		if (runningPkg == null) {
+			throw new RuntimeException("The product version " + runningVersion + " is not mapped to a source package." + 
+					" The instantiator needs to be created with a complete map of version numbers to package names.");
+		}
+		List<String> validVersions = getValidVersionList(runningPkg);
 		Iterator<String> it = validVersions.iterator();
 		Object o = null;
 		Class clazz = null;
@@ -147,15 +152,15 @@ public class VersionedInstantiator {
 		return name;
 	}
 	
-	protected List<String> getValidVersionList(String runningVersion){
+	protected List<String> getValidVersionList(String runningPackage){
 		List<String> list = new ArrayList<String>(packageMap.values());
 		List<String> newList = new ArrayList<String>();
 		int i =0;
 		try {
-			while(!list.get(i).equals(runningVersion)) i++;
+			while(!list.get(i).equals(runningPackage)) i++;
 		}
 		catch(IndexOutOfBoundsException ioobe){
-			throw new RuntimeException("The running product version '" + runningVersion +  "' was not found in the map!", ioobe);
+			throw new RuntimeException("The running product version '" + runningPackage +  "' was not found in the map!", ioobe);
 		}
 		newList = list.subList(0, i+1);
 		Collections.reverse(newList);
