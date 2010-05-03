@@ -60,7 +60,7 @@ public class TestNGListener implements IResultListener, ISuiteListener {
 	@Override
 	public void onTestSkipped(ITestResult result) {
 		Reporter.setCurrentTestResult(result);
-		if (result.getThrowable() instanceof SkipException){
+		if (result.getThrowable() != null){
 			LogRecord r= new LogRecord(Level.INFO,  "Skipping test " + result.getName() + ": " + result.getThrowable().getMessage());
 			r.setParameters(new Object[]{LogMessageUtil.Style.Banner});
 			log.log(r);
