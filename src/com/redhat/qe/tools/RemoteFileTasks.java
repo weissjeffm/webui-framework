@@ -148,7 +148,7 @@ public class RemoteFileTasks {
 	}
 	
 	public static int runAugeasCommand(SSHCommandRunner runner, String command, LogRecord logRecord){
-		return runCommandAndWait(runner, String.format("echo -e \"%s\nsave\n\" | augtool", command), logRecord);
+		return runCommandAndWait(runner, String.format("echo -e \"%s\nsave\" | augtool", command), logRecord);
 	}
 
 	public static int updateAugeasConfig(SSHCommandRunner runner, String augeusPath, String newValue){
