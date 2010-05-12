@@ -90,7 +90,10 @@ public class BugzillaTestNGListener implements IResultListener, ISuiteListener{
 		
 		if (params.length > 0 && params[0] instanceof BzBugDependency){
 			BzBugDependency bbb = (BzBugDependency)params[0];
-			lookupBugAndSkipIfOpen(bbb.getBugId());
+			String[] bugIds = bbb.getBugIds();
+			for (String bugId: bugIds) {
+				lookupBugAndSkipIfOpen(bugId);
+			}
 			//if we get here, we need to extract items into the list of params
 			log.finer("Extracting parameters: " + Arrays.deepToString(bbb.getParameters()));
 			result.setParameters(bbb.getParameters());
@@ -158,7 +161,7 @@ public class BugzillaTestNGListener implements IResultListener, ISuiteListener{
 						 * bzChecker.setBugState(number, BzChecker.bzState.VERIFIED);
 						 * log.info("Verified bug " + number);
 						 **/
-						verifyComment(number, result);
+						verifyComment(result, number);
 					}
 					else log.warning("Bug " + number + " has been verified, but it is in " + state + " state instead of ON_QA");
 				}
@@ -169,9 +172,9 @@ public class BugzillaTestNGListener implements IResultListener, ISuiteListener{
 		}
 		BzBugDependency blockedOrVerifiedBy = bzTests.get(result.getParameters());
 		if (blockedOrVerifiedBy != null){
-			log.warning("Test is now unblocked by bug " + blockedOrVerifiedBy.getBugId() + ".");			
+			log.warning("Test is now unblocked by bug " + blockedOrVerifiedBy.getBugIds() + ".");			
 			if (blockedOrVerifiedBy.getType().equals(BzBugDependency.Type.Verifies)){
-				verifyComment(blockedOrVerifiedBy.getBugId(), result);
+				verifyComment(result, blockedOrVerifiedBy.getBugIds());
 			}
 		}
 	}
@@ -197,25 +200,28 @@ public class BugzillaTestNGListener implements IResultListener, ISuiteListener{
 	}
 
 	
-	protected void verifyComment(String bugNumber, ITestResult result){
-		//first check if this has been tested already.  if so, do nothing
-		try {
-			if (bzChecker.getBugField(bugNumber, "keywords").toString().indexOf(AUTO_VERIFIED) != -1 ) {
-				log.info("Bug " + bugNumber + " already has the AutoVerified keyword.");
-				return;
+	protected void verifyComment(ITestResult result, String... bugNumbers){
+		for (String bugNumber: bugNumbers) {
+			//first check if this has been tested already.  if so, do nothing
+			try {
+				if (bzChecker.getBugField(bugNumber, "keywords").toString().indexOf(AUTO_VERIFIED) != -1 ) {
+					log.info("Bug " + bugNumber + " already has the AutoVerified keyword.");
+					return;
+				}
+			} catch(Exception e) {
+				log.log(Level.WARNING, "Could not determine if bug " + bugNumber + " has been marked AutoVerified yet.",e);
 			}
-		} catch(Exception e) {
-			log.log(Level.WARNING, "Could not determine if bug " + bugNumber + " has been marked AutoVerified yet.",e);
+			StringBuffer sb = new StringBuffer();
+			bzChecker.login(System.getProperty("bugzilla.login"), System.getProperty("bugzilla.password"));
+			sb.append("Verified by Automated Test " + result.getName() + " parameters: (" + Arrays.deepToString(result.getParameters()) + ")\n");
+			String log = AbstractTestProcedureHandler.getActiveLog();
+			if (log != null)
+			sb.append("Automation log:\n");
+			sb.append(AbstractTestProcedureHandler.getActiveLog());
+			bzChecker.addKeywords(bugNumber, AUTO_VERIFIED);
+			bzChecker.addComment(bugNumber, sb.toString());
 		}
-		StringBuffer sb = new StringBuffer();
-		bzChecker.login(System.getProperty("bugzilla.login"), System.getProperty("bugzilla.password"));
-		sb.append("Verified by Automated Test " + result.getName() + " parameters: (" + Arrays.deepToString(result.getParameters()) + ")\n");
-		String log = AbstractTestProcedureHandler.getActiveLog();
-		if (log != null)
-		sb.append("Automation log:\n");
-		sb.append(AbstractTestProcedureHandler.getActiveLog());
-		bzChecker.addKeywords(bugNumber, AUTO_VERIFIED);
-		bzChecker.addComment(bugNumber, sb.toString());
+		
 		bzTests.remove(result.getParameters());
 	}
 	

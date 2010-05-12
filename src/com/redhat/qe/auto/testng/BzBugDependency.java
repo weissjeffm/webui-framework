@@ -1,7 +1,7 @@
 package com.redhat.qe.auto.testng;
 
 public abstract class BzBugDependency {
-	protected String bugId = null;
+	protected String[] bugIds = null;
 	protected Object[] params = null;
 	protected Type type = null;
 	
@@ -16,8 +16,8 @@ public abstract class BzBugDependency {
 		}
 	};
 	
-	public String getBugId() {
-		return bugId;
+	public String[] getBugIds() {
+		return bugIds;
 	}
 	
 	public Object[] getParameters() {
@@ -34,7 +34,9 @@ public abstract class BzBugDependency {
 			if (param==null) param = "null";
 			sb.append(param.toString() + "," );
 		}
-		sb.append(" **" + type.getDescription() + " " + bugId);
+		sb.append(" **" + type.getDescription());
+		for (String bugId: bugIds )
+			sb.append(" " + bugId);
 		return sb.toString();
 	}
 

@@ -4,8 +4,13 @@ package com.redhat.qe.auto.testng;
 public class VerifiesBzBug extends BzBugDependency {
 
 	public VerifiesBzBug(String bugId, Object... params) {
+		this(new String[] {bugId}, params);
+	}
+
+	
+	public VerifiesBzBug(String[] bugIds, Object... params) {
 		super();
-		this.bugId = bugId;
+		this.bugIds = bugIds;
 		this.params = params;
 		this.type = Type.Verifies; 
 	}
