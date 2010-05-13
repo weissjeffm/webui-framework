@@ -3,6 +3,7 @@
  */
 package com.redhat.qe.auto.testopia;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -13,6 +14,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
+import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 import org.apache.xmlrpc.XmlRpcException;
@@ -464,10 +466,11 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 	}
 	
 	//FIXME this is just temporary for testing
-	private static void setLogConfig(){
-		Logger.getLogger("").setLevel(Level.ALL);
+	private static void setLogConfig() throws Exception{
+		/*Logger.getLogger("").setLevel(Level.ALL);
 		Logger.getLogger("").getHandlers()[0].setFormatter(new ConsoleLogFormatter());
-		Logger.getLogger("").getHandlers()[0].setLevel(Level.ALL);
+		Logger.getLogger("").getHandlers()[0].setLevel(Level.ALL);*/
+		LogManager.getLogManager().readConfiguration(new FileInputStream("/home/weissj/log.properties"));
 		log.info("Hello");
 	}
 	
@@ -516,15 +519,17 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 		//System.out.println(Arrays.deepToString(new Object[]{new Integer(4), "hi"}));
 		setLogConfig();
 		log.finer("Testing log setting.");
+		/*
 		String test = "component-Hi There";
 		System.out.println(test.split("component-")[1]);
 		
 		String pkg_class = "com.jboss.qa.jon20.tests.DynaGroups";
 		//log.finer("Got test class of " + pkg_class);
 		String[] pkgs=  pkg_class.split("\\.");
-		System.out.println("Found class" +  pkgs[pkgs.length-1]);
-		/*Session session = new Session(TESTOPIA_USER, TESTOPIA_PW, new URL(TESTOPIA_URL));
-		session.login();*/
+		System.out.println("Found class" +  pkgs[pkgs.length-1]);*/
+		TestopiaTestNGListener ttngl = new TestopiaTestNGListener();
+		//ttngl.session.
+		ttngl.loginTestopia();
 		/*//tc.makeTestCase(id, 0, 0, true, 271, "This is a test of the testy test", 0);
 		Map<String, Object> values = new HashMap<String, Object>();
 		values.put("summary", "dfdfg");

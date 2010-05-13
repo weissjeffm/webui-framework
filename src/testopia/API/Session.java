@@ -3,18 +3,29 @@ package testopia.API;
 import java.io.IOException;
 import java.net.URL;
 import java.security.GeneralSecurityException;
+import java.security.KeyStore;
+import java.security.Provider;
+import java.security.Security;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpState;
-import org.apache.commons.httpclient.contrib.ssl.EasySSLProtocolSocketFactory;
-import org.apache.commons.httpclient.protocol.Protocol;
-import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
+import javax.net.ssl.ManagerFactoryParameters;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactorySpi;
+import javax.net.ssl.X509TrustManager;
+
+import org.apache.http.client.params.AuthPolicy;
+import org.apache.http.impl.auth.NegotiateSchemeFactory;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.xmlrpc.XmlRpcException;
 import org.apache.xmlrpc.client.XmlRpcClient;
 import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
 import org.apache.xmlrpc.client.XmlRpcCommonsTransportFactory;
+
+
+
+
 
 
 
@@ -23,7 +34,7 @@ public class Session {
 	protected String userName;
 	protected String password;
 	protected URL url;
-	protected HttpState httpState = null;
+	//protected HttpState httpState = null;
 	protected Integer userid;
 	XmlRpcClient client;
 
@@ -43,13 +54,19 @@ public class Session {
 		client = new XmlRpcClient();
 		client.setConfig(config);
 
-		HttpClient httpClient = new HttpClient();
+		//org.apache.http.client.HttpClient httpClient = new org.apache.http.client.HttpClient();
+		DefaultHttpClient  httpClient = new DefaultHttpClient();
 		XmlRpcCommonsTransportFactory fac = new XmlRpcCommonsTransportFactory(
 				client);
-		fac.setHttpClient(httpClient);
+		
+		NegotiateSchemeFactory nsf = new NegotiateSchemeFactory();
+		httpClient.getAuthSchemes().register(AuthPolicy.SPNEGO, nsf);
+		
+		/*fac.setHttpClient(httpClient);
 		client.setTransportFactory(fac);
 		if (httpState == null)
-			httpState = httpClient.getState();
+			httpState = httpClient.getState();*/
+		
 	}
 	
 	public Object login()
@@ -81,12 +98,16 @@ public class Session {
 	throws GeneralSecurityException, IOException
 	{
 		try{
+			Security.addProvider(new MyProvider());
+			Security.setProperty(
+		            "ssl.TrustManagerFactory.algorithm",
+		            "TrustAllCertificates");
 			// Create a trust manager that does not validate certificate chains
 			//System.out.println("JHOME="+System.getProperty("java.home"));
 			//System.out.println("I have svn upped!!!!");
-			ProtocolSocketFactory sf = new EasySSLProtocolSocketFactory();
+			/*ProtocolSocketFactory sf = new EasySSLProtocolSocketFactory();
 			Protocol p = new Protocol("https", sf, 443);
-			Protocol.registerProtocol("https", p);
+			Protocol.registerProtocol("https", p);*/
 		}
 		catch(Exception e){
 			System.out.println("Couldn't trust all certificates, things may break...");
@@ -103,4 +124,37 @@ public class Session {
 	public Integer getUserid() {
 		return userid;
 	}
+	
+	 /* The following code disables certificate checking.
+	    * Use the Security.addProvider and Security.setProperty
+	    * calls to enable it */
+	   public static class MyProvider extends Provider {
+	      public MyProvider() {
+	         super( "MyProvider", 1.0, "Trust certificates" );
+	         put( "TrustManagerFactory.TrustAllCertificates",
+	            MyTrustManagerFactory.class.getName() );
+	      }
+	      protected static class MyTrustManagerFactory
+	            extends TrustManagerFactorySpi {
+	         public MyTrustManagerFactory() {}
+	         protected void engineInit( KeyStore keystore ) {}
+	         protected void engineInit(
+	            ManagerFactoryParameters mgrparams ) {}
+	         protected TrustManager[] engineGetTrustManagers() {
+	            return new TrustManager[] {
+	               new MyX509TrustManager()
+	            };
+	         }
+	      }
+	      protected static class MyX509TrustManager
+	            implements X509TrustManager {
+	         public void checkClientTrusted(
+	            X509Certificate[] chain, String authType) {}
+	         public void checkServerTrusted(
+	            X509Certificate[] chain, String authType) {}
+	         public X509Certificate[] getAcceptedIssuers() {
+	            return null;
+	         }
+	      }
+	   }
 }
