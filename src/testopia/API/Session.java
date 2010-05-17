@@ -15,9 +15,9 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactorySpi;
 import javax.net.ssl.X509TrustManager;
 
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.UsernamePasswordCredentials;
+import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.ws.commons.util.NamespaceContextImpl;
 import org.apache.xmlrpc.XmlRpcException;
 import org.apache.xmlrpc.client.XmlRpcClient;
@@ -29,14 +29,6 @@ import org.apache.xmlrpc.common.XmlRpcStreamConfig;
 import org.apache.xmlrpc.parser.NullParser;
 import org.apache.xmlrpc.parser.TypeParser;
 import org.apache.xmlrpc.serializer.NullSerializer;
-
-import sun.net.www.http.HttpClient;
-
-
-
-
-
-
 
 public class Session {
 
@@ -64,7 +56,7 @@ public class Session {
 		client.setConfig(config);
 
 		//org.apache.http.client.HttpClient httpClient = new org.apache.http.client.HttpClient();
-		DefaultHttpClient  httpClient = new DefaultHttpClient();
+		HttpClient  httpClient = new HttpClient();
 		XmlRpcCommonsTransportFactory fac = new XmlRpcCommonsTransportFactory(
 				client);
 
