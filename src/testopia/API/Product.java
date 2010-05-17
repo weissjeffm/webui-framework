@@ -20,6 +20,8 @@
  */
 package testopia.API;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.xmlrpc.XmlRpcException;
@@ -32,6 +34,7 @@ import org.apache.xmlrpc.XmlRpcException;
  */
 public class Product extends TestopiaObject{
 
+	protected String productName;
 
 	/**
 	 * 
@@ -50,6 +53,7 @@ public class Product extends TestopiaObject{
 	{
 		this.session = session;
 		this.id = newIntegerAttribute("id", null);
+		this.productName = productName;
 		this.getProductIDByName(productName);
 	}
 
@@ -80,8 +84,17 @@ public class Product extends TestopiaObject{
 		return (Integer)m.get("id");		 
 
 	}
+	
+	public int getVersionIDByName(String version)throws XmlRpcException {
+		Map params = new HashMap();
+		params.put("name", version);
+		List list = (List)callXmlrpcMethod("Product.filter_versions", params);
+		return (Integer)((Map) list.get(0)).get("id");
+	}
 
-
+	public String getName(){
+		return productName;
+	}
 	/**
 	 * 
 	 * @param id the ID of the product name that will be returned. Null is returned 

@@ -15,13 +15,22 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactorySpi;
 import javax.net.ssl.X509TrustManager;
 
-import org.apache.http.client.params.AuthPolicy;
-import org.apache.http.impl.auth.NegotiateSchemeFactory;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.ws.commons.util.NamespaceContextImpl;
 import org.apache.xmlrpc.XmlRpcException;
 import org.apache.xmlrpc.client.XmlRpcClient;
 import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
 import org.apache.xmlrpc.client.XmlRpcCommonsTransportFactory;
+import org.apache.xmlrpc.common.TypeFactoryImpl;
+import org.apache.xmlrpc.common.XmlRpcController;
+import org.apache.xmlrpc.common.XmlRpcStreamConfig;
+import org.apache.xmlrpc.parser.NullParser;
+import org.apache.xmlrpc.parser.TypeParser;
+import org.apache.xmlrpc.serializer.NullSerializer;
+
+import sun.net.www.http.HttpClient;
 
 
 
@@ -58,21 +67,29 @@ public class Session {
 		DefaultHttpClient  httpClient = new DefaultHttpClient();
 		XmlRpcCommonsTransportFactory fac = new XmlRpcCommonsTransportFactory(
 				client);
+
 		
-		NegotiateSchemeFactory nsf = new NegotiateSchemeFactory();
-		httpClient.getAuthSchemes().register(AuthPolicy.SPNEGO, nsf);
+		/*NegotiateSchemeFactory nsf = new NegotiateSchemeFactory();
+		httpClient.getAuthSchemes().register(AuthPolicy.SPNEGO, nsf);*/
 		
 		/*fac.setHttpClient(httpClient);
 		client.setTransportFactory(fac);
 		if (httpState == null)
 			httpState = httpClient.getState();*/
 		
+		fac.setHttpClient(httpClient);
+		
+		httpClient.getState().setCredentials(new AuthScope(url.getHost(), 443, null),
+				new UsernamePasswordCredentials(userName, password));
+		client.setTransportFactory(fac);
+		client.setTypeFactory(new MyTypeFactory(client));
+
 	}
 	
 	public Object login()
 	throws XmlRpcException, GeneralSecurityException, IOException
 	{
-		return login("User.login","login",userName,"password",password,"id");
+		return login("Auth.login","login",userName,"password",password,"id");
 	}
 	
 	
@@ -157,4 +174,28 @@ public class Session {
 	         }
 	      }
 	   }
+
+	public class MyTypeFactory extends TypeFactoryImpl {
+
+	    public MyTypeFactory(XmlRpcController pController) {
+	        super(pController);
+	    }
+
+	    @Override
+	    public TypeParser getParser(XmlRpcStreamConfig pConfig,
+	      NamespaceContextImpl pContext, String pURI, String pLocalName) {
+
+	        if ("".equals(pURI) && NullSerializer.NIL_TAG.equals(pLocalName)) {
+	            return new NullParser();
+	        } else {
+	            return super.getParser(pConfig, pContext, pURI, pLocalName);
+	        }
+	    }
+	}
+	
+	public static void main (String... args) throws Exception{
+		Session session = new Session("jweiss", "113!!#Two", new URL("https://tcms.engineering.redhat.com/xmlrpc/"));
+		session.login();
+	}
+
 }

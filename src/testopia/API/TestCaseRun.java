@@ -80,6 +80,15 @@ public class TestCaseRun extends TestopiaObject{
 
 	}
 	
+	public TestCaseRun(Session session,	int runID,  int caseID, int buildID) 
+	{
+		this.session = session;
+		this.caseID.set(caseID);
+		this.runID.set(runID); 
+		this.buildID.set(buildID); 
+		this.id = newIntegerAttribute("case_run_id", null);
+	}
+	
 	/**
 	 * Updates are not called when the .set is used. You must call update after all your sets
 	 * to push the changes over to testopia.

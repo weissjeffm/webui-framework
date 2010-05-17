@@ -23,8 +23,7 @@
 	<classpathentry exported="true" kind="lib" path="lib/testng-5.9-jdk15.jar" sourcepath="/testng5.9/src"/>
 	<classpathentry kind="lib" path="lib/velocity-1.6.2-dep.jar"/>
 	<classpathentry exported="true" kind="con" path="GROOVY_SUPPORT"/>
-	<classpathentry kind="lib" path="lib/httpclient-4.1-alpha1.jar"/>
-	<classpathentry kind="lib" path="lib/httpmime-4.1-alpha1.jar"/>
-	<classpathentry kind="lib" path="lib/httpcore-4.1-alpha1.jar"/>
+	<classpathentry kind="lib" path="lib/httpclient-4.0.1.jar"/>
+	<classpathentry kind="lib" path="lib/httpmime-4.0.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -37,7 +37,8 @@ public class TestRun extends TestopiaObject{
 
 	private StringAttribute notes = newStringAttribute("notes", null);
 	private IntegerAttribute status = newIntegerAttribute("status", null); 
-	private StringAttribute productVersion = newStringAttribute("product_version", null); 
+	private IntegerAttribute productVersion = newIntegerAttribute("product_version", null); 
+	private IntegerAttribute product = newIntegerAttribute("product", null); 
 	
 
 	/**
@@ -56,15 +57,25 @@ public class TestRun extends TestopiaObject{
 	}
 	public TestRun(Session session, Integer planID, Integer environment, Integer build, Integer manager, String summary)
 	{
+		this(session, planID, environment, build, manager, summary, null, null);
+	}
+	
+	public TestRun(Session session, Integer planID, Integer environment,  Integer build, Integer manager, String summary, Integer product, Integer productVersion) {
 		this.session = session;
 		this.planID.set(planID);
-		this.environment.set(environment);
+		if (environment != null) this.environment.set(environment);
 		this.build.set(build);
 		this.manager.set(manager);
 		this.summary.set(summary);
 		this.listMethod = "TestRun.list";
 		this.id = newIntegerAttribute("run_id", null);
-
+		this.product.set(product);
+		this.productVersion.set(productVersion);
+	}
+	
+	public TestRun(Session session, Integer planID, Integer build, Integer manager, String summary)
+	{
+		this(session, planID, null, build, manager, summary);
 	}
 	
 	/**

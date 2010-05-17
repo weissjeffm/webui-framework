@@ -32,11 +32,14 @@ import org.apache.xmlrpc.XmlRpcException;
  */
 public class TestPlan extends TestopiaObject{
 	
+	protected static final String LIST_METHOD = "TestPlan.filter";
+
+
 	private static final String PLAN_ID = "plan_id";
 
 
 	//inputed values to update a testPlan 
-	private IntegerAttribute productId = newIntegerAttribute("product_id", null);  	
+	private IntegerAttribute productId = newIntegerAttribute("product", null);  	
 	private IntegerAttribute type = newIntegerAttribute("type", null);  	
 	private BooleanAttribute isactive = newBooleanAttribute("isactive", null);  		 
 	private StringAttribute name = newStringAttribute("name", null);  	
@@ -56,13 +59,13 @@ public class TestPlan extends TestopiaObject{
 		this.session = session;
 		this.id = newIntegerAttribute(PLAN_ID, planID);
 
-		this.listMethod = "TestPlan.list";
+		this.listMethod = LIST_METHOD;
 	}
 	
 	public TestPlan(Session session, String plan) throws XmlRpcException
 	{
 		this.session = session;
-		this.listMethod = "TestPlan.list";
+		this.listMethod = LIST_METHOD;
 		this.id = newIntegerAttribute(PLAN_ID, null);
 
 		getPlanIDByName(plan);
@@ -72,10 +75,10 @@ public class TestPlan extends TestopiaObject{
 	public TestPlan(Session session, Integer product, String plan, String version) throws XmlRpcException
 	{
 		this.session = session;
-		this.listMethod = "TestPlan.list";
+		this.listMethod = LIST_METHOD;
 		this.id = newIntegerAttribute(PLAN_ID, null);
 		this.productId.set(product);
-		this.version.set(version);
+		this.defaultProductVersion.set(version);
 		this.name.set(plan);
 		getPlanIdByCurrentAttributes();
 

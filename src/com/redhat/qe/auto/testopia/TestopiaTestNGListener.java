@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
@@ -54,7 +55,7 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 	protected TestRun testrun;
 	protected Product product;
 	protected Build build;
-	protected Environment environment;
+	//protected Environment environment;
 	protected TestPlan testplan;
 	protected TestCase testcase;
 	protected Session session;
@@ -131,12 +132,7 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 		try {
 			loginTestopia();
 			retrieveContext();
-			testrun = new TestRun(session, 
-					testplan.getId(),
-					environment.getId(), 
-					build.getId(), 
-					session.getUserid(), 
-					testname);
+			testrun = new TestRun(session, testplan.getId(), build.getId(),	session.getUserid(), null, testname, product.getId(), product.getVersionIDByName(version));
 			testrun.create();
 			
 
@@ -362,12 +358,7 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 		log.finer("Testrun is " + testrun.getId());
 		
 			
-		testcaserun = new TestCaseRun(session,
-							  testrun.getId(),
-							  testcase.getId(),
-							  build.getId(),
-							  environment.getId());
-		
+		testcaserun = new TestCaseRun(session, testrun.getId(), testcase.getId(), build.getId());
 		testcaserun.setStatus(TestCaseRun.Statuses.RUNNING);
 		try {
 			testcaserun.create();
@@ -482,7 +473,8 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 		TESTOPIA_TESTRUN_TESTPLAN = System.getProperty("testopia.testrun.testplan");
 		log.finer("Logging in to testopia as " + TESTOPIA_USER);
 		session = new Session(TESTOPIA_USER, TESTOPIA_PW, new URL(TESTOPIA_URL));
-		session.login();
+		session.init();
+		//session.login();
 	}
 	
 	protected void retrieveContext() throws XmlRpcException{
@@ -500,8 +492,7 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 			build.create();
 			
 		}
-		environment = new Environment(session, product.getId(), null);
-		Integer envId = environment.getEnvironemntIDByName(environmentName);
+		
 		/*HashMap<String,Object> trinst= (HashMap<String, Object>) tr.create();
 		TestCaseRun tcr = new TestCaseRun(session,
 										  (Integer)trinst.get("run_id"),
@@ -517,7 +508,7 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 	public static void main(String args[]) throws Exception{
 		
 		//System.out.println(Arrays.deepToString(new Object[]{new Integer(4), "hi"}));
-		setLogConfig();
+		/*setLogConfig();
 		log.finer("Testing log setting.");
 		/*
 		String test = "component-Hi There";
@@ -527,9 +518,22 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 		//log.finer("Got test class of " + pkg_class);
 		String[] pkgs=  pkg_class.split("\\.");
 		System.out.println("Found class" +  pkgs[pkgs.length-1]);*/
-		TestopiaTestNGListener ttngl = new TestopiaTestNGListener();
-		//ttngl.session.
-		ttngl.loginTestopia();
+		LogManager.getLogManager().readConfiguration(new FileInputStream("/home/weissj/log.properties"));
+		TestopiaTestNGListener ttl = new TestopiaTestNGListener();
+		Properties p = new Properties();
+		p.load(new FileInputStream("/home/weissj/automation.properties"));
+		for (Object key: p.keySet()){
+			System.setProperty((String)key, p.getProperty((String)(key)));
+		}
+		
+		ttl.loginTestopia();
+		Product product = new Product(ttl.session, System.getProperty("testopia.testrun.product"));
+		TestPlan testplan = new TestPlan(ttl.session, product.getId(), System.getProperty("testopia.testrun.testplan"), "2.4.0-SNAPSHOT");
+
+		System.out.println(product.getId() + "\n" + testplan.getId());
+		/*Session session = new Session(TESTOPIA_USER, TESTOPIA_PW, new URL(TESTOPIA_URL));
+		session.login();*/
+
 		/*//tc.makeTestCase(id, 0, 0, true, 271, "This is a test of the testy test", 0);
 		Map<String, Object> values = new HashMap<String, Object>();
 		values.put("summary", "dfdfg");
