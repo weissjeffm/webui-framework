@@ -24,12 +24,12 @@ public abstract class TestopiaObject {
 			sb.append((param==params[params.length-1]?"":","));
 		}
 		log.finer("Calling xmlrpc method '" + methodName + "', with params (" + sb.toString() + ")");
-		Object o = (Object) session.getClient().execute(methodName, Arrays.asList(params));	
+		
+		Object o = (Object) session.getClient().execute(methodName, params);	
 		//print result for debug purposes
 		if (o instanceof Object[]){
-			for (Object obj: (Object[])o){
-				log.finer("Result of '" + methodName + "' = " + obj.toString());				
-			}
+			log.finer("Result of '" + methodName + "' = " + Arrays.deepToString((Object[])o) );				
+			
 		}
 		else log.finer("Result of '" + methodName + "' = " + o.toString());
 		return o;
@@ -93,6 +93,12 @@ public abstract class TestopiaObject {
 		for(Attribute attr: attributes){
 			String name = attr.getName();
 			Object val = remoteMap.get(name);
+			if (name.endsWith("_id")) {
+				if (val == null) val = remoteMap.get(name.split("_id")[0]);
+			}
+			else {
+				if (val == null) val = remoteMap.get(name + "_id");
+			}
 			if (val == null) 
 				try {
 					log.finer("Did not get attribute " + attr.getName() + " in response.");
@@ -100,9 +106,9 @@ public abstract class TestopiaObject {
 				catch(NullPointerException npe) {}
 			else {
 				attr.set(val);
-				
+				attr.clean();
 			}
-			attr.clean();
+			
 		}
 	}
 	/**

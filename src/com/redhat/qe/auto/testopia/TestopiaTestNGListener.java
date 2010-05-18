@@ -26,7 +26,6 @@ import org.testng.ITestResult;
 import org.testng.internal.IResultListener;
 
 import testopia.API.Build;
-import testopia.API.Environment;
 import testopia.API.Product;
 import testopia.API.Session;
 import testopia.API.TestCase;
@@ -34,8 +33,7 @@ import testopia.API.TestCaseRun;
 import testopia.API.TestPlan;
 import testopia.API.TestRun;
 import testopia.API.TestopiaException;
-
-import com.redhat.qe.auto.selenium.ConsoleLogFormatter;
+import testopia.API.User;
 
 /**
  * @author jweiss
@@ -132,7 +130,7 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 		try {
 			loginTestopia();
 			retrieveContext();
-			testrun = new TestRun(session, testplan.getId(), build.getId(),	session.getUserid(), null, testname, product.getId(), product.getVersionIDByName(version));
+			testrun = new TestRun(session, testplan.getId(), null, build.getId(), session.getUserid(), testname, product.getId(), product.getVersionIDByName(version));
 			testrun.create();
 			
 
@@ -474,6 +472,7 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 		log.finer("Logging in to testopia as " + TESTOPIA_USER);
 		session = new Session(TESTOPIA_USER, TESTOPIA_PW, new URL(TESTOPIA_URL));
 		session.init();
+		session.setUserid(new User(session).getId());
 		//session.login();
 	}
 	

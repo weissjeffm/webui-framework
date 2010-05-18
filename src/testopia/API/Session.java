@@ -134,6 +134,10 @@ public class Session {
 		return userid;
 	}
 	
+	public void setUserid(Integer userid){
+		this.userid = userid;
+	}
+	
 	 /* The following code disables certificate checking.
 	    * Use the Security.addProvider and Security.setProperty
 	    * calls to enable it */

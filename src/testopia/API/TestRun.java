@@ -29,7 +29,7 @@ public class TestRun extends TestopiaObject{
 	public enum Status{ Running, Stopped }
 	
 	//variables used to update the testRun
-	private IntegerAttribute planID = newIntegerAttribute("plan_id", null);  
+	private IntegerAttribute planID = newIntegerAttribute("plan", null);  
 	private IntegerAttribute environment = newIntegerAttribute("environment", null); 
 	private IntegerAttribute build = newIntegerAttribute("build", null);  
 	private IntegerAttribute manager = newIntegerAttribute("manager", null);  

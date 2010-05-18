@@ -20,12 +20,22 @@
   */
 package testopia.API;
 
+import java.util.Map;
+
 import org.apache.xmlrpc.XmlRpcException;
 
 /**
  * 
  * @author anelson, bstice
  * Retrives the user ID for the inputed email
+ */
+/**
+ * @author weissj
+ *
+ */
+/**
+ * @author weissj
+ *
  */
 public class User extends TestopiaObject{
 	 
@@ -42,19 +52,40 @@ public class User extends TestopiaObject{
 	 {
 		 this.user = login;
 		 this.session = session;
+		//this.id = newStringAttribute("id", login);
+
 	 }
 	
+	 
+	 /** Creates a user object for the currently logged in user
+	 * @param session
+	 */
+	public User(Session session){
+		 this.id = newIntegerAttribute("id", null);
+		 this.session = session;
+	}
 	 
 	 /**
 	 * @return the user_id for the specified login. Returns 0 if there is
 	 *         an error and the user ID cannot be returned
 	 * @throws XmlRpcException 
 	 */
-	 public int getAttributes() throws XmlRpcException
-	 {
-		 return (Integer)this.callXmlrpcMethod("User.lookup_id_by_login", user);
+	 public Integer getId() {
+		 try {
+			 Map map;
+		 
+			 if (user == null){
+				 map = (Map)this.callXmlrpcMethod("User.get_me");
+			 } else {	 
+				 map = (Map)this.callXmlrpcMethod("User.get", user);
+			 }
+			 return (Integer)map.get("id");			
+			 
+		 }
+		 catch (XmlRpcException xe){
+			 throw new RuntimeException("Could not retrieve user.", xe);
+		 }
 	 }
-
 
 	/**
 	 * @return the user

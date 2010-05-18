@@ -74,7 +74,7 @@ public class Product extends TestopiaObject{
 	public int getCategoryIDByName(String categoryName, String productName) throws XmlRpcException
 	{
 		Map m = (Map)callXmlrpcMethod("Product.check_category", categoryName, productName);
-		return (Integer)m.get("category_id");		 
+		return (Integer)m.get("id");		 
 
 	}
 
@@ -86,10 +86,18 @@ public class Product extends TestopiaObject{
 	}
 	
 	public int getVersionIDByName(String version)throws XmlRpcException {
-		Map params = new HashMap();
+		/*Map params = new HashMap();
 		params.put("name", version);
 		List list = (List)callXmlrpcMethod("Product.filter_versions", params);
-		return (Integer)((Map) list.get(0)).get("id");
+		return (Integer)((Map) list.get(0)).get("id");*/
+		
+		Object[] list = (Object[])callXmlrpcMethod("Product.get_versions", productName);
+		for (Object item: list){
+			Map map = (Map)item;
+			if (item != null & map.get("value").equals(version)) return (Integer)map.get("id");
+		}
+		throw new IllegalStateException("Version " + version + "was not found.");
+
 	}
 
 	public String getName(){

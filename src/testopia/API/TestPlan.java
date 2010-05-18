@@ -35,7 +35,7 @@ public class TestPlan extends TestopiaObject{
 	protected static final String LIST_METHOD = "TestPlan.filter";
 
 
-	private static final String PLAN_ID = "plan_id";
+	private static final String PLAN_ID = "plan";
 
 
 	//inputed values to update a testPlan 
