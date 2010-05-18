@@ -37,8 +37,8 @@ public class TestCaseRun extends TestopiaObject{
 	private StringAttribute status= this.newStringAttribute("status", null);
 	private IntegerAttribute assigneeID= this.newIntegerAttribute("assignee", null);
 
-	private IntegerAttribute caseID= this.newIntegerAttribute("case_id", null);
-	private IntegerAttribute runID= this.newIntegerAttribute("run_id", null);
+	private IntegerAttribute caseID= this.newIntegerAttribute("case", null);
+	private IntegerAttribute runID= this.newIntegerAttribute("run", null);
 	private IntegerAttribute buildID= this.newIntegerAttribute("build", null);
 	private IntegerAttribute environmentID= this.newIntegerAttribute("environment", null);
 

@@ -40,7 +40,7 @@ public class TestCase extends TestopiaObject{
 	private StringAttribute action= newStringAttribute("action", null);
 	private StringAttribute status= newStringAttribute("status", null);
 	private BooleanAttribute isAutomated = newBooleanAttribute("isautomated", null);
-	private StringAttribute plans= newStringAttribute("plans", null);
+	private StringAttribute plan= newStringAttribute("plan", null);
 	private IntegerAttribute productId = newIntegerAttribute("product", null);
 	private Product prod;
 	/** 
@@ -76,7 +76,7 @@ public class TestCase extends TestopiaObject{
 		this.categoryID.set(categoryId);
 		this.priority.set(getPriorityIdByName(priority));
 		this.summary.set(summary);
-		this.plans.set(Integer.toString(plan));
+		this.plan.set(Integer.toString(plan));
 		this.id = newIntegerAttribute("case_id", null);
 
 	}
@@ -91,7 +91,7 @@ public class TestCase extends TestopiaObject{
 
 		this.priority.set(getPriorityIdByName(priority));
 		this.summary.set(summary);
-		this.plans.set(Integer.toString(new TestPlan(session,plan).getId()));
+		this.plan.set(Integer.toString(new TestPlan(session,plan).getId()));
 	}
 
 	public TestCase(Session session, String caseStatusName, String category, String priority, String summary, String plan, String product, String version) throws XmlRpcException{
@@ -106,7 +106,7 @@ public class TestCase extends TestopiaObject{
 
 		this.priority.set(getPriorityIdByName(priority));
 		this.summary.set(summary);
-		this.plans.set(Integer.toString(new TestPlan(session, prod.getId(), plan, version).getId()));
+		this.plan.set(Integer.toString(new TestPlan(session, prod.getId(), plan, version).getId()));
 	}
 
 	
@@ -417,10 +417,10 @@ public class TestCase extends TestopiaObject{
 	}
 
 	public String getPlan() {
-		return plans.get();
+		return plan.get();
 	}
 
 	public void setPlan(Integer plans) {
-		this.plans.set(Integer.toString(plans));
+		this.plan.set(Integer.toString(plans));
 	}
 }

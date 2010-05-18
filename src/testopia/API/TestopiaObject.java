@@ -31,6 +31,9 @@ public abstract class TestopiaObject {
 			log.finer("Result of '" + methodName + "' = " + Arrays.deepToString((Object[])o) );				
 			
 		}
+		else if (o == null) {
+			log.finer("Result of '" + methodName + "' = nil");
+		}
 		else log.finer("Result of '" + methodName + "' = " + o.toString());
 		return o;
 	}

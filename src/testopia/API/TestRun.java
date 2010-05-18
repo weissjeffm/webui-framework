@@ -90,7 +90,7 @@ public class TestRun extends TestopiaObject{
 		if (id.get() == null) 
 			throw new TestopiaException("runID is null.");
 		//update the testRunCase
-		return super.update("TestRun.update");
+		return update("TestRun.update");
 	}
 	
 	/**
@@ -106,7 +106,7 @@ public class TestRun extends TestopiaObject{
 	
 	public void addCases(Integer... cases) throws XmlRpcException{
 		//Map params = new HashMap();
-		callXmlrpcMethod("TestRun.add_cases", (Object)cases);
+		callXmlrpcMethod("TestRun.add_cases", this.id.get(), (Object)cases);
 	}
 	
 	/*private int getNextTestRunID(Integer caseID) throws XmlRpcException{
@@ -189,6 +189,19 @@ public class TestRun extends TestopiaObject{
 	
 	public void setNotes(String notes) {
 		this.notes.set(notes);
+	}
+
+	protected Map<String,Object> update(String methodName) throws XmlRpcException{
+		Map<String,Object> outGoingMap =  getDirtyAttributesMap();
+		Object[] list;
+		Map<String,Object> map;
+		if (outGoingMap.size() > 0) {
+			list = (Object[])this.callXmlrpcMethod(methodName, id.get(), outGoingMap);
+			map = (Map<String,Object>)list[0];
+		}
+		else throw new TestopiaException("There are no locally updated fields to update via xmlrpc!");
+		this.syncAttributes(map);
+		return map;
 	}
 
 }
