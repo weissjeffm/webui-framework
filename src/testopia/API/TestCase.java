@@ -20,6 +20,7 @@
   */
 package testopia.API;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.xmlrpc.XmlRpcException;
@@ -28,19 +29,20 @@ public class TestCase extends TestopiaObject{
 		
 	//values for updates 
 	//private Integer defaultTesterID = null;
-	private StringAttribute priority = newStringAttribute("priority", null);
+	private IntegerAttribute priority = newIntegerAttribute("priority", null);
 	private IntegerAttribute categoryID= newIntegerAttribute("category", null);
 	private StringAttribute arguments= newStringAttribute("arguments", null);
 	private StringAttribute alias= newStringAttribute("alias", null); 
 	private StringAttribute requirement= newStringAttribute("requirement", null);
 	private StringAttribute script= newStringAttribute("script", null); 
-	private StringAttribute caseStatusID= newStringAttribute("case_status_id", null);
+	private IntegerAttribute caseStatusID= newIntegerAttribute("case_status", null);
 	private StringAttribute summary= newStringAttribute("summary", null);
 	private StringAttribute action= newStringAttribute("action", null);
 	private StringAttribute status= newStringAttribute("status", null);
 	private BooleanAttribute isAutomated = newBooleanAttribute("isautomated", null);
 	private StringAttribute plans= newStringAttribute("plans", null);
-	
+	private IntegerAttribute productId = newIntegerAttribute("product", null);
+	private Product prod;
 	/** 
 	 * @param userName your bugzilla/testopia userName
 	 * @param password your password 
@@ -61,45 +63,48 @@ public class TestCase extends TestopiaObject{
 		this.listMethod = "TestCase.list";
 		this.id = newIntegerAttribute("case_id", null);
 
-		get("TestCase.get", caseAlias);
+		Map params = new HashMap();
+		params.put("alias", caseAlias);
+		syncAttributes(getFirstMatching("TestCase.filter", params));
 		
 	}
 	
-	public TestCase(Session session, String status, Integer categoryId, String priority, String summary, Integer plan){
+	public TestCase(Session session, String caseStatusName, Integer categoryId, String priority, String summary, Integer plan)throws XmlRpcException{
 		this.session = session;
-		this.status.set(status);
+		this.caseStatusID.set(getStatusIdByName(caseStatusName));
 		this.listMethod = "TestCase.list";
 		this.categoryID.set(categoryId);
-		this.priority.set(priority);
+		this.priority.set(getPriorityIdByName(priority));
 		this.summary.set(summary);
 		this.plans.set(Integer.toString(plan));
 		this.id = newIntegerAttribute("case_id", null);
 
 	}
 	
-	public TestCase(Session session, String status, String category, String priority, String summary, String plan, String product) throws XmlRpcException{
+	public TestCase(Session session, String caseStatusName, String category, String priority, String summary, String plan, String product) throws XmlRpcException{
 		this.session = session;
 		this.listMethod = "TestCase.list";
-		this.status.set(status);
+		this.caseStatusID.set(getStatusIdByName(caseStatusName));
 		this.id = newIntegerAttribute("case_id", null);
 
 		this.categoryID.set(new Product(session).getCategoryIDByName(category, product));
 
-		this.priority.set(priority);
+		this.priority.set(getPriorityIdByName(priority));
 		this.summary.set(summary);
 		this.plans.set(Integer.toString(new TestPlan(session,plan).getId()));
 	}
 
-	public TestCase(Session session, String status, String category, String priority, String summary, String plan, String product, String version) throws XmlRpcException{
+	public TestCase(Session session, String caseStatusName, String category, String priority, String summary, String plan, String product, String version) throws XmlRpcException{
 		this.session = session;
 		this.listMethod = "TestCase.list";
-		this.status.set(status);
+		this.caseStatusID.set(getStatusIdByName(caseStatusName));
 		this.id = newIntegerAttribute("case_id", null);
 
-		Product prod = new Product(session, product);
+		prod = new Product(session, product);
+		this.productId.set(prod.getId());
 		this.categoryID.set(prod.getCategoryIDByName(category, product));
 
-		this.priority.set(priority);
+		this.priority.set(getPriorityIdByName(priority));
 		this.summary.set(summary);
 		this.plans.set(Integer.toString(new TestPlan(session, prod.getId(), plan, version).getId()));
 	}
@@ -126,7 +131,7 @@ public class TestCase extends TestopiaObject{
 	 * 
 	 * @param caseStatusID String - the new case Status ID
 	 */
-	public void setCaseStatusID(String caseStatusID) {
+	public void setCaseStatusID(Integer caseStatusID) {
 		this.caseStatusID.set(caseStatusID);
 	}
 
@@ -158,9 +163,10 @@ public class TestCase extends TestopiaObject{
 	/**
 	 * 
 	 * @param priorityID - int the new priorityID
+	 * @throws XmlRpcException 
 	 */
-	public void setPriorityID(String priorityID) {
-		this.priority.set(priorityID);
+	public void setPriorityID(String priorityID) throws XmlRpcException {
+		this.priority.set(getPriorityIdByName(priorityID));
 	}
 	
 	/**
@@ -344,18 +350,20 @@ public class TestCase extends TestopiaObject{
 		return get("TestCase.get", id.get());	
 	}
 		
-	public int getPriorityIdByName(String categoryName) throws XmlRpcException
+	public int getPriorityIdByName(String priorityName) throws XmlRpcException
 	{
 		//get the result
-		return (Integer) this.callXmlrpcMethod("TestCase.lookup_priority_id_by_name",
-												  categoryName);	
+		Map m = (Map) this.callXmlrpcMethod("TestCase.check_priority",
+												  priorityName);	
+		return (Integer)m.get("id");
 	}
 	
-	public int getStatusIdByName(String categoryName) throws XmlRpcException
+	public int getStatusIdByName(String caseStatusName) throws XmlRpcException
 	{
 		//get the result
-		return (Integer) this.callXmlrpcMethod("TestCase.lookup_status_id_by_name",
-												  categoryName);	
+		Map m = (Map) this.callXmlrpcMethod("TestCase.check_case_status",
+				caseStatusName);	
+		return (Integer)m.get("id");
 	}
 	
 	 /**
@@ -377,7 +385,7 @@ public class TestCase extends TestopiaObject{
 	public Boolean getIsAutomated() {
 		return isAutomated.get();
 	}
-	public String getPriorityID() {
+	public Integer getPriorityID() {
 		return priority.get();
 	}
 	public Integer getCategoryID() {
@@ -395,7 +403,7 @@ public class TestCase extends TestopiaObject{
 	public String getScript() {
 		return script.get();
 	}
-	public String getCaseStatusID() {
+	public Integer getCaseStatusID() {
 		return caseStatusID.get();
 	}
 	public String getSummary() {

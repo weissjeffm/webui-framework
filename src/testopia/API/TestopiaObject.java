@@ -165,6 +165,11 @@ public abstract class TestopiaObject {
 		return map;
 	}
     
+    protected Map<String,Object> getFirstMatching(String methodName, Map params) throws XmlRpcException{		
+		Object firstMatch = ((Object[])this.callXmlrpcMethod(methodName, params))[0];
+		return (Map<String,Object>)firstMatch;
+	}
+    
     public Integer getId(){
     	return id.get();
     }
