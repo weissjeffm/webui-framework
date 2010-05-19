@@ -180,7 +180,7 @@ public class TestRun extends TestopiaObject{
 		return status.get()==1 ? Status.Running : Status.Stopped;
 	}
 	public void setStatus(Status status) {
-		this.status.set(status.equals(Status.Running) ? 1:0);
+		this.status.set(status.equals(Status.Running) ? 0:1);
 	}
 	
 	public String getNotes() {
