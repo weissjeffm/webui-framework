@@ -65,7 +65,7 @@ public class Build extends TestopiaObject{
 		if (productId.get() == null) 
 			throw new TestopiaException("productId is null.");
 		//update the testRunCase
-		return super.update("Build.update");
+		return super.updateById("Build.update");
 	}
 
 	/**

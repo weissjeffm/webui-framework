@@ -328,8 +328,10 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 			testcase = new TestCase(session, alias);
 			//FIXME temporary to fix testcase names
 			testcase.setSummary(summary);
-			String args =Arrays.deepToString(result.getParameters()); 
-			testcase.setArguments(args);
+			if (result.getParameters() != null && result.getParameters().length > 0) {
+				String args =Arrays.deepToString(result.getParameters()); 
+				testcase.setArguments(args);
+			}
 			testcase.update();
 			
 		}catch(Exception e){
@@ -389,7 +391,8 @@ public class TestopiaTestNGListener implements IResultListener, ISuiteListener {
 
 				testcase.update();
 			}catch(Exception e){
-				throw new TestopiaException(e);
+				//throw new TestopiaException(e);
+				log.log(Level.WARNING, "Could not update testopia with successful status." + result.getName(), e);
 			}
 		}
 		

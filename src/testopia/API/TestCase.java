@@ -311,15 +311,15 @@ public class TestCase extends TestopiaObject{
 		if (id.get() == null) 
 			throw new TestopiaException("caseID is null.");
 		//update the testRunCase
-		return super.update("TestCase.update");
+		return super.updateById("TestCase.update");
 	}
 	
-	public Integer storeText() throws TestopiaException, XmlRpcException
+	public void storeText() throws TestopiaException, XmlRpcException
 	{
 		if (id.get() == null) 
 			throw new TestopiaException("caseID is null.");
 		//update the testRunCase
-		return (Integer)super.callXmlrpcMethod("TestCase.store_text", getId(), getAction(), "", "", "");
+		super.callXmlrpcMethod("TestCase.store_text", getId(), getAction(), "", "", "");
 	}
 	
 	/**

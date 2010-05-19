@@ -142,11 +142,16 @@ public abstract class TestopiaObject {
 			attribute.clean();
 	}
 	
-	protected Map<String,Object> update(String methodName) throws XmlRpcException{
+	protected Map<String,Object> updateById(String methodName) throws XmlRpcException{
 		Map<String,Object> outGoingMap =  getDirtyAttributesMap();
 		Map<String,Object> map;
-		if (outGoingMap.size() > 0)
-			map = (Map<String,Object>)this.callXmlrpcMethod(methodName, id.get(), outGoingMap);
+		if (outGoingMap.size() > 0) {
+			Object o = this.callXmlrpcMethod(methodName, id.get(), outGoingMap);
+			if (o instanceof Object[]) {
+				map = (Map<String,Object>)((Object[]) o)[0]; //sometimes map is wrapped in an array
+			}
+			else map = (Map<String,Object>)o;
+		}
 		else throw new TestopiaException("There are no locally updated fields to update via xmlrpc!");
 		this.syncAttributes(map);
 		return map;

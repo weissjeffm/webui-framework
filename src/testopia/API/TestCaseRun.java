@@ -20,6 +20,7 @@
   */
 package testopia.API;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.xmlrpc.XmlRpcException;
@@ -34,7 +35,7 @@ public class TestCaseRun extends TestopiaObject{
 			
 	//stores the updated value until it's pushed to testopia with an update
 	private StringAttribute notes = this.newStringAttribute("notes", null);
-	private StringAttribute status= this.newStringAttribute("status", null);
+	private IntegerAttribute status= this.newIntegerAttribute("case_run_status", null);
 	private IntegerAttribute assigneeID= this.newIntegerAttribute("assignee", null);
 
 	private IntegerAttribute caseID= this.newIntegerAttribute("case", null);
@@ -42,7 +43,7 @@ public class TestCaseRun extends TestopiaObject{
 	private IntegerAttribute buildID= this.newIntegerAttribute("build", null);
 	private IntegerAttribute environmentID= this.newIntegerAttribute("environment", null);
 
-
+	private Map<Statuses, Integer> statuses = new HashMap<Statuses, Integer>();
 	
 
 	/**
@@ -101,7 +102,7 @@ public class TestCaseRun extends TestopiaObject{
 		if (runID.get() == null) 
 			throw new TestopiaException("runID is null.");
 		//update the testRunCase
-		return super.update("TestCaseRun.update");
+		return super.updateById("TestCaseRun.update");
 	}
 	
 	/**
@@ -146,10 +147,22 @@ public class TestCaseRun extends TestopiaObject{
 	/**
 	 * This is used to change the testCaseRun status (2 for pass, 3 for fail)
 	 * @param status int - the status you want to change the testCaseRun to
+	 * @throws XmlRpcException 
 	 */
-	public void setStatus(Statuses status)
+	public void setStatus(Statuses status) 
 	{
-		this.status.set(status.toString());
+		Integer iStat = statuses.get(status);
+		if (iStat == null) {
+			Map map;
+			try {
+				map = (Map) callXmlrpcMethod("TestCaseRun.check_case_run_status", status.toString().toLowerCase());
+			}catch(XmlRpcException xe) {
+				throw new TestopiaException("Could not retrieve status id for " + status, xe);
+			}
+			iStat = (Integer)map.get("id");
+			statuses.put(status, iStat); //cache the value so we don't have to keep asking the remote end
+		}
+		this.status.set(iStat);
 	}
 	
 
@@ -198,13 +211,6 @@ public class TestCaseRun extends TestopiaObject{
 	 */
 	public String getNotes() {
 		return notes.get();
-	}
-
-	/**
-	 * @return the caseStatus
-	 */
-	public Statuses getStatus() {
-		return Statuses.valueOf(status.get());
 	}
 
 	/**

@@ -61,7 +61,7 @@ public class Environment extends TestopiaObject{
 	public Map<String,Object> update() throws TestopiaException, XmlRpcException
 	{
 		//update the testRunCase
-		return super.update("Environment.update");
+		return super.updateById("Environment.update");
 	}
 
 	/**
