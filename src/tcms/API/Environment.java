@@ -19,7 +19,7 @@
  * 				Jason Sabin <jsabin@novell.com>
  *
  */
-package testopia.API;
+package tcms.API;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -1,4 +1,4 @@
-package com.redhat.qe.auto.testopia;
+package com.redhat.qe.auto.tcms;
 
 import java.util.ArrayList;
 import java.util.Arrays;

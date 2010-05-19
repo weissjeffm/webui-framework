@@ -1,4 +1,4 @@
-package testopia.API;
+package tcms.API;
 
 public class TestopiaException extends RuntimeException {
 	

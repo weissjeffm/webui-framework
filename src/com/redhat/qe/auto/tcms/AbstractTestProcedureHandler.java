@@ -1,4 +1,4 @@
-package com.redhat.qe.auto.testopia;
+package com.redhat.qe.auto.tcms;
 
 import java.util.logging.Handler;
 import java.util.logging.Logger;

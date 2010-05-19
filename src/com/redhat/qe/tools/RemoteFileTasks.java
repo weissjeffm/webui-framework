@@ -8,8 +8,8 @@ import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
+import com.redhat.qe.auto.tcms.Assert;
 import com.redhat.qe.auto.testng.LogMessageUtil;
-import com.redhat.qe.auto.testopia.Assert;
 import com.trilead.ssh2.Connection;
 import com.trilead.ssh2.SCPClient;
 

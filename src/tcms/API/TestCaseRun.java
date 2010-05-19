@@ -18,7 +18,7 @@
   * Contributor(s): Andrew Nelson <anelson@novell.com>
   *					Jason Sabin <jsabin@novell.com>
   */
-package testopia.API;
+package tcms.API;
 
 import java.util.HashMap;
 import java.util.Map;

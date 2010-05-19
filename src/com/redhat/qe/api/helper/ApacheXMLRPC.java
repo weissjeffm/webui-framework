@@ -2,7 +2,7 @@ package com.redhat.qe.api.helper;
 
 import java.net.URL;
 
-import testopia.API.Session;
+import tcms.API.Session;
 
 public class ApacheXMLRPC {
 	

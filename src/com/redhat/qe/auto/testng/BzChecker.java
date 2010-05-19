@@ -18,8 +18,8 @@ import java.util.logging.Logger;
 
 import org.apache.xmlrpc.XmlRpcException;
 
-import testopia.API.Session;
-import testopia.API.TestopiaObject;
+import tcms.API.Session;
+import tcms.API.TestopiaObject;
 
 /**
  * Example code to retrieve a bugzilla bug's status, given its ID.  This is for future use with testng, 

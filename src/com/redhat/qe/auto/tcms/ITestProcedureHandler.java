@@ -1,4 +1,4 @@
-package com.redhat.qe.auto.testopia;
+package com.redhat.qe.auto.tcms;
 
 public interface ITestProcedureHandler {
 	
