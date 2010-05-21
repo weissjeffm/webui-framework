@@ -56,6 +56,17 @@ public class Assert {
 	}
 	
 	
+	/**
+	 * Assert that the actual string (which may contain multiple lines) matches the specified regex.
+	 * Because a MULTILINE pattern is compiled on the actual string, the ^ and $ regex characters
+	 * will match against individual lines in the actual string.  Therefore, if your regex uses ^ and/or $,
+	 * multiple matches may result and will get logged as such.
+	 * @param actual
+	 * @param regex
+	 * @param where
+	 * @param msg
+	 * @author jsefler
+	 */
 	static public void assertContainsMatch(String actual, String regex, String where, String msg) {
 		if (msg==null) msg = String.format("%s'%s' contains matches to regex '%s'", where+" ", actual, regex);
 
@@ -79,7 +90,7 @@ public class Assert {
 
 	static public void assertContainsNoMatch(String actual, String regex, String where, String msg) {
 		if (msg==null) msg = String.format("%s'%s' does NOT match regex '%s'", where+" ", actual, regex);
-		Pattern pattern = Pattern.compile(regex, Pattern.MULTILINE | Pattern.DOTALL);
+		Pattern pattern = Pattern.compile(regex, Pattern.MULTILINE/* | Pattern.DOTALL*/);
 		assertFalse(pattern.matcher(actual).find(), msg);
 	}
 
