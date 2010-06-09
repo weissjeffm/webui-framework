@@ -111,7 +111,7 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 	@Override
 	public String getValue(String locator) {
 		highlight(locator);
-		return getValue(locator);
+		return super.getValue(locator);
 	}
 
 	public void clickAndWait(String locator) {
