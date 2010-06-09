@@ -159,6 +159,15 @@ public class RemoteFileTasks {
 	}
 	
 	
+	public static void runCommandAndAssert(SSHCommandRunner sshCommandRunner, String command, Integer exitCode, List<String> stdoutRegexs, List<String> stderrRegexs) {
+		List<Integer> exitCodes = null;
+		if (exitCode != null) {
+			exitCodes = new ArrayList<Integer>();
+			exitCodes.add(exitCode);
+		}
+		runCommandAndAssert(sshCommandRunner, command, exitCodes, stdoutRegexs, stderrRegexs);
+	}
+	
 	/**
 	 * Use the sshCommandRunner to execute the given command and verify that stdout and stderr
 	 * contains one or more matches to an expected regex expression. <br>
@@ -166,14 +175,16 @@ public class RemoteFileTasks {
 	 * does not have to match the entire output to be a successful match.
 	 * @param sshCommandRunner
 	 * @param command - command to execute with options
-	 * @param exitCode - expected exit code from the command (usually 0 on success, non-0 on failure)
+	 * @param validExitCodes - a list of expected exit codes from the command (usually 0 on success, non-0 on failure).  If the actual exit code matches 
+	 * any code in this list, the assert passes.
 	 * @param stdoutRegexs - List of expected regex expressions.  Each regex is asserted  to match a substring from the command's stdout
 	 * @param stderrRegexs - List of expected regex expressions.  Each regex is asserted  to match a substring from the command's stderr
 	 * @author jsefler
 	 */
-	public static void runCommandAndAssert(SSHCommandRunner sshCommandRunner, String command, Integer exitCode, List<String> stdoutRegexs, List<String> stderrRegexs) {
+	public static void runCommandAndAssert(SSHCommandRunner sshCommandRunner, String command, List<Integer> validExitCodes, List<String> stdoutRegexs, List<String> stderrRegexs) {
 
-		Assert.assertEquals(sshCommandRunner.runCommandAndWait(command),exitCode);
+		Assert.assertContains(validExitCodes, new Integer(sshCommandRunner.runCommandAndWait(command)));
+		
 		if (stdoutRegexs!=null) {
 			for (String regex : stdoutRegexs) {
 				Assert.assertContainsMatch(sshCommandRunner.getStdout(),regex,"Stdout",String.format("Stdout from command '%s' contains a matches to regex '%s',",command,regex));
