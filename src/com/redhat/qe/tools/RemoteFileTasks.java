@@ -3,6 +3,7 @@ package com.redhat.qe.tools;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
@@ -208,8 +209,8 @@ public class RemoteFileTasks {
 		runCommandAndAssert(sshCommandRunner,command,exitCode,stdoutRegexs,stderrRegexs);
 	}
 
-	public static void runCommandAndAssert(SSHCommandRunner sshCommandRunner, String command, Integer exitCode) {
-		runCommandAndAssert(sshCommandRunner,command,exitCode,new ArrayList<String>(),new ArrayList<String>());
+	public static void runCommandAndAssert(SSHCommandRunner sshCommandRunner, String command, Integer... exitCodes) {
+		runCommandAndAssert(sshCommandRunner,command,Arrays.asList(exitCodes),new ArrayList<String>(),new ArrayList<String>());
 	}
 
 	/**
