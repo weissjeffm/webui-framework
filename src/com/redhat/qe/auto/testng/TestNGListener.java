@@ -110,7 +110,7 @@ public class TestNGListener implements IResultListener, ISuiteListener {
 	@Override
 	public void onConfigurationSuccess(ITestResult result) {
 		Reporter.setCurrentTestResult(result);
-		log.log(Level.FINE, "Configuration completed: " + result.getName(), LogMessageUtil.Style.Banner);
+		log.log(Level.FINE, "Configuration completed: " + result.getClass().getName() + "." + result.getName() , LogMessageUtil.Style.Banner);
 	}
 
 	@Override
