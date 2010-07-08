@@ -188,12 +188,12 @@ public class RemoteFileTasks {
 		
 		if (stdoutRegexs!=null) {
 			for (String regex : stdoutRegexs) {
-				Assert.assertContainsMatch(sshCommandRunner.getStdout(),regex,"Stdout",String.format("Stdout from command '%s' contains a matches to regex '%s',",command,regex));
+				Assert.assertContainsMatch(sshCommandRunner.getStdout(),regex,"Stdout",String.format("Stdout from command '%s' contains matches to regex '%s',",command,regex));
 			}
 		}
 		if (stderrRegexs!=null) {
 			for (String regex : stderrRegexs) {
-				Assert.assertContainsMatch(sshCommandRunner.getStderr(),regex,"Stderr",String.format("Stderr from command '%s' contains a matches to regex '%s',",command,regex));
+				Assert.assertContainsMatch(sshCommandRunner.getStderr(),regex,"Stderr",String.format("Stderr from command '%s' contains matches to regex '%s',",command,regex));
 			}
 		}
 	}
