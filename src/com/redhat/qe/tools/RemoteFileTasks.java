@@ -222,9 +222,7 @@ public class RemoteFileTasks {
 	 * @author ssalevan
 	 */
 	public static void runCommandExpectingNonzeroExit(SSHCommandRunner sshCommandRunner, String command){
-		Assert.assertNotSame(sshCommandRunner.runCommandAndWait(command),
-				0,
-				"Command returns nonzero error code: "+command);
+		runCommandExpectingNonzeroExit(sshCommandRunner, command, null);
 	}
 	
 	/**
@@ -236,10 +234,13 @@ public class RemoteFileTasks {
 	 * @param timeout - in milliseconds
 	 * @author whayutin
 	 */
-	public static void runCommandExpectingNonzeroExit(SSHCommandRunner sshCommandRunner, String command,Long timeout){
-		Assert.assertNotSame(sshCommandRunner.runCommandAndWait(command,timeout),
-				0,
-				"Command returns nonzero error code: "+command);
+	public static void runCommandExpectingNonzeroExit(SSHCommandRunner sshCommandRunner, String command, Long timeout){
+// THIS WILL ALWAYS RETURN FALSE SINCE THE COMPARISON IS BETWEEN TWO DIFFERENT INSTANTIATED OBJECTS EVEN THOUGH THEIR VALUES MAY BE EQUAL - jsefler 7/9/2010 		
+//		Assert.assertNotSame(sshCommandRunner.runCommandAndWait(command,timeout),
+//				0,
+//				"Command returns nonzero error code: "+command);
+		Integer exitCode = sshCommandRunner.runCommandAndWait(command,timeout);
+		Assert.assertFalse(exitCode.equals(0),"Command '"+command+"' returns nonzero error code: "+exitCode);
 	}
 	
 	
