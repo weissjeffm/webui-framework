@@ -76,7 +76,8 @@ public abstract class TestScript {
 		List<String> keyList = CollectionSorter.asSortedList(keySet);
 		for (Object key: keyList){
 			String value = System.getProperty((String) key);
-			if (key.toString().toLowerCase().contains("password"))
+			if (key.toString().toLowerCase().contains("password") ||
+				key.toString().toLowerCase().contains("passphrase"))
 				value = "********";
 			log.finer("Property("+key+")= "+ value);
 		}
