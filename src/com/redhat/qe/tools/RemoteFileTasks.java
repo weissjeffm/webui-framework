@@ -240,7 +240,7 @@ public class RemoteFileTasks {
 //				0,
 //				"Command returns nonzero error code: "+command);
 		Integer exitCode = sshCommandRunner.runCommandAndWait(command,timeout);
-		Assert.assertFalse(exitCode.equals(0),"Command '"+command+"' returns nonzero error code: "+exitCode);
+		Assert.assertTrue(!exitCode.equals(0),"Command '"+command+"' returns nonzero error code: "+exitCode);
 	}
 	
 	
