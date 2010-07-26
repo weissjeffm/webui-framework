@@ -61,7 +61,7 @@ public class RemoteFileTasks {
 	 * @throws IOException
 	 * @author jweiss
 	 */
-	public static void copyFiles(Connection conn, String destDir, String... sources ) throws IOException  {
+	public static void putFiles(Connection conn, String destDir, String... sources ) throws IOException  {
 		for (String source: sources)
 			log.log(Level.INFO, "Copying " + source + " to " + destDir + " on " + conn.getHostname(), LogMessageUtil.Style.Action);
 		SCPClient scp = new SCPClient(conn);
@@ -77,8 +77,8 @@ public class RemoteFileTasks {
 	 * @throws IOException
 	 * @author jweiss
 	 */
-	public static void copyFile(Connection conn, String source, String dest, String mask) throws IOException  {
-		log.log(Level.INFO, "Copying " + source + " to " + dest + " on " + conn.getHostname() + " with mask " + mask, LogMessageUtil.Style.Action);
+	public static void putFile(Connection conn, String source, String dest, String mask) throws IOException  {
+		log.log(Level.INFO, "Copying local file " + source + " to " + dest + " on " + conn.getHostname() + " with mask " + mask, LogMessageUtil.Style.Action);
 		SCPClient scp = new SCPClient(conn);
 		if (dest.endsWith("/")) {
 			scp.put(new String[] {source}, null, dest, mask);
@@ -88,6 +88,24 @@ public class RemoteFileTasks {
 			String destFile = new File(dest).getName();
 			scp.put(new String[] {source}, new String[] {destFile}, destDir, mask);
 		}
+	}
+	
+	/**
+	 * Copy file(s) from a remote machine 
+	 * @param conn - can be retrieved from your SSHCommandRunner instance
+	 * @param localTargetDirectory - Local directory to put the downloaded file(s).
+	 * @param remoteFiles - Path and name(s) of the remote file(s)
+	 * @throws IOException
+	 * @author jsefler
+	 */
+	public static void getFiles(Connection conn, String localTargetDirectory, String... remoteFiles ) throws IOException {
+		for (String remoteFile: remoteFiles)
+			log.log(Level.INFO, "Copying remote file "+remoteFile+" on "+conn.getHostname()+" to local directory "+localTargetDirectory+".", LogMessageUtil.Style.Action);
+		SCPClient scp = new SCPClient(conn);
+		scp.get(remoteFiles, localTargetDirectory);
+	}
+	public static void getFile(Connection conn, String localTargetDirectory, String remoteFile ) throws IOException {
+		getFiles(conn,localTargetDirectory,remoteFile);
 	}
 	
 	/**
