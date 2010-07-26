@@ -249,6 +249,7 @@ public class SSHCommandRunner implements Runnable {
 			String e = (this.getStderr().split("\n").length>1)? "\n":"";
 			log.log(logRecord.getLevel(), "Stdout: "+o+this.getStdout());
 			log.log(logRecord.getLevel(), "Stderr: "+e+this.getStderr());
+			log.log(logRecord.getLevel(), "ExitCode: "+exitCode);
 		}
 		return exitCode;
 	}
