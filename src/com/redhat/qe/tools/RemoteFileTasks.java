@@ -162,7 +162,7 @@ public class RemoteFileTasks {
 	}
 	
 	public static int runCommandAndWait(SSHCommandRunner runner, String command, LogRecord logRecord){
-		return runner.runCommandAndWait(command,logRecord);
+		return runner.runCommandAndWait(command,logRecord).getExitCode();
 		//return runner.runCommandAndWait(command,Long.valueOf(30000),logRecord);	// timeout after 30 sec
 	}
 	
@@ -178,13 +178,13 @@ public class RemoteFileTasks {
 	}
 	
 	
-	public static void runCommandAndAssert(SSHCommandRunner sshCommandRunner, String command, Integer exitCode, List<String> stdoutRegexs, List<String> stderrRegexs) {
+	public static SSHCommandResult runCommandAndAssert(SSHCommandRunner sshCommandRunner, String command, Integer exitCode, List<String> stdoutRegexs, List<String> stderrRegexs) {
 		List<Integer> exitCodes = null;
 		if (exitCode != null) {
 			exitCodes = new ArrayList<Integer>();
 			exitCodes.add(exitCode);
 		}
-		runCommandAndAssert(sshCommandRunner, command, exitCodes, stdoutRegexs, stderrRegexs);
+		return runCommandAndAssert(sshCommandRunner, command, exitCodes, stdoutRegexs, stderrRegexs);
 	}
 	
 	/**
@@ -200,22 +200,25 @@ public class RemoteFileTasks {
 	 * @param stderrRegexs - List of expected regex expressions.  Each regex is asserted  to match a substring from the command's stderr
 	 * @author jsefler
 	 */
-	public static void runCommandAndAssert(SSHCommandRunner sshCommandRunner, String command, List<Integer> validExitCodes, List<String> stdoutRegexs, List<String> stderrRegexs) {
+	public static SSHCommandResult runCommandAndAssert(SSHCommandRunner sshCommandRunner, String command, List<Integer> validExitCodes, List<String> stdoutRegexs, List<String> stderrRegexs) {
 
-		Assert.assertContains(validExitCodes, new Integer(sshCommandRunner.runCommandAndWait(command)));
+		SSHCommandResult sshCommandResult = sshCommandRunner.runCommandAndWait(command);
+		Assert.assertContains(validExitCodes, sshCommandResult.getExitCode());
 		
 		if (stdoutRegexs!=null) {
 			for (String regex : stdoutRegexs) {
-				Assert.assertContainsMatch(sshCommandRunner.getStdout(),regex,"Stdout",String.format("Stdout from command '%s' contains matches to regex '%s',",command,regex));
+				Assert.assertContainsMatch(sshCommandResult.getStdout(),regex,"Stdout",String.format("Stdout from command '%s' contains matches to regex '%s',",command,regex));
 			}
 		}
 		if (stderrRegexs!=null) {
 			for (String regex : stderrRegexs) {
-				Assert.assertContainsMatch(sshCommandRunner.getStderr(),regex,"Stderr",String.format("Stderr from command '%s' contains matches to regex '%s',",command,regex));
+				Assert.assertContainsMatch(sshCommandResult.getStderr(),regex,"Stderr",String.format("Stderr from command '%s' contains matches to regex '%s',",command,regex));
 			}
 		}
+		
+		return sshCommandResult;
 	}
-	public static void runCommandAndAssert(SSHCommandRunner sshCommandRunner, String command, Integer exitCode, String stdoutRegex, String stderrRegex) {
+	public static SSHCommandResult runCommandAndAssert(SSHCommandRunner sshCommandRunner, String command, Integer exitCode, String stdoutRegex, String stderrRegex) {
 		List<String> stdoutRegexs = null;
 		if (stdoutRegex!=null) {
 			stdoutRegexs = new ArrayList<String>();	stdoutRegexs.add(stdoutRegex);
@@ -224,11 +227,11 @@ public class RemoteFileTasks {
 		if (stderrRegex!=null) {
 			stderrRegexs = new ArrayList<String>();	stderrRegexs.add(stderrRegex);
 		}
-		runCommandAndAssert(sshCommandRunner,command,exitCode,stdoutRegexs,stderrRegexs);
+		return runCommandAndAssert(sshCommandRunner,command,exitCode,stdoutRegexs,stderrRegexs);
 	}
 
-	public static void runCommandAndAssert(SSHCommandRunner sshCommandRunner, String command, Integer... exitCodes) {
-		runCommandAndAssert(sshCommandRunner,command,Arrays.asList(exitCodes),new ArrayList<String>(),new ArrayList<String>());
+	public static SSHCommandResult runCommandAndAssert(SSHCommandRunner sshCommandRunner, String command, Integer... exitCodes) {
+		return runCommandAndAssert(sshCommandRunner,command,Arrays.asList(exitCodes),new ArrayList<String>(),new ArrayList<String>());
 	}
 
 	/**
@@ -239,8 +242,8 @@ public class RemoteFileTasks {
 	 * @param command - command to execute with options
 	 * @author ssalevan
 	 */
-	public static void runCommandExpectingNonzeroExit(SSHCommandRunner sshCommandRunner, String command){
-		runCommandExpectingNonzeroExit(sshCommandRunner, command, null);
+	public static SSHCommandResult runCommandExpectingNonzeroExit(SSHCommandRunner sshCommandRunner, String command){
+		return runCommandExpectingNonzeroExit(sshCommandRunner, command, null);
 	}
 	
 	/**
@@ -252,26 +255,28 @@ public class RemoteFileTasks {
 	 * @param timeout - in milliseconds
 	 * @author whayutin
 	 */
-	public static void runCommandExpectingNonzeroExit(SSHCommandRunner sshCommandRunner, String command, Long timeout){
+	public static SSHCommandResult runCommandExpectingNonzeroExit(SSHCommandRunner sshCommandRunner, String command, Long timeout){
 // THIS WILL ALWAYS RETURN FALSE SINCE THE COMPARISON IS BETWEEN TWO DIFFERENT INSTANTIATED OBJECTS EVEN THOUGH THEIR VALUES MAY BE EQUAL - jsefler 7/9/2010 		
 //		Assert.assertNotSame(sshCommandRunner.runCommandAndWait(command,timeout),
 //				0,
 //				"Command returns nonzero error code: "+command);
-		Integer exitCode = sshCommandRunner.runCommandAndWait(command,timeout);
-		Assert.assertTrue(!exitCode.equals(0),"Command '"+command+"' returns nonzero error code: "+exitCode);
+		SSHCommandResult sshCommandResult = sshCommandRunner.runCommandAndWait(command,timeout);
+		Assert.assertTrue(!sshCommandResult.getExitCode().equals(0),"Command '"+command+"' returns nonzero error code: "+sshCommandResult.getExitCode());
+		return sshCommandResult;
 	}
 	
 	
 
-	public static void runCommandExpectingNoTracebacks(SSHCommandRunner sshCommandRunner, String command){
-		runCommandExpectingNoTracebacks( sshCommandRunner, command,  null);
+	public static SSHCommandResult runCommandExpectingNoTracebacks(SSHCommandRunner sshCommandRunner, String command){
+		return runCommandExpectingNoTracebacks( sshCommandRunner, command,  null);
 	}
 	
-	public static void runCommandExpectingNoTracebacks(SSHCommandRunner sshCommandRunner, String command, Long timeout){
-		int exitCode = sshCommandRunner.runCommandAndWait(command,timeout);
-		Assert.assertFalse(sshCommandRunner.getStdout().toLowerCase().contains("traceback"),
+	public static SSHCommandResult runCommandExpectingNoTracebacks(SSHCommandRunner sshCommandRunner, String command, Long timeout){
+		SSHCommandResult sshCommandResult = sshCommandRunner.runCommandAndWait(command,timeout);
+		Assert.assertFalse(sshCommandResult.getStdout().toLowerCase().contains("traceback"),
 				"Traceback string not in stdout");
-		Assert.assertFalse(sshCommandRunner.getStderr().toLowerCase().contains("traceback"),
-				"Traceback string not in stderr");	
+		Assert.assertFalse(sshCommandResult.getStderr().toLowerCase().contains("traceback"),
+				"Traceback string not in stderr");
+		return sshCommandResult;
 	}
 }
