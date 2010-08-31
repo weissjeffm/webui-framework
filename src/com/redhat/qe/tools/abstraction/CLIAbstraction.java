@@ -26,7 +26,7 @@ public abstract class CLIAbstraction {
 		regexCriterion.putAll(regex);
 	}
 	
-	protected ArrayList<Hashtable<String, String>> match(String input) throws NullPointerException{
+	public ArrayList<Hashtable<String, String>> match(String input) throws NullPointerException{
 		ArrayList<Hashtable<String, String>> rtn = new ArrayList<Hashtable<String, String>>();
 		Iterator<String> itr = Arrays.asList(input.trim().split("\n")).iterator();
 		// TODO: Find a better way than O(n^2)
