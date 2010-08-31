@@ -18,7 +18,9 @@
 		<mkdir dir="${framework.build.dir}" />
 
 		<javac srcdir="${framework.src.dir}" destdir="${framework.build.dir}"
-			classpathref="lib.cp" debug="on" />
+			classpathref="lib.cp" debug="on" >
+			<compilerarg value="-Xlint"/>
+		</javac>
 					  
 
 	</target>
