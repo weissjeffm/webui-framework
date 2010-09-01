@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.List;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 import java.util.logging.Logger;
@@ -17,7 +18,7 @@ public abstract class CLIAbstraction {
 	
 	public CLIAbstraction() {
 		regexCriterion = new Hashtable<String, String>();
-		groupId = new List<String>;
+		groupId = new ArrayList<String>();
 	}
 
 	public void appendRegexCriterion(String name, String regex) {
@@ -33,7 +34,13 @@ public abstract class CLIAbstraction {
 	}
 
 	public void appendGroup(List ids) {
-		groupId.addAll(ids);
+		try {
+			groupId.addAll(()ids);
+		}
+		catch (Exception e) {
+			log.severe("Cannot add ids to groupId.");
+			e.printStackTrace();
+		}
 	}
 	
 	public ArrayList<Hashtable<String, String>> match(String input) throws NullPointerException{
@@ -72,6 +79,7 @@ public abstract class CLIAbstraction {
 		return rtn;
 	}
 
+	/*
 	public ArrayList<Hashtable<String, String>> groupMatch(String input) throws NullPointerException{
 		ArrayList<Hashtable<String, String>> rtn = new ArrayList<Hashtable<String, String>>();
 		try {
@@ -85,4 +93,5 @@ public abstract class CLIAbstraction {
 		}
 		return rtn;
 	}
+	*/
 }
