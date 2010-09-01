@@ -35,7 +35,7 @@ public abstract class CLIAbstraction {
 
 	public void appendGroup(List ids) {
 		try {
-			groupId.addAll(()ids);
+			groupId.addAll(ids);
 		}
 		catch (Exception e) {
 			log.severe("Cannot add ids to groupId.");
