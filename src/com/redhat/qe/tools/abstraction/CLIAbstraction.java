@@ -1,4 +1,4 @@
-package com.redhat.qe.tools.automation;
+package com.redhat.qe.tools.abstraction;
 
 import java.util.Hashtable;
 import java.util.ArrayList;
@@ -13,9 +13,11 @@ import java.util.logging.Logger;
 public abstract class CLIAbstraction {
 	protected static Logger log = Logger.getLogger(CLIAbstraction.class.getName());
 	protected Hashtable<String, String> regexCriterion;
+	protected List<String> groupId;
 	
 	public CLIAbstraction() {
 		regexCriterion = new Hashtable<String, String>();
+		groupId = new List<String>;
 	}
 
 	public void appendRegexCriterion(String name, String regex) {
@@ -24,6 +26,14 @@ public abstract class CLIAbstraction {
 
 	public void appendRegexCriterion(Hashtable<String, String> regex) {
 		regexCriterion.putAll(regex);
+	}
+
+	public void appendGroupId(String id) {
+		groupId.add(id);
+	}
+
+	public void appendGroup(List ids) {
+		groupId.addAll(ids);
 	}
 	
 	public ArrayList<Hashtable<String, String>> match(String input) throws NullPointerException{
@@ -54,6 +64,20 @@ public abstract class CLIAbstraction {
 				if (matchedResult.keySet().size() > 0) {
 					rtn.add(matchedResult);
 				}
+			}
+		}
+		catch (NullPointerException e) {
+			throw e;			
+		}
+		return rtn;
+	}
+
+	public ArrayList<Hashtable<String, String>> groupMatch(String input) throws NullPointerException{
+		ArrayList<Hashtable<String, String>> rtn = new ArrayList<Hashtable<String, String>>();
+		try {
+			Pattern pattern = Pattern.compile(regexCriterion);
+			Matcher matcher = pattern.matcher(input);
+			while (matcher.find()) {
 			}
 		}
 		catch (NullPointerException e) {
