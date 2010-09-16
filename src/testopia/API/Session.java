@@ -16,6 +16,8 @@ import org.apache.xmlrpc.client.XmlRpcClient;
 import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
 import org.apache.xmlrpc.client.XmlRpcCommonsTransportFactory;
 
+import com.redhat.qe.tools.SSLCertificateTruster;
+
 
 
 public class Session {
@@ -34,7 +36,7 @@ public class Session {
 	}
 
 	public void init() throws XmlRpcException, GeneralSecurityException, IOException{
-		TrustAllCerts();
+		SSLCertificateTruster.trustAllCertsForApacheHttp();
 
 		// setup client
 		XmlRpcClientConfigImpl config = new XmlRpcClientConfigImpl();
@@ -77,21 +79,6 @@ public class Session {
 		
 	}
 
-	private void TrustAllCerts()
-	throws GeneralSecurityException, IOException
-	{
-		try{
-			// Create a trust manager that does not validate certificate chains
-			//System.out.println("JHOME="+System.getProperty("java.home"));
-			//System.out.println("I have svn upped!!!!");
-			ProtocolSocketFactory sf = new EasySSLProtocolSocketFactory();
-			Protocol p = new Protocol("https", sf, 443);
-			Protocol.registerProtocol("https", p);
-		}
-		catch(Exception e){
-			System.out.println("Couldn't trust all certificates, things may break...");
-		}
-	}
 
 	public XmlRpcClient getClient() {
 		return client;

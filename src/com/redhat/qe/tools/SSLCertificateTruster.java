@@ -1,9 +1,16 @@
 package com.redhat.qe.tools;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
+
+import org.apache.commons.httpclient.contrib.ssl.EasySSLProtocolSocketFactory;
+import org.apache.commons.httpclient.protocol.Protocol;
+import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
 
 /**
  * @author jsefler
@@ -45,4 +52,19 @@ public class SSLCertificateTruster {
 		}
 	}
 		
+	public static void trustAllCertsForApacheHttp() throws GeneralSecurityException, IOException
+	{
+		try{
+			// Create a trust manager that does not validate certificate chains
+			//System.out.println("JHOME="+System.getProperty("java.home"));
+			//System.out.println("I have svn upped!!!!");
+			ProtocolSocketFactory sf = new EasySSLProtocolSocketFactory();
+			Protocol p = new Protocol("https", sf, 443);
+			Protocol.registerProtocol("https", p);
+		}
+		catch(Exception e){
+			System.out.println("Couldn't trust all certificates, things may break...");
+		}
+	}
+
 }
