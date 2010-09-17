@@ -107,6 +107,12 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 	public String getValue(Element element) {
 		return getValue(element.getLocator());
 	}
+	
+	@Override
+	public String getValue(String locator) {
+		highlight(locator);
+		return super.getValue(locator);
+	}
 
 	public void clickAndWait(String locator) {
 		clickAndWait(locator, WAITFORPAGE_TIMEOUT, true);

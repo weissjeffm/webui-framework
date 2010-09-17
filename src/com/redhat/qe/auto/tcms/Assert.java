@@ -31,6 +31,22 @@ public class Assert {
     // hide constructor
   }
   
+    public static <T> void assertContains(Collection<T> coll, T item ){
+    	if (coll == null) {
+    		fail(item + " isn't part of a null list."); 
+    	}
+    	boolean contains = coll.contains(item);
+    	String formatString = "%s is present in the list %s"; 
+    	if (!contains) {
+    		formatString = "%s was not present in the list %s";	
+    	}
+    	String message = String.format(formatString, item.toString(), Arrays.deepToString(coll.toArray()));
+    	if (contains){
+    		pass(message);
+    	}
+    	else fail(message);
+    }
+  
 	static public void assertMatch(String actual, String regex, String descriptionOfText) {
 		String msg = String.format("%s'%s' matches regex '%s'", descriptionOfText+" ", actual, regex);
 		Pattern p = Pattern.compile(regex, Pattern.MULTILINE | Pattern.DOTALL);
@@ -56,6 +72,17 @@ public class Assert {
 	}
 	
 	
+	/**
+	 * Assert that the actual string (which may contain multiple lines) matches the specified regex.
+	 * Because a MULTILINE pattern is compiled on the actual string, the ^ and $ regex characters
+	 * will match against individual lines in the actual string.  Therefore, if your regex uses ^ and/or $,
+	 * multiple matches may result and will get logged as such.
+	 * @param actual
+	 * @param regex
+	 * @param where
+	 * @param msg
+	 * @author jsefler
+	 */
 	static public void assertContainsMatch(String actual, String regex, String where, String msg) {
 		if (msg==null) msg = String.format("%s'%s' contains matches to regex '%s'", where+" ", actual, regex);
 
@@ -79,7 +106,7 @@ public class Assert {
 
 	static public void assertContainsNoMatch(String actual, String regex, String where, String msg) {
 		if (msg==null) msg = String.format("%s'%s' does NOT match regex '%s'", where+" ", actual, regex);
-		Pattern pattern = Pattern.compile(regex, Pattern.MULTILINE | Pattern.DOTALL);
+		Pattern pattern = Pattern.compile(regex, Pattern.MULTILINE/* | Pattern.DOTALL*/);
 		assertFalse(pattern.matcher(actual).find(), msg);
 	}
 
@@ -724,6 +751,12 @@ public class Assert {
             + message);
       }
     }
+  }
+  
+  public static void main(String... args){
+	  List<String> list = Arrays.asList(new String[] {"foo", "bar", "baz"});
+	  Assert.assertContains(list, "foo");
+	  Assert.assertContains(list, "quux");
   }
 }
 

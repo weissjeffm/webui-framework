@@ -172,7 +172,7 @@ public class BugzillaTestNGListener implements IResultListener, ISuiteListener{
 		}
 		BzBugDependency blockedOrVerifiedBy = bzTests.get(result.getParameters());
 		if (blockedOrVerifiedBy != null){
-			log.warning("Test is now unblocked by bug " + blockedOrVerifiedBy.getBugIds() + ".");			
+			log.warning("Bugs that were previously blocking this test: " + Arrays.deepToString(blockedOrVerifiedBy.getBugIds()) + ".");			
 			if (blockedOrVerifiedBy.getType().equals(BzBugDependency.Type.Verifies)){
 				verifyComment(result, blockedOrVerifiedBy.getBugIds());
 			}

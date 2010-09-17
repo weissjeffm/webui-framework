@@ -209,19 +209,19 @@ public class SSHCommandRunner implements Runnable {
 		run(logRecord);
 	}
 	
-	public Integer runCommandAndWait(String command){
+	public SSHCommandResult runCommandAndWait(String command){
 		return runCommandAndWait(command,null,LogMessageUtil.fine(), false);
 	}
 	
-	public Integer runCommandAndWait(String command, boolean liveLogOutput){
+	public SSHCommandResult runCommandAndWait(String command, boolean liveLogOutput){
 		return runCommandAndWait(command,null,LogMessageUtil.fine(), liveLogOutput);
 	}
 	
-	public Integer runCommandAndWait(String command, Long timeoutMS){
+	public SSHCommandResult runCommandAndWait(String command, Long timeoutMS){
 		return runCommandAndWait(command,timeoutMS,LogMessageUtil.fine(), false);
 	}
 	
-	public Integer runCommandAndWait(String command, LogRecord logRecord){
+	public SSHCommandResult runCommandAndWait(String command, LogRecord logRecord){
 		return runCommandAndWait(command,null,logRecord, false);
 	}
 	
@@ -237,20 +237,22 @@ public class SSHCommandRunner implements Runnable {
 	 * any output until the command has finished running.
 	 * @return the integer return code of the command
 	 */ 
-	public Integer runCommandAndWait(String command, Long timeoutMS, LogRecord logRecord, boolean liveLogOutput){
+	public SSHCommandResult runCommandAndWait(String command, Long timeoutMS, LogRecord logRecord, boolean liveLogOutput){
 		runCommand(command,logRecord);
 		if (liveLogOutput){
 			SplitStreamLogger logger = new SplitStreamLogger(this);
 			logger.log(logRecord.getLevel(), logRecord.getLevel());
 		}
 		Integer exitCode = waitForWithTimeout(timeoutMS);
+		SSHCommandResult sshCommandResult = new SSHCommandResult(exitCode,this.getStdout(),this.getStderr());
 		if (!liveLogOutput){
 			String o = (this.getStdout().split("\n").length>1)? "\n":"";
 			String e = (this.getStderr().split("\n").length>1)? "\n":"";
-			log.log(logRecord.getLevel(), "Stdout: "+o+this.getStdout());
-			log.log(logRecord.getLevel(), "Stderr: "+e+this.getStderr());
+			log.log(logRecord.getLevel(), "Stdout: "+o+sshCommandResult.getStdout());
+			log.log(logRecord.getLevel(), "Stderr: "+e+sshCommandResult.getStderr());
+			log.log(logRecord.getLevel(), "ExitCode: "+sshCommandResult.getExitCode());
 		}
-		return exitCode;
+		return sshCommandResult;
 	}
 	
 	
