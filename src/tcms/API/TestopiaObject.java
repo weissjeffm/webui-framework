@@ -27,14 +27,8 @@ public abstract class TestopiaObject {
 		
 		Object o = (Object) session.getClient().execute(methodName, params);	
 		//print result for debug purposes
-		if (o instanceof Object[]){
-			log.finer("Result of '" + methodName + "' = " + Arrays.deepToString((Object[])o) );				
-			
-		}
-		else if (o == null) {
-			log.finer("Result of '" + methodName + "' = nil");
-		}
-		else log.finer("Result of '" + methodName + "' = " + o.toString());
+		log.finer("Result of '" + methodName + "' = " + deepToString(o));	
+		
 		return o;
 	}
 
@@ -248,5 +242,23 @@ public abstract class TestopiaObject {
 			super.set(s);
 		}
 
+	}
+	
+	public static String deepToString(Object o) {
+		if (o == null) return "null";
+		else if (o instanceof Object[]) {
+			return Arrays.deepToString((Object[])o);
+		}
+		else if (o instanceof Map) {
+			Map m = (Map)o;
+			StringBuffer b = new StringBuffer();
+			b.append("{");
+			for(Object key: m.keySet()) {
+				b.append(deepToString(key) + ":" + deepToString(m.get(key)) + ", ");
+			}
+			b.append("}");
+			return b.toString();
+		}
+		else return o.toString();
 	}
 }

@@ -60,7 +60,7 @@ public class TCMSTestNGListener implements IResultListener, ISuiteListener {
 	protected TestCaseRun testcaserun = null;
 	protected static String buildName = "";
 	protected static String environmentName = "";
-	protected static String version = "";
+	protected static String version = null;
 	protected static boolean testcaseOverwrite = true;
 	protected static String myOverwrite = null;
 	
