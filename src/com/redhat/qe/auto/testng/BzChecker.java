@@ -180,7 +180,7 @@ public class BzChecker {
 		
 		protected void connectBZ() throws XmlRpcException, GeneralSecurityException, IOException{
 			BZ_URL = System.getProperty("bugzilla.url");
-			session = new Session(null, null, new URL(BZ_URL));
+			session = new Session(System.getProperty("bugzilla.login"), System.getProperty("bugzilla.password"), new URL(BZ_URL));
 			try {
 				session.init();
 				// initiate a login here because some bugzilla projects (e.g. Cloud Enablement Tools) are not anonymously
