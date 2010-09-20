@@ -39,9 +39,10 @@ public class TestCase extends TestopiaObject{
 	private StringAttribute summary= newStringAttribute("summary", null);
 	private StringAttribute action= newStringAttribute("action", null);
 	private StringAttribute status= newStringAttribute("status", null);
-	private BooleanAttribute isAutomated = newBooleanAttribute("isautomated", null);
+	private IntegerAttribute isAutomated = newIntegerAttribute("is_automated", null);
 	private StringAttribute plan= newStringAttribute("plan", null);
 	private IntegerAttribute productId = newIntegerAttribute("product", null);
+
 	private Product prod;
 	/** 
 	 * @param userName your bugzilla/testopia userName
@@ -78,7 +79,7 @@ public class TestCase extends TestopiaObject{
 		this.summary.set(summary);
 		this.plan.set(Integer.toString(plan));
 		this.id = newIntegerAttribute("case_id", null);
-
+		
 	}
 	
 	public TestCase(Session session, String caseStatusName, String category, String priority, String summary, String plan, String product) throws XmlRpcException{
@@ -156,7 +157,7 @@ public class TestCase extends TestopiaObject{
 	 * @param isAutomated boolean - true if it's to be set automated, 
 	 * false otherwise
 	 */
-	public void setIsAutomated(Boolean isAutomated) {
+	public void setIsAutomated(Integer isAutomated) {
 		this.isAutomated.set(isAutomated);
 	}
 	
@@ -382,7 +383,7 @@ public class TestCase extends TestopiaObject{
 		return (Integer)this.callXmlrpcMethod("TestCase.lookup_category_id_by_name",
 											  categoryName);
 	 }
-	public Boolean getIsAutomated() {
+	public Integer getIsAutomated() {
 		return isAutomated.get();
 	}
 	public Integer getPriorityID() {

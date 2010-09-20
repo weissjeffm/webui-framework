@@ -341,7 +341,7 @@ public class TCMSTestNGListener implements IResultListener, ISuiteListener {
 				testcase = new TestCase(session, "PROPOSED", "--default--", "P1",
 						summary, TESTOPIA_TESTRUN_TESTPLAN, TESTOPIA_TESTRUN_PRODUCT, version);
 				testcase.setAlias(alias);
-				testcase.setIsAutomated(true);
+				testcase.setIsAutomated(1);
 				testcase.create();
 				
 				
@@ -387,7 +387,7 @@ public class TCMSTestNGListener implements IResultListener, ISuiteListener {
 			try {
 				testcase.storeText();
 				//FIXME remove the following lines later when all records are updated
-				testcase.setIsAutomated(true);
+				testcase.setIsAutomated(1);
 
 				testcase.update();
 			}catch(Exception e){
@@ -492,7 +492,6 @@ public class TCMSTestNGListener implements IResultListener, ISuiteListener {
 			log.log(Level.FINER, "Couldn't find build " + buildName + ", creating new.", e);
 			build.setName(buildName);
 			build.create();
-			
 		}
 		
 		/*HashMap<String,Object> trinst= (HashMap<String, Object>) tr.create();
