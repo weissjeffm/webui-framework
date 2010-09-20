@@ -1,4 +1,4 @@
-package com.redhat.qe.auto.tcms;
+package com.redhat.qe.auto.testng;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -11,7 +11,6 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.redhat.qe.auto.testng.LogMessageUtil;
 
 
 

@@ -4,7 +4,6 @@ import org.testng.SkipException;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
 
-import com.redhat.qe.auto.tcms.Assert;
 import com.redhat.qe.auto.tcms.TCMSTestNGListener;
 
 /**
