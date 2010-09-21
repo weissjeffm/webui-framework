@@ -115,7 +115,9 @@ public class RemoteFileTasks {
 	 * @param filePath - absolute path to the file to be searched and replaced
 	 * @param regexp - the regular expression used to match a pattern for replacement
 	 * @param replacement - the replacement content
+	 * <BR>Note: in case your regexp or replacement contains a / character in it, you will need to call .replaceAll("/", "\\/") as you pass them to this method.
 	 * @return - exit code from sed
+	 * 
 	 */
 	public static int searchReplaceFile (SSHCommandRunner runner, String filePath, String regexp, String replacement) {
 		return runCommandAndWait(runner, "sed -i 's/"+regexp+"/"+replacement+"/g' " + filePath, LogMessageUtil.action());
