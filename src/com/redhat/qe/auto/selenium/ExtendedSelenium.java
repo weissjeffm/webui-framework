@@ -284,12 +284,12 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 	 * @param timeout How long to wait for the element to appear before timing out and throwing an exception
 	 */
 	public void waitAndClick(String locator, String timeout){
-		super.waitForCondition("selenium.isElementPresent(\"" + locator + "\");", timeout);
+		super.waitForCondition("selenium.isElementPresent(\"" + escape(locator) + "\");", timeout);
 		click(locator);
 	}
 	
 	public void waitAndClick(Element element, String timeout) {
-		super.waitForCondition("selenium.isElementPresent(\"" + element.getLocator() + "\");", timeout);
+		super.waitForCondition("selenium.isElementPresent(\"" + escape(element.getLocator()) + "\");", timeout);
 		click(element);
 	}
 
@@ -303,7 +303,7 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 	 */
 	public void waitAndClickAndWait(String locator, String timeout1, String timeout2){
 		try {
-			super.waitForCondition("selenium.isElementPresent(\"" + locator + "\");", timeout1);
+			super.waitForCondition("selenium.isElementPresent(\"" + escape(locator) + "\");", timeout1);
 		}
 		catch(Exception e){
 			RuntimeException rte = new RuntimeException("Element did not appear: " + locator);
@@ -328,12 +328,12 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 	
 	public void waitForElement(String locator, String timeout){
 		log.info("Waiting for element '" + locator  + "', with timeout of " + timeout + ".");
-		super.waitForCondition("selenium.isElementPresent(\"" + locator + "\");", timeout);
+		super.waitForCondition("selenium.isElementPresent(\"" + escape(locator) + "\");", timeout);
 	}
 	
 	public void waitForElement(Element element, String timeout){
 		log.info("Wait for element '" + element  + "', with timeout of " + timeout + ".");
-		super.waitForCondition("selenium.isElementPresent(\"" + element.getLocator() + "\");", timeout);
+		super.waitForCondition("selenium.isElementPresent(\"" + escape(element.getLocator()) + "\");", timeout);
 	}
 	
 	/**
@@ -348,7 +348,7 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 		if (!super.isElementPresent(locator)) return;
 		log.finer("Wait for element to be invisible '"+locator+"', with timeout of "+timeout+".");
 		try{
-			super.waitForCondition("!selenium.isVisible(\""+locator+"\");", timeout);
+			super.waitForCondition("!selenium.isVisible(\""+ escape(locator) +"\");", timeout);
 		}
 		catch(SeleniumException e){
 			if (e.getMessage().contains("not found")){
@@ -373,8 +373,8 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 	 */
 	public void waitForVisible(String locator, String timeout){
 		log.finer("Wait for element to be visible '" + locator  + "', with timeout of " + timeout + ".");
-		super.waitForCondition("selenium.isElementPresent(\""+locator+"\");", timeout); // first wait for its existence
-		super.waitForCondition("selenium.isVisible(\""+locator+"\");", timeout); // then wait for its visibility
+		super.waitForCondition("selenium.isElementPresent(\""+ escape(locator) +"\");", timeout); // first wait for its existence
+		super.waitForCondition("selenium.isVisible(\""+ escape(locator) +"\");", timeout); // then wait for its visibility
 	}
 	
 	public void waitForVisible(Element element, String timeout){
@@ -888,6 +888,10 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 	public static ExtendedSelenium newInstance(String serverHost, int serverPort, String browserStartCommand, String browserURL){
 		instance = new ExtendedSelenium(serverHost, serverPort, browserStartCommand, browserURL);
 		return instance;
+	}
+	
+	public static String escape(String locator){
+		return locator.replace("\"", "\\\"");
 	}
 	
 	public static void main (String... args) {
