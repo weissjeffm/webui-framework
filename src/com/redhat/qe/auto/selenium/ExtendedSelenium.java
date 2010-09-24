@@ -336,6 +336,11 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 		super.waitForCondition("selenium.isElementPresent(\"" + escape(element.getLocator()) + "\");", timeout);
 	}
 	
+	public void waitForTextPresent(String text, String timeout) {
+		log.info("Wait for text `" + text + "`, with timeout of " + timeout + ".");
+		super.waitForCondition("selenium.isTextPresent(\"" + text +"\");", timeout);
+	}
+	
 	/**
 	 * Wait for an element to be invisible.<br>
 	 * Note: On an AJAXy page, an element can exist and be invisible.
