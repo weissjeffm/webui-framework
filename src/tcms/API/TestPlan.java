@@ -25,6 +25,8 @@ import java.util.Map;
 
 import org.apache.xmlrpc.XmlRpcException;
 
+import com.redhat.qe.xmlrpc.Session;
+
 /**
  * Creates a test plan object, that allows the user to create, change and get test plan values
  * @author anelson

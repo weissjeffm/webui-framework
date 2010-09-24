@@ -26,6 +26,8 @@ import java.util.Map;
 
 import org.apache.xmlrpc.XmlRpcException;
 
+import com.redhat.qe.xmlrpc.Session;
+
 /**
  * Allows the user to get an environment from it's ID. It can also create 
  * and update an environment

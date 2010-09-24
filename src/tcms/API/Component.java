@@ -24,6 +24,8 @@ import java.util.HashMap;
 
 import org.apache.xmlrpc.XmlRpcException;
 
+import com.redhat.qe.xmlrpc.Session;
+
 /**
  * Allows the user to get a hashmap of the component values by inputing the component ID
  * @author anelson

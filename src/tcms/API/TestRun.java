@@ -24,6 +24,8 @@ import java.util.Map;
 
 import org.apache.xmlrpc.XmlRpcException;
 
+import com.redhat.qe.xmlrpc.Session;
+
 public class TestRun extends TestopiaObject{
 		
 	public enum Status{ Running, Stopped }

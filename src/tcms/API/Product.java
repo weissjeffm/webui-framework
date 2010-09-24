@@ -26,6 +26,8 @@ import java.util.Map;
 
 import org.apache.xmlrpc.XmlRpcException;
 
+import com.redhat.qe.xmlrpc.Session;
+
 /**
  * Allows the user to get a productID from it's name, or it's name from the productID. It's also able to return a
  * product's milestones'.
