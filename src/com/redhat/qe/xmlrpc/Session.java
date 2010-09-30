@@ -64,8 +64,7 @@ public class Session {
 				httpClient.getState().setCredentials(new AuthScope(url.getHost(), 443, null),
 						new UsernamePasswordCredentials(userName, password));
 				client.setTransportFactory(fac);
-				client.setTypeFactory(new MyTypeFactory(client));
-			
+				client.setTypeFactory(new MyTypeFactory(client));			
 			}
 
 	public XmlRpcClient getClient() {
