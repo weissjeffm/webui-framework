@@ -161,6 +161,8 @@ public class RemoteFileTasks {
 		if (runner.getStdout().trim().equals("1")) return 1;
 		if (runner.getStdout().trim().equals("0")) return 0;
 		return -1;
+		
+		// Note: Another more informative way to implement this is using: stat filePath
 	}
 	
 	public static int runCommandAndWait(SSHCommandRunner runner, String command, LogRecord logRecord){
