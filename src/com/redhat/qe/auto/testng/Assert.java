@@ -623,6 +623,7 @@ public class Assert {
      
       assertEquals(a, e, errorMessage, true);
     }
+    pass(message+": lists have the same contents in the same order");
   }
  
   /**
