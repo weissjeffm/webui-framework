@@ -29,6 +29,8 @@ public abstract class AbstractCommandLineData {
 					abstractionField.set(this, this.parseDateString(productData.get(keyField)));
 				else if (abstractionField.getType().equals(Integer.class))
 					abstractionField.set(this, this.parseInt(productData.get(keyField)));
+				else if (abstractionField.getType().equals(Long.class))
+					abstractionField.set(this, this.parseLong(productData.get(keyField)));
 				else if (abstractionField.getType().equals(Boolean.class))
 					abstractionField.set(this, productData.get(keyField).toLowerCase().contains("true"));
 				else
@@ -93,7 +95,12 @@ public abstract class AbstractCommandLineData {
 		return Integer.parseInt(intString);
 	}
 	
+	protected Long parseLong(String longString){
+		return Long.parseLong(longString);
+	}
+	
 	static protected boolean addRegexMatchesToList(Pattern regex, String to_parse, List<Map<String,String>> matchList, String sub_key) {
+		boolean foundMatches = false;
 		Matcher matcher = regex.matcher(to_parse);
 		int currListElem=0;
 		while (matcher.find()){
@@ -102,12 +109,17 @@ public abstract class AbstractCommandLineData {
 			matchMap.put(sub_key, matcher.group(1).trim());
 			matchList.set(currListElem, matchMap);
 			currListElem++;
+			foundMatches = true;
 		}
-		return true;
+        if (!foundMatches) {
+        	log.warning("Could not find regex '"+regex+"' match for field '"+sub_key+"' while parsing: "+to_parse );
+        }
+		return foundMatches;
 	}
 			
 	static protected boolean addRegexMatchesToMap(Pattern regex, String to_parse, Map<String, Map<String,String>> matchMap, String sub_key) {
         Matcher matcher = regex.matcher(to_parse);
+        boolean foundMatches = false;
         while (matcher.find()) {
             Map<String,String> singleCertMap = matchMap.get(matcher.group(1));
             if(singleCertMap == null){
@@ -116,7 +128,12 @@ public abstract class AbstractCommandLineData {
             }
             singleCertMap.put(sub_key, matcher.group(2));
             matchMap.put(matcher.group(1), singleCertMap);
+            foundMatches = true;
         }
-        return true;
+        if (!foundMatches) {
+        	log.warning("Could not find regex '"+regex+"' match for field '"+sub_key+"' while parsing: "+to_parse );
+        }
+        
+        return foundMatches;
 	}
 }
