@@ -19,6 +19,7 @@ public class UILocatorStrategies {
     public LocatorStrategy notification = new LocatorTemplate("notification","//div[@id='notification' and normalize-space(.)='$1']");
     public LocatorStrategy buttonWithParentHeader = new LocatorTemplate("buttonWithParentHeader","//h3[text()='$1']/following-sibling::input[@value='Launch']"); 
     public LocatorStrategy value = new LocatorTemplate("value", "//input[@value='$1']");
+    public LocatorStrategy span = new LocatorTemplate("span", "//span[@class='$1']");
    
     // find a particular table
     public LocatorStrategy wrappedTable = new LocatorTemplate("wrapped table","//div[@class='wrapped_table']//div[@class='title' and normalize-space(.)='$1']");
@@ -38,5 +39,6 @@ public class UILocatorStrategies {
     public LocatorStrategy nav_href = new CombinedLocatorTemplate("nav_href",nav,href);
     public LocatorStrategy div_id = new CombinedLocatorTemplate("div_id",div,id);
     public LocatorStrategy div_icon = new CombinedLocatorTemplate("div_icon",div,icon);
+    public LocatorStrategy div_span = new CombinedLocatorTemplate("div_span",div,span);
 
 }
