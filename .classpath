@@ -24,5 +24,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/velocity-1.6.2-dep.jar"/>
 	<classpathentry exported="true" kind="con" path="GROOVY_SUPPORT"/>
 	<classpathentry kind="lib" path="lib/commons-httpclient-3.1.jar"/>
+	<classpathentry kind="lib" path="lib/httpclient-negotiate.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
