@@ -4,10 +4,16 @@ import java.io.IOException;
 import java.net.URL;
 import java.security.GeneralSecurityException;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.httpclient.Credentials;
 import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthPolicy;
 import org.apache.commons.httpclient.auth.AuthScope;
+import org.apache.commons.httpclient.contrib.auth.NegotiateScheme;
+import org.apache.commons.httpclient.params.DefaultHttpParams;
+import org.apache.commons.httpclient.params.HttpParams;
 import org.apache.ws.commons.util.NamespaceContextImpl;
 import org.apache.xmlrpc.XmlRpcException;
 import org.apache.xmlrpc.client.XmlRpcClient;
@@ -45,29 +51,26 @@ public class Session {
 			
 				client = new XmlRpcClient();
 				client.setConfig(config);
-			
-				//org.apache.http.client.HttpClient httpClient = new org.apache.http.client.HttpClient();
-				HttpClient  httpClient = new HttpClient();
-				XmlRpcCommonsTransportFactory fac = new XmlRpcCommonsTransportFactory(
-						client);
-			
-				
-				/*NegotiateSchemeFactory nsf = new NegotiateSchemeFactory();
-				httpClient.getAuthSchemes().register(AuthPolicy.SPNEGO, nsf);*/
-				
-				/*fac.setHttpClient(httpClient);
-				client.setTransportFactory(fac);
-				if (httpState == null)
-					httpState = httpClient.getState();*/
-				
-				/*fac.setHttpClient(httpClient);
-				NegotiateSchemeFactory nsf = new NegotiateSchemeFactory();
-				httpClient.getAuthSchemes().register(AuthPolicy.SPNEGO, nsf);
-				httpClient.getState().setCredentials(new AuthScope(url.getHost(), 443, null),
-						new UsernamePasswordCredentials(userName, password));
-				httpClient.
-				client.setTransportFactory(fac);
-				client.setTypeFactory(new MyTypeFactory(client));			*/
+				XmlRpcCommonsTransportFactory factory = new XmlRpcCommonsTransportFactory(client);
+			    client.setTransportFactory(factory);
+			    factory.setHttpClient(new HttpClient());
+			    client.setTypeFactory(new MyTypeFactory(client));
+			    
+			    // register the auth scheme
+		        AuthPolicy.registerAuthScheme("Negotiate", NegotiateScheme.class);
+
+		        // include the scheme in the AuthPolicy.AUTH_SCHEME_PRIORITY preference
+		        List<String> schemes = new ArrayList<String>();
+		        schemes.add("Negotiate");
+
+		        HttpParams params = DefaultHttpParams.getDefaultParams();        
+		        params.setParameter(AuthPolicy.AUTH_SCHEME_PRIORITY, schemes);
+		        
+		        Credentials use_jaas_creds = new Credentials() {};
+		        factory.getHttpClient().getState().setCredentials(
+		            new AuthScope(null, -1, null),
+		            use_jaas_creds);
+
 			}
 
 	public XmlRpcClient getClient() {
