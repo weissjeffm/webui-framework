@@ -467,7 +467,7 @@ public class TCMSTestNGListener implements IResultListener, ISuiteListener {
 	}
 	
 	protected void loginTestopia() throws XmlRpcException, GeneralSecurityException, IOException{
-		TESTOPIA_URL = System.getProperty("testopia.url");
+		TESTOPIA_URL = System.getProperty("testopia.url", "https://tcms.engineering.redhat.com/xmlrpc/");
 		TESTOPIA_USER = System.getProperty("testopia.login");
 		TESTOPIA_PW = System.getProperty("testopia.password");
 		TESTOPIA_TESTRUN_PRODUCT = System.getProperty("testopia.testrun.product");

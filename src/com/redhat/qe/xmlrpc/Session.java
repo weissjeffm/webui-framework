@@ -6,6 +6,7 @@ import java.security.GeneralSecurityException;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
+import org.apache.commons.httpclient.auth.AuthPolicy;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.ws.commons.util.NamespaceContextImpl;
 import org.apache.xmlrpc.XmlRpcException;
@@ -59,12 +60,14 @@ public class Session {
 				if (httpState == null)
 					httpState = httpClient.getState();*/
 				
-				fac.setHttpClient(httpClient);
-				
+				/*fac.setHttpClient(httpClient);
+				NegotiateSchemeFactory nsf = new NegotiateSchemeFactory();
+				httpClient.getAuthSchemes().register(AuthPolicy.SPNEGO, nsf);
 				httpClient.getState().setCredentials(new AuthScope(url.getHost(), 443, null),
 						new UsernamePasswordCredentials(userName, password));
+				httpClient.
 				client.setTransportFactory(fac);
-				client.setTypeFactory(new MyTypeFactory(client));			
+				client.setTypeFactory(new MyTypeFactory(client));			*/
 			}
 
 	public XmlRpcClient getClient() {
