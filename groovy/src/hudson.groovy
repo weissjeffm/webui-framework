@@ -24,7 +24,9 @@ System.setProperty("org.uncommons.reportng.stylesheet","${webuiFramework}/web/re
  * Now that we know where external jars and classes should be, tell the classloader about them
  * so we can use them dynamically
  */
-setupClasspath([webuiFramework, automationDir])
+javacDirs = setupClasspath([webuiFramework, automationDir])
+
+compileProject()
 
 masterXmlFile = args[0]
 
@@ -62,6 +64,15 @@ makeJunitReport()
 !testng.hasFailure()
 /* ----- internal methods ----- */
 
+
+def compileProject() {
+	def binDir = "$automationDir/bin"
+	ant.mkdir(dir: binDir)
+	ant.javac(srcdir: "$automationDir/src", destdir: binDir, classpath: javacDirs.join(":"))
+	
+	//<javac srcdir="${test.src.dir}" destdir="${test.build.dir}" classpathref="tests.cp" debug="on" />
+	
+}
 
 def setOutputDir(){
 	//set the output dir
@@ -109,13 +120,16 @@ def String pathToFileURL(String path){
  * Adds those libs to the running jvm classpath.
  */
 def setupClasspath(eclipseProjectDirList){
+	 antClasspaths = []
 	 println(eclipseProjectDirList)
 	 eclipseProjectDirList.each { dir ->
 		println("Reading eclipse classpath file in $dir")
 		def rootNode = new XmlParser().parse(new File(dir + "/" + ".classpath"))
 		def entries = rootNode.classpathentry.findAll { (it.@kind == 'lib' && !it.@path.startsWith("/")) || it.@kind == 'output'}
 	 	entries.each {
-	 		entry = new URL(pathToFileURL(dir + "/" + it.@path + (it.@kind == "output" ? "/":""))) //append trailing slash to dirs
+			def entryDir = dir + "/" + it.@path + (it.@kind == "output" ? "/":"") 
+			antClasspaths.add(entryDir)
+	 		entry = new URL(pathToFileURL(entryDir)) //append trailing slash to dirs
 
 	 		println("Adding classpath entry $entry")
 	 		
@@ -123,4 +137,5 @@ def setupClasspath(eclipseProjectDirList){
 	 		 ClassLoader.getSystemClassLoader().addURL(entry) //don't do this for all entries, causes the same libs to be loaded by different cl's, classcastexceptions -jmw
 	 	}
 	 }
+	 return antClasspaths
  }
