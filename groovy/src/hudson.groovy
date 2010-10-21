@@ -66,9 +66,15 @@ makeJunitReport()
 
 
 def compileProject() {
-	def binDir = "$automationDir/bin"
-	ant.mkdir(dir: binDir)
-	ant.javac(srcdir: "$automationDir/src", destdir: binDir, classpath: javacDirs.join(":"))
+	def automationBinDir = "$automationDir/bin"
+	def webuiBinDir = "$webuiFramework/bin"
+	def eclipseClasspath = javacDirs.join(":")
+
+	ant.mkdir(dir: webuiBinDir)
+	ant.javac(srcdir: "$webuiFramework/src", destdir: webuiBinDir, classpath: eclipseClasspath)
+	
+	ant.mkdir(dir: automationBinDir)
+	ant.javac(srcdir: "$automationDir/src", destdir: automationBinDir, classpath: eclipseClasspath)
 	
 	//<javac srcdir="${test.src.dir}" destdir="${test.build.dir}" classpathref="tests.cp" debug="on" />
 	
