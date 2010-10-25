@@ -63,12 +63,13 @@ public class Session {
 
 		        // include the scheme in the AuthPolicy.AUTH_SCHEME_PRIORITY preference
 		        List<String> schemes = new ArrayList<String>();
+		        schemes.add(AuthPolicy.BASIC);
 		        schemes.add("Negotiate");
 
 		        HttpParams params = DefaultHttpParams.getDefaultParams();        
 		        params.setParameter(AuthPolicy.AUTH_SCHEME_PRIORITY, schemes);
 		        
-		        Credentials use_jaas_creds = new Credentials() {};
+		        Credentials use_jaas_creds = new UsernamePasswordCredentials(userName, password);
 		        factory.getHttpClient().getState().setCredentials(
 		            new AuthScope(null, -1, null),
 		            use_jaas_creds);
