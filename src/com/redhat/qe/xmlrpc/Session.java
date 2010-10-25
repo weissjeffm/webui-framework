@@ -3,12 +3,12 @@ package com.redhat.qe.xmlrpc;
 import java.io.IOException;
 import java.net.URL;
 import java.security.GeneralSecurityException;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.httpclient.Credentials;
 import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthPolicy;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.contrib.auth.NegotiateScheme;
@@ -55,7 +55,9 @@ public class Session {
 			    client.setTransportFactory(factory);
 			    factory.setHttpClient(new HttpClient());
 			    client.setTypeFactory(new MyTypeFactory(client));
-			    
+			    			    
+			    factory.getHttpClient().getState().setCredentials(
+			    		new AuthScope(url.getHost(), 443, null), new UsernamePasswordCredentials(userName, password));
 			    // register the auth scheme
 		        AuthPolicy.registerAuthScheme("Negotiate", NegotiateScheme.class);
 
