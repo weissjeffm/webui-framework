@@ -25,6 +25,7 @@ public class UILocatorStrategies {
     public LocatorStrategy wrappedTable = new LocatorTemplate("wrapped table","//div[@class='wrapped_table']//div[@class='title' and normalize-space(.)='$1']");
     // find a check box to the left of specified text
     public LocatorStrategy checkboxNextToText =    new StringSandwichLocatorStrategy("checkbox next to text", NEXT_TO_XPATH_PREFIX, "')]/..//input[@type='checkbox']");
+    public LocatorStrategy radioButtonNextToText =    new StringSandwichLocatorStrategy("checkbox next to text", NEXT_TO_XPATH_PREFIX, "')]/..//input[@type='radio']");
     // find a cell in a table w/ specified txt
     public LocatorStrategy cellWithTextOrRequiredText =   new LocatorTemplate("cell with text","//tr/td[normalize-space(.)='$1')]") ;  // the rest can be used if the query is not exact // or normalize-space(.)='$1 *' or contains(.,'$1')]");
     public LocatorStrategy rowWithTextInColumnNumber =   new LocatorTemplate("row with text in column number","//tr[td[normalize-space(.)='$1' and position()='$2']]");
