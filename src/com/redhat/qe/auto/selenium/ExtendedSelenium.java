@@ -847,6 +847,21 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 		Reporter.log("<a href='" + String.format("%s/%s", screenshotLinkUrl, outFileName) + "'>Screenshot</a>");
 	}
 	
+	public void testNGScreenCapture() throws Exception{
+		String dirName = System.getProperty("selenium.screenshot.dir", System.getProperty("user.dir") + File.separator
+				+ "test-output" + File.separator + "screenshots");
+		mkdir(dirName);
+		Date rightNow = new Date();
+		String outFileName = dateFormat.format(rightNow) + ".png";
+		String fullpath = dirName + File.separator + outFileName;
+		pngRemoteScreenCapture(fullpath);
+		
+		//embed link in testng report
+		//Reporter.setCurrentTestResult(result);
+		String screenshotLinkUrl = System.getProperty("selenium.screenshot.link.path", "../screenshots");
+		Reporter.log("<a href='" + String.format("%s/%s", screenshotLinkUrl, outFileName) + "'>Screenshot</a>");
+	}
+	
 	protected void pngRemoteScreenCapture(String filepath) throws Exception{
 		String base64Png = super.captureEntirePageScreenshotToString("");
 		File ssFile = new File(filepath);
