@@ -13,6 +13,7 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Properties;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
@@ -701,6 +702,15 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 		return props;
 	}
 	
+	/*
+	 * Properties attr = sel().getAttributes(element);
+			Set<String> mySet = attr.stringPropertyNames();
+			for(String s:mySet){
+				log.info(s);
+				log.info(attr.getProperty(s));
+			}
+			log.info("TAG "+sel().getAttributes(element).getProperty("tagName"));
+	 */
 	public Properties getAttributes(Element element) {
 		return getAttributes(element.getLocator());
 	}
