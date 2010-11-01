@@ -17,6 +17,7 @@ public class UILocatorStrategies {
     public LocatorStrategy table = new LocatorTemplate("table","//table[@class='$1']");
     public LocatorStrategy icon = new LocatorTemplate("icon","//input[@Class='icon' and @Name='$1']");
     public LocatorStrategy notification = new LocatorTemplate("notification","//div[@id='notification' and normalize-space(.)='$1']");
+    public LocatorStrategy warning = new LocatorTemplate("warning","//div[@id='warning' and normalize-space(.)='$1']");
     public LocatorStrategy buttonWithParentHeader = new LocatorTemplate("buttonWithParentHeader","//h3[text()='$1']/following-sibling::input[@value='Launch']"); 
     public LocatorStrategy value = new LocatorTemplate("value", "//input[@value='$1']");
     public LocatorStrategy span = new LocatorTemplate("span", "//span[@class='$1']");
