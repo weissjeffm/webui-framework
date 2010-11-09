@@ -26,6 +26,11 @@ public abstract class AbstractCommandLineData {
 			Field abstractionField = null;
 			try {
 				abstractionField = this.getClass().getField(keyField);
+				if (productData.get(keyField).equals("")) {
+					abstractionField.set(this, null);
+					log.warning("No value was parsed for abstractionField '"+this.getClass().getName()+"."+abstractionField.getName()+"'.  Setting it to null.");
+					continue;
+				}
 				if (abstractionField.getType().equals(Calendar.class))
 					abstractionField.set(this, this.parseDateString(productData.get(keyField)));
 				else if (abstractionField.getType().equals(Integer.class))
@@ -44,7 +49,7 @@ public abstract class AbstractCommandLineData {
 					try {
 						abstractionField.set(this, null);
 					} catch (Exception x){
-						log.warning("and we can't even set it to null.  Whaaaaaa?");
+						log.warning("...and an exception was thrown setting it to null.");
 					}
 				for (StackTraceElement ste:e.getStackTrace()){
 					log.warning(ste.toString());
