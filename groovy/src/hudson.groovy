@@ -103,7 +103,7 @@ def makeJunitReport(){
 def addListeners(){
 	// the object cast below is so the api doesn't get confused about which overloaded method we're calling
 	listeners = ["com.redhat.qe.auto.selenium.TestNGListener", "com.redhat.qe.auto.bugzilla.BugzillaTestNGListener", 
-	             "org.uncommons.reportng.HTMLReporter", "org.uncommons.reportng.JUnitXMLReporter"]
+	             "org.uncommons.reportng.HTMLReporter", "org.uncommons.reportng.JUnitXMLReporter", "com.redhat.qe.auto.testng.TestNgPriorityInterceptor"]
 	listeners.each {
 		println("Adding testng listener $it")
 		testng.addListener((Object)Class.forName(it).newInstance());
