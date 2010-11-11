@@ -1,0 +1,21 @@
+This project is a Java framework and library for automated testing.  It provides functionality to enable testing of web-based applications (using selenium http://seleniumhq.org/ ), GNOME apps (using LDTP), and console applications.  
+
+TestNG ( http://testng.org ) is used as the test harness.  There are several plugins available here for TestNG to facilitate logging, screenshots, and interactions with Bugzilla and TCMS.  
+
+Running tests under Hudson is also supported.
+
+FAQ:
+
+1) How do I run tests under hudson?
+   Add a groovy task to you job that runs groovy/src/hudson.groovy.  The script takes a TestNG suite file argument, and an optional name of a test to run from within that suite.  If no test is specified, the whole suite is run.  
+
+2) How do I get pretty reports in Hudson?
+   Several java properties should be set in your hudson groovy task:
+   	   -Dtestng.outputdir=[any relative path within the workspace - must be on the list of dirs to archive for the hudson job]
+	   -Dselenium.screenshot.dir=[any subdir of the outputdir]
+	   -Dselenium.screenshot.link.path=../artifact/[screenshotdir]
+
+   Also, install the HTML Reports plugin for hudson.  In the Post-build actions for your hudson job, point the "Publish HTML Reports" section to the [outputdir]/html/index.html file that will be produced by the TestNG report.
+
+   The report will use icons that need to be present on hudson.  Typically the hudson war dir is ~hudson/.hudson/war.  Create a subdir images/webui-framework under the war dir.  Copy the files web/*.png from this repository into images/webui-framework.  Then the report's icons will link to the correct files.
+   	  
