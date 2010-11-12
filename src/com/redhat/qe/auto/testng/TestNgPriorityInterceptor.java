@@ -15,7 +15,7 @@ public class TestNgPriorityInterceptor implements IMethodInterceptor {
 			private int getPriority(IMethodInstance mi) { 
 				int result = 0; Method method = mi.getMethod().getMethod(); 
 				TestNgPriority a1 = method.getAnnotation(TestNgPriority.class); 
-				System.out.println("I entered method interceptor");
+				//System.out.println("I entered method interceptor");
 
 				if (a1 != null) { 
 					result = a1.value(); 
@@ -26,6 +26,7 @@ public class TestNgPriorityInterceptor implements IMethodInterceptor {
 						result = classPriority.value(); 
 					} 
 				} 
+				System.out.println("method: " +method.getName() + "   result: " +result);
 			return result; 
 		}
 
@@ -36,6 +37,7 @@ public class TestNgPriorityInterceptor implements IMethodInterceptor {
 
 	}; 
 	
+	System.out.println("size: " + methods.size());
 	IMethodInstance[] array = methods.toArray(new IMethodInstance [methods.size()]); 
 	Arrays.sort(array, comparator);
 
