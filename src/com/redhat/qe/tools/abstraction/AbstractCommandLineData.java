@@ -28,7 +28,7 @@ public abstract class AbstractCommandLineData {
 				abstractionField = this.getClass().getField(keyField);
 				if (productData.get(keyField).equals("")) {
 					abstractionField.set(this, null);
-					log.warning("No value was parsed for abstractionField '"+this.getClass().getName()+"."+abstractionField.getName()+"'.  Setting it to null.");
+					log.finer("No value was parsed for abstractionField '"+this.getClass().getName()+"."+abstractionField.getName()+"'.  Setting it to null.");
 					continue;
 				}
 				if (abstractionField.getType().equals(Calendar.class))
@@ -124,7 +124,8 @@ public abstract class AbstractCommandLineData {
 			foundMatches = true;
 		}
         if (!foundMatches) {
-        	log.warning("Could not find regex '"+regex+"' match for field '"+sub_key+"' while parsing: "+to_parse );
+        	//log.warning("Could not find regex '"+regex+"' match for field '"+sub_key+"' while parsing: "+to_parse );
+        	log.finer("Could not find regex '"+regex+"' match for field '"+sub_key+"' while parsing: "+to_parse );
         }
 		return foundMatches;
 	}
@@ -143,7 +144,8 @@ public abstract class AbstractCommandLineData {
             foundMatches = true;
         }
         if (!foundMatches) {
-        	log.warning("Could not find regex '"+regex+"' match for field '"+sub_key+"' while parsing: "+to_parse );
+        	//log.warning("Could not find regex '"+regex+"' match for field '"+sub_key+"' while parsing: "+to_parse );
+        	log.finer("Could not find regex '"+regex+"' match for field '"+sub_key+"' while parsing: "+to_parse );
         }
         
         return foundMatches;
