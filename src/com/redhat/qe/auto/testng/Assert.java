@@ -208,24 +208,55 @@ public class Assert {
     else failNotEquals(actual, expected, message);
   }
   
-  static public void assertEquals(Object actual, Object expected, Comparator comparator, String message) {
+  static public void assertEquals(Object actual, Object expected, Comparator<Object> comparator, String message) {
 	  compare(actual, expected, comparator, message, 0);
   }
 
-  public static void assertLess(Object actual, Object expected, Comparator comparator, String message){
+  public static void assertLess(Object actual, Object expected, Comparator<Object> comparator, String message){
 	  compare(actual, expected, comparator, message, -1);	  
   }
   
-  public static void assertMore(Object actual, Object expected, Comparator comparator, String message){
+  public static void assertMore(Object actual, Object expected, Comparator<Object> comparator, String message){
 	  compare(actual, expected, comparator, message, 1);	  
   }
  
-  protected static void compare(Object actual, Object expected, Comparator comparator, String message, int expComp){
+  public static void assertLess(Comparable<?> actual, Comparable<?> expected, String message){
+	  compare(actual, expected, message, -1);	  
+  }
+  
+  public static void assertMore(Comparable<?> actual, Comparable<?> expected, String message){
+	  compare(actual, expected, message, 1);	  
+  }
+ 
+  protected static void compare(Object actual, Object expected, Comparator<Object> comparator, String message, int expComp){
 	  String newMessage = message + ": " + actual + comparator.toString() + expected;
 	  if (comparator.compare(actual, expected) == expComp){
 	    	pass(newMessage);
 	  }
 	  else failNotEquals(actual, expected, newMessage);
+  }
+  
+  protected static void compare(Comparable actual, Comparable expected, String message, int expComp){
+	  String comp;
+	  switch (expComp){
+		  case -1: {
+			  comp = " less than "; break;
+		  }
+		  case 1: {
+			  comp = " more than "; break;
+		  }
+		  case 0: {
+			  comp = " equals "; break;
+		  }
+		  default: throw new IllegalStateException("Can only set expected comparison results of -1,0,1.  Given: " + expComp);
+	  }
+	  String newMessage = message + ": " + actual + comp + expected;
+	  System.out.println(actual.compareTo(expected) + " " +  expComp);
+	  int comparison = actual.compareTo(expected);
+	  if (comparison * expComp > 0 || (comparison == 0 && expComp == 0)){
+	    	pass(newMessage);
+	  }
+	  else throw new AssertionError(newMessage);
   }
   
   
@@ -754,9 +785,11 @@ public class Assert {
   }
   
   public static void main(String... args){
-	  List<String> list = Arrays.asList(new String[] {"foo", "bar", "baz"});
+	  /*List<String> list = Arrays.asList(new String[] {"foo", "bar", "baz"});
 	  Assert.assertContains(list, "foo");
-	  Assert.assertContains(list, "quux");
+	  Assert.assertContains(list, "quux");*/
+	  Assert.assertMore(6, 5, "blah");
+	  Assert.assertMore("dani", "dani", "blah2");
   }
 }
 
