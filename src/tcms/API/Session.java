@@ -53,7 +53,7 @@ public class Session extends com.redhat.qe.xmlrpc.Session {
 	}
 
 	public static void main(String... args) throws Exception {
-		Session session = new Session("jweiss", "113!!#Two", new URL(
+		Session session = new Session("jweiss", "", new URL(
 				"https://tcms.engineering.redhat.com/xmlrpc/"));
 		session.login();
 	}

@@ -1,5 +1,6 @@
 package com.redhat.qe.api.helper;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -148,5 +149,14 @@ public class TestHelper {
 		return null;
 	}
 	
+	public static String interpose(String separator, Object... items){
+		StringBuffer sb = new StringBuffer();
+		Iterator<Object> it = Arrays.asList(items).iterator();
+		while (it.hasNext()){
+			sb.append(it.next().toString());
+			if (it.hasNext()) sb.append(separator);
+		}
+		return sb.toString();
+	}
 	
 }
