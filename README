@@ -19,3 +19,7 @@ FAQ:
 
    The report will use icons that need to be present on hudson.  Typically the hudson war dir is ~hudson/.hudson/war.  Create a subdir images/webui-framework under the war dir.  Copy the files web/*.png from this repository into images/webui-framework.  Then the report's icons will link to the correct files.
    	  
+3) How do I use kerberos negotiate auth (with services like TCMS)? 
+   First you'll need to get a kerberos ticket with kinit. 
+   Then you'll need the following jvm arguments when running your tests:  -Duser.krb5cc=[your-kerb-cache-file] -Djavax.security.auth.useSubjectCredsOnly=false 
+   Your cache file is something like /tmp/krb5cc_500.  The number at the end is your unix userid, check your /tmp dir for files like this - the one owned by you should be the one you want.
