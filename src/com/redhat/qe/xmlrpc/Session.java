@@ -55,25 +55,31 @@ public class Session {
 			    client.setTransportFactory(factory);
 			    factory.setHttpClient(new HttpClient());
 			    client.setTypeFactory(new MyTypeFactory(client));
-			    			    
-			    if (userName != null && password != null) 
+			    		
+		        List<String> schemes = new ArrayList<String>();
+		        String jaas_user = "not_needed_for_kerb";
+		        String jaas_pw = "not_needed_for_kerb";
+		        	
+			    if (userName != null && password != null) {
 			    	factory.getHttpClient().getState().setCredentials(
-			    		new AuthScope(url.getHost(), 443, null), new UsernamePasswordCredentials(userName, password));
+			    		new AuthScope(url.getHost(), 443, AuthScope.ANY_REALM), new UsernamePasswordCredentials(userName, password));
+			        schemes.add(AuthPolicy.BASIC);
+			        jaas_user = userName;
+			        jaas_pw = password;
+			        
+			    }
 			    // register the auth scheme
 		        AuthPolicy.registerAuthScheme("Negotiate", NegotiateScheme.class);
 
 		        // include the scheme in the AuthPolicy.AUTH_SCHEME_PRIORITY preference
-		        List<String> schemes = new ArrayList<String>();
 		        schemes.add("Negotiate");
-		        schemes.add(AuthPolicy.BASIC);
 
 		        HttpParams params = DefaultHttpParams.getDefaultParams();        
 		        params.setParameter(AuthPolicy.AUTH_SCHEME_PRIORITY, schemes);
 		        
-		        Credentials use_jaas_creds = new UsernamePasswordCredentials(userName == null? "fake" : userName,
-		        		password == null? "fake" : password);
+		        Credentials use_jaas_creds = new UsernamePasswordCredentials(jaas_user, jaas_pw);
 		        factory.getHttpClient().getState().setCredentials(
-		            new AuthScope(null, -1, null),
+		            new AuthScope(null, -1, AuthScope.ANY_REALM),
 		            use_jaas_creds);
 
 			}
