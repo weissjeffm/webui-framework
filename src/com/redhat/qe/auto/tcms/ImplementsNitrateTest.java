@@ -10,7 +10,7 @@ import java.lang.annotation.*;
 
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ImplementsNitrateTest {
-	int[] cases();
+	int caseId();
 	int version() default 0; // will be interpreted as latest
 	int fromPlan() default 0;
 	String baseUrl() default "http://tcms.engineering.redhat.com";

@@ -95,20 +95,19 @@ public class TestNGListener implements IResultListener, ISuiteListener {
 				// https://tcms.engineering.redhat.com/case/7889
 				// https://tcms.engineering.redhat.com/case/7889/history/?from_plan=&case_text_version=6
 
-		    	for (int testCase : nitrateTest.cases()) {
-		    		String baseUrl = nitrateTest.baseUrl();
-		    		int fromPlan = nitrateTest.fromPlan();
-		    		int version = nitrateTest.version();
-					String logMsg = String.format("This automated test implements Nitrate test %s/case/%d/history/?from_plan=%s&case_text_version=%s", baseUrl, testCase, fromPlan==0?"":fromPlan, version==0?"":version);
-					if (version==0) {
-						logMsg = logMsg.replace("&case_text_version=", "");
-						logMsg = logMsg.replace("history/", "");
-						if (fromPlan==0) {
-							logMsg = logMsg.replace("?from_plan=", "");
-						}
+	    		int caseId = nitrateTest.caseId();
+	    		int version = nitrateTest.version();
+	    		int fromPlan = nitrateTest.fromPlan();
+	    		String baseUrl = nitrateTest.baseUrl();
+	    		String logMsg = String.format("This automated test implements Nitrate test %s/case/%d/history/?from_plan=%s&case_text_version=%s", baseUrl, caseId, fromPlan==0?"":fromPlan, version==0?"":version);
+				if (version==0) {
+					logMsg = logMsg.replace("&case_text_version=", "");
+					logMsg = logMsg.replace("history/", "");
+					if (fromPlan==0) {
+						logMsg = logMsg.replace("?from_plan=", "");
 					}
-					log.info(logMsg);	    	
-		    	}
+				}
+				log.info(logMsg);
 		    }
 		}
 	}
