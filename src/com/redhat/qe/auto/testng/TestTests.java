@@ -4,6 +4,7 @@ import org.testng.SkipException;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
 
+import com.redhat.qe.auto.tcms.ImplementsNitrateTest;
 import com.redhat.qe.auto.tcms.TCMSTestNGListener;
 
 /**
@@ -16,7 +17,10 @@ public class TestTests extends TestScript {
 
 	@BeforeSuite
 	public void setBuild() {
-		TCMSTestNGListener.setBuild("123");
+/*		System.setProperty("org.apache.commons.logging.simplelog.log.httpclient.wire", "debug");
+
+		System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.commons.httpclient", "debug");
+*/		TCMSTestNGListener.setBuild("123");
 		TCMSTestNGListener.setVersion("2.4.0-SNAPSHOT");
 	}
 	
@@ -25,7 +29,7 @@ public class TestTests extends TestScript {
 		Assert.assertTrue(true, "Yeah!");
 	}
 	
-	
+	@ImplementsNitrateTest(caseId=59698)
 	public void mytest2() {
 		log.info("Testing test2.");
 		Assert.assertTrue(false, "Boo!");

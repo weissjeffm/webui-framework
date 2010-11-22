@@ -56,20 +56,22 @@ public class Session {
 			    factory.setHttpClient(new HttpClient());
 			    client.setTypeFactory(new MyTypeFactory(client));
 			    			    
-			    factory.getHttpClient().getState().setCredentials(
+			    if (userName != null && password != null) 
+			    	factory.getHttpClient().getState().setCredentials(
 			    		new AuthScope(url.getHost(), 443, null), new UsernamePasswordCredentials(userName, password));
 			    // register the auth scheme
 		        AuthPolicy.registerAuthScheme("Negotiate", NegotiateScheme.class);
 
 		        // include the scheme in the AuthPolicy.AUTH_SCHEME_PRIORITY preference
 		        List<String> schemes = new ArrayList<String>();
-		        schemes.add(AuthPolicy.BASIC);
 		        schemes.add("Negotiate");
+		        schemes.add(AuthPolicy.BASIC);
 
 		        HttpParams params = DefaultHttpParams.getDefaultParams();        
 		        params.setParameter(AuthPolicy.AUTH_SCHEME_PRIORITY, schemes);
 		        
-		        Credentials use_jaas_creds = new UsernamePasswordCredentials(userName, password);
+		        Credentials use_jaas_creds = new UsernamePasswordCredentials(userName == null? "fake" : userName,
+		        		password == null? "fake" : password);
 		        factory.getHttpClient().getState().setCredentials(
 		            new AuthScope(null, -1, null),
 		            use_jaas_creds);

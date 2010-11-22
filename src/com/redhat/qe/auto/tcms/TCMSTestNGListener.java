@@ -307,25 +307,37 @@ public class TCMSTestNGListener implements IResultListener, ISuiteListener {
 		return pkgs[pkgs.length-1];
 	}
 
+	protected TestCase getTestCaseByAnnotation(ITestResult result){
+		if (result.getMethod().getInvocationCount() > 1) 
+			throw new RuntimeException("Cannot overwrite TCMS testcase from method that will be invoked multiple times: " + result.getMethod().getMethodName());
+		ImplementsNitrateTest annotation = result.getMethod().getMethod().getAnnotation(ImplementsNitrateTest.class);
+		if (annotation == null) throw new RuntimeException("No TCMS annotation present.");
+		return new TestCase(session, annotation.caseId());
+	}
 	/* (non-Javadoc)
 	 * @see org.testng.ITestListener#onTestStart(org.testng.ITestResult)
 	 */
 	public void onTestStart(ITestResult result) {
-		
 		//create new testcaserun
 		int iteration = result.getMethod().getCurrentInvocationCount();
 		log.finer("Got getCurrentInvocationCount()=" + iteration  + ", total=" + result.getMethod().getInvocationCount());
 		String count = "";
 		
 		String className = getPackagelessTestClass(result);
+		
 		if (iteration > 0) count = new Integer(iteration+1).toString();
-		String alias = version + "." + className + "." + result.getMethod().getMethodName() + count;
+		String alias =  className + "." + result.getMethod().getMethodName() + count;
 		String script = className + "." + result.getMethod().getMethodName();
 		String description = result.getMethod().getDescription();
 		String summary = description.length()>0 ? (description + count) : (script + count);
 		
 		try {
-			testcase = new TestCase(session, alias);
+			try {
+				testcase = getTestCaseByAnnotation(result);
+			}catch (Exception e){
+				log.log(Level.FINER, "Couldn't retrieve testcase via tcms annotation, falling back to retrieving by method name.", e);
+				testcase = new TestCase(session, alias);
+			}
 			//FIXME temporary to fix testcase names
 			testcase.setSummary(summary);
 			if (result.getParameters() != null && result.getParameters().length > 0) {
@@ -343,9 +355,6 @@ public class TCMSTestNGListener implements IResultListener, ISuiteListener {
 				testcase.setAlias(alias);
 				testcase.setIsAutomated(1);
 				testcase.create();
-				
-				
-				
 			}
 			catch(Exception e2){
 				throw new TestopiaException(e2);
