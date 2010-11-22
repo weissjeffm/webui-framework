@@ -387,8 +387,8 @@ public class TCMSTestNGListener implements IResultListener, ISuiteListener {
 		if (action == null)
 			action = "no procedure found!";
 		
-		if(myOverwrite == null || myOverwrite.equalsIgnoreCase("1")){
-			log.finer("Updating testcase " + testcase.getAlias() + " with successful action log: \n" + action);
+		if(myOverwrite.equalsIgnoreCase("1")){
+			log.fine("Updating testcase " + testcase.getAlias() + " with successful action log: \n" + action);
 			//put it in testopia
 		
 			testcase.setAction(action);
