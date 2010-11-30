@@ -35,7 +35,7 @@ testng = Class.forName("org.testng.TestNG").newInstance();
 addListeners()	
 setOutputDir()
 
-if (args[1] && !args[1]=="*") {
+if (args[1] && args[1]!="*") {
 	testToRun = args[1]
 	def parser = Class.forName("org.testng.xml.Parser").getConstructor(String.class).newInstance(masterXmlFile)
 	def masterXmlSuite = parser.parse().iterator().next();
