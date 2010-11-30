@@ -59,8 +59,14 @@ else {
 	testng.setTestSuites([masterXmlFile])
 }
 
-testng.run()
-
+try {
+	testng.run()
+}
+catch(Exception e){
+	println("Error running TestNG: $e")
+	e.printStackTrace()
+	throw e
+}
 !testng.hasFailure()
 /* ----- internal methods ----- */
 
