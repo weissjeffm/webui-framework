@@ -60,7 +60,7 @@ else {
 }
 
 testng.run()
-makeJunitReport()
+
 !testng.hasFailure()
 /* ----- internal methods ----- */
 
@@ -86,18 +86,6 @@ def setOutputDir(){
 	println("Setting testng output dir to $outputDir")
 	testng.setOutputDirectory(outputDir)
 	
-}
-def makeJunitReport(){
-	//generate junit report
-	junitDir = "${automationDir}/test-output-junit"
-	ant.mkdir(dir: junitDir)
-	ant.junitreport(todir: junitDir) {
-		fileset(dir: outputDir){
-			include(name: "**/*.xml")
-			exclude(name: "**/testng-failed.xml")
-			exclude(name: "xml/**")
-		}
-	}
 }
 
 def addListeners(){
