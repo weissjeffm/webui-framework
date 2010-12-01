@@ -11,7 +11,7 @@ import java.util.logging.Logger;
 
 import com.redhat.qe.tools.compare.CollectionSorter;
 
-public abstract class TestScript {
+public class TestScript {
 
 	protected static boolean initialized = false;
 	protected static Logger log = Logger.getLogger(TestScript.class.getName());
@@ -40,7 +40,7 @@ public abstract class TestScript {
 			LogManager.getLogManager().readConfiguration(new FileInputStream(propFile));
 			log.fine("Loaded logger configuration from log.propertiesfile: "+propFile);
 
-		} catch(Exception e){
+		} catch(Throwable e){
 			e.printStackTrace();
 			log.log(Level.SEVERE, "Could not load log properties from "+propFile, e);
 		}
@@ -65,7 +65,7 @@ public abstract class TestScript {
 				System.setProperty("automation.dir", System.getProperty("user.dir"));
 			}
 
-		} catch(Exception e){
+		} catch(Throwable e){
 			e.printStackTrace();
 			log.log(Level.SEVERE, "Could not load automation properties from "+propFile, e);
 		}
