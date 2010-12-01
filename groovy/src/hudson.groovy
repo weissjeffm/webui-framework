@@ -35,7 +35,7 @@ testng = Class.forName("org.testng.TestNG").newInstance();
 addListeners()	
 setOutputDir()
 
-if (args.length > 1) {
+if (args.length > 1 && args[1]!="*") {
 	testToRun = args[1]
 	def parser = Class.forName("org.testng.xml.Parser").getConstructor(String.class).newInstance(masterXmlFile)
 	def masterXmlSuite = parser.parse().iterator().next();
@@ -59,8 +59,14 @@ else {
 	testng.setTestSuites([masterXmlFile])
 }
 
-testng.run()
-makeJunitReport()
+try {
+	testng.run()
+}
+catch(Exception e){
+	println("Error running TestNG: $e")
+	e.printStackTrace()
+	throw e
+}
 !testng.hasFailure()
 /* ----- internal methods ----- */
 
@@ -86,18 +92,6 @@ def setOutputDir(){
 	println("Setting testng output dir to $outputDir")
 	testng.setOutputDirectory(outputDir)
 	
-}
-def makeJunitReport(){
-	//generate junit report
-	junitDir = "${automationDir}/test-output-junit"
-	ant.mkdir(dir: junitDir)
-	ant.junitreport(todir: junitDir) {
-		fileset(dir: outputDir){
-			include(name: "**/*.xml")
-			exclude(name: "**/testng-failed.xml")
-			exclude(name: "xml/**")
-		}
-	}
 }
 
 def addListeners(){
