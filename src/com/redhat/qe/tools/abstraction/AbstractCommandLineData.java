@@ -5,6 +5,7 @@ import java.math.BigInteger;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
@@ -150,4 +151,60 @@ public abstract class AbstractCommandLineData {
         
         return foundMatches;
 	}
+	
+	
+	
+	
+	/**
+	 * Given a List of instances of some class (e.g. getCurrentEntitlementCerts()), this
+	 * method is useful for finding the first instance (e.g. an EntitlementCert) whose public
+	 * field by the name "fieldName" has a value of fieldValue.  If no match is found, null is returned.
+	 * @param <T>
+	 * @param fieldName
+	 * @param fieldValue
+	 * @param dataInstances
+	 * @return
+	 */
+	public static <T> T findFirstInstanceWithMatchingFieldFromList(String fieldName, Object fieldValue, List<T> dataInstances) {
+		List<T> dataInstancesWithMatchingField = findAllInstancesWithMatchingFieldFromList(fieldName,fieldValue,dataInstances);
+		if (dataInstancesWithMatchingField.isEmpty()) {
+			return null;
+		}
+		return dataInstancesWithMatchingField.get(0);
+	}
+	
+	/**
+	 * Given a List of instances of some class (e.g. getAllAvailableSubscriptionPools()), this
+	 * method is useful for finding a subset of instances whose public field by the name "fieldName"
+	 * has a value of fieldValue.  If no match is found, an empty list is returned.
+	 * @param <T>
+	 * @param fieldName
+	 * @param fieldValue
+	 * @param dataInstances
+	 * @return
+	 */
+	public static <T> List<T> findAllInstancesWithMatchingFieldFromList(String fieldName, Object fieldValue, List<T> dataInstances) {
+		List<T> dataInstancesWithMatchingField = new ArrayList<T>();
+		for (T dataInstance : dataInstances) {
+			try {
+				if (dataInstance.getClass().getField(fieldName).get(dataInstance).equals(fieldValue)) {
+					dataInstancesWithMatchingField.add(dataInstance);
+				}
+			} catch (IllegalArgumentException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (SecurityException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (NoSuchFieldException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return dataInstancesWithMatchingField;
+	}
+	
 }
