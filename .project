@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
   <name>webui-framework</name>
-  <comment>FIXME: write</comment>
+  <comment>A library of automated testing related functions.</comment>
   <projects/>
   <buildSpec>
     <buildCommand>
