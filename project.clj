@@ -12,4 +12,4 @@
 		 [org.clojars.weissjeffm/httpclient-negotiate "1.0"]
 		 [commons-logging/commons-logging "1.1.1"]
 		 [org.seleniumhq.selenium.client-drivers/selenium-java-client-driver "1.0.2"]]
-  :dev-dependencies [ [lein-javac "1.2.1-SNAPSHOT"] [lein-eclipse "1.0.0"] ])
+  :dev-dependencies [ [lein-eclipse "1.0.0"] ])
