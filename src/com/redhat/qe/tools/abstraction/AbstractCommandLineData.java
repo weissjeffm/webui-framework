@@ -41,7 +41,8 @@ public abstract class AbstractCommandLineData {
 				else if (abstractionField.getType().equals(BigInteger.class))
 					abstractionField.set(this, this.parseBigInteger(productData.get(keyField)));
 				else if (abstractionField.getType().equals(Boolean.class))
-					abstractionField.set(this, productData.get(keyField).toLowerCase().contains("true"));
+					//abstractionField.set(this, productData.get(keyField).toLowerCase().equals("true")||productData.get(keyField).equals("1"));
+					abstractionField.set(this, this.parseBoolean(productData.get(keyField)));
 				else
 					abstractionField.set(this, productData.get(keyField));
 			} catch (Exception e){
@@ -98,6 +99,15 @@ public abstract class AbstractCommandLineData {
 	public static String formatDateString(Calendar date){
 		DateFormat dateFormat = new SimpleDateFormat(simpleDateFormat);
 		return dateFormat.format(date.getTime());
+	}
+	
+	protected Boolean parseBoolean(String booleanString){
+		if (booleanString.toLowerCase().equals("true")) return Boolean.TRUE;
+		if (booleanString.toLowerCase().equals("false")) return Boolean.FALSE;
+		if (booleanString.equals("1")) return Boolean.TRUE; 
+		if (booleanString.equals("0")) return Boolean.FALSE;
+		log.warning("Do not know how to infer a Boolean value from '"+booleanString+"'.");
+		return null;
 	}
 	
 	protected Integer parseInt(String intString){

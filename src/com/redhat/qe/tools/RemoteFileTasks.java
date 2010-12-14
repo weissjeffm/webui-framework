@@ -185,8 +185,7 @@ public class RemoteFileTasks {
 	public static SSHCommandResult runCommandAndAssert(SSHCommandRunner sshCommandRunner, String command, Integer exitCode, List<String> stdoutRegexs, List<String> stderrRegexs) {
 		List<Integer> exitCodes = null;
 		if (exitCode != null) {
-			exitCodes = new ArrayList<Integer>();
-			exitCodes.add(exitCode);
+			exitCodes = new ArrayList<Integer>(); exitCodes.add(exitCode);
 		}
 		return runCommandAndAssert(sshCommandRunner, command, exitCodes, stdoutRegexs, stderrRegexs);
 	}
@@ -207,8 +206,9 @@ public class RemoteFileTasks {
 	public static SSHCommandResult runCommandAndAssert(SSHCommandRunner sshCommandRunner, String command, List<Integer> validExitCodes, List<String> stdoutRegexs, List<String> stderrRegexs) {
 
 		SSHCommandResult sshCommandResult = sshCommandRunner.runCommandAndWait(command);
-		Assert.assertContains(validExitCodes, sshCommandResult.getExitCode());
-		
+		if (validExitCodes!=null) {
+			Assert.assertContains(validExitCodes, sshCommandResult.getExitCode());
+		}
 		if (stdoutRegexs!=null) {
 			for (String regex : stdoutRegexs) {
 				Assert.assertContainsMatch(sshCommandResult.getStdout(),regex,"Stdout",String.format("Stdout from command '%s' contains matches to regex '%s',",command,regex));

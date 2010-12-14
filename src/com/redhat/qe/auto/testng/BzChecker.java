@@ -164,7 +164,7 @@ public class BzChecker {
 		String[] splits = states.split(",");
 		List<bzState> list = new ArrayList<bzState>();
 		for (String state: splits) {
-			list.add(bzState.valueOf(state.toUpperCase()));
+			list.add(bzState.valueOf(state.trim().toUpperCase()));
 		}
 		return list.toArray(new bzState[] {});
 	}
