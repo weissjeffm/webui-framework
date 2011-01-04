@@ -41,6 +41,7 @@ public class UILocatorStrategies {
     public LocatorStrategy id_button = new CombinedLocatorTemplate("id_button",id,button);
     public LocatorStrategy id_link = new CombinedLocatorTemplate("id_link",id,link);
     public LocatorStrategy nav_href = new CombinedLocatorTemplate("nav_href",nav,href);
+    public LocatorStrategy nav_link = new CombinedLocatorTemplate("nav_link",nav,link);
     public LocatorStrategy div_id = new CombinedLocatorTemplate("div_id",div,id);
     public LocatorStrategy div_icon = new CombinedLocatorTemplate("div_icon",div,icon);
     public LocatorStrategy div_span = new CombinedLocatorTemplate("div_span",div,span);
