@@ -31,6 +31,12 @@ public class Element {
 		this.locatorStrategyArgs = locatorStrategyArgs;
 	}
 	
+	public Element(Element humanReadable,LocatorStrategy locatorStrategy, String... locatorStrategyArgs){
+		this.locatorStrategy = locatorStrategy;
+		this.locatorStrategyArgs = locatorStrategyArgs;
+		this.humanReadable = humanReadable;
+	}
+	
 	public Element(String locator, Element humanReadable) {
 		this.locator = locator;
 		this.humanReadable = humanReadable;
@@ -78,6 +84,11 @@ public class Element {
 	
 	public void setLocatorStrategyArgs(String[] locatorStrategyArgs) {
 		this.locatorStrategyArgs = locatorStrategyArgs;
+	}
+	
+	public void setLocatorStrategyArgs(String[] locatorStrategyArgs, Element humanReadable) {
+		this.locatorStrategyArgs = locatorStrategyArgs;
+		this.humanReadable = humanReadable;
 	}
 	
 	/**
