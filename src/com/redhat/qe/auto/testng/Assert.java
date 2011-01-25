@@ -251,7 +251,7 @@ public class Assert {
 		  default: throw new IllegalStateException("Can only set expected comparison results of -1,0,1.  Given: " + expComp);
 	  }
 	  String newMessage = message + ": " + actual + comp + expected;
-	  System.out.println(actual.compareTo(expected) + " " +  expComp);
+	  // System.out.println(actual.compareTo(expected) + " " +  expComp);
 	  int comparison = actual.compareTo(expected);
 	  if (comparison * expComp > 0 || (comparison == 0 && expComp == 0)){
 	    	pass(newMessage);
