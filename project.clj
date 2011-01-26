@@ -1,4 +1,4 @@
-(defproject webui-framework "1.0.0-SNAPSHOT"
+(defproject webui-framework "1.0.1-SNAPSHOT"
   :description "A library of automated testing related functions."
   :java-source-path "src"
   ;  :java-options {:debug "true" }
@@ -6,7 +6,7 @@
 		 [commons-httpclient/commons-httpclient "3.1"]
 		 [com.google.collections/google-collections "1.0"]
 		 [velocity/velocity "1.4"]
-		 [org.testng/testng "5.14.2"]
+		 [org.testng/testng "5.14.6"]
 		 [com.trilead/trilead-ssh2 "build213-svnkit-1.3-patch"]
 		 [ca.juliusdavies/not-yet-commons-ssl "0.3.11"]
 		 [org.clojars.weissjeffm/httpclient-negotiate "1.0"]
