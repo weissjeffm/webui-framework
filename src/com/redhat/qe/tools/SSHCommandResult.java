@@ -1,5 +1,6 @@
 package com.redhat.qe.tools;
 
+
 public class SSHCommandResult {
 	protected Integer exitCode = null;
 	protected String stdout = null;
@@ -36,5 +37,14 @@ public class SSHCommandResult {
 	 */
 	public final String getStderr() {
 		return stderr;
+	}
+	
+	public String toString() {
+		String string = "";
+		if (exitCode != null)	string += String.format(" %s=%d", "exitCode",exitCode);
+		if (stdout != null)		string += String.format(" %s='%s'", "stdout",stdout);
+		if (stderr != null)		string += String.format(" %s='%s'", "stderr",stderr);
+		
+		return string.trim();
 	}
 }
