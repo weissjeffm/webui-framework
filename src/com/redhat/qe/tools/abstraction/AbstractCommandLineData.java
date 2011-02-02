@@ -10,6 +10,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -83,9 +84,10 @@ public abstract class AbstractCommandLineData {
 		return parseDateString(dateString, simpleDateFormat);
 	}
 	
-	protected final Calendar parseDateString(String dateString, String simpleDateFormat){
+	protected Calendar parseDateString(String dateString, String simpleDateFormat){
 		try{
 			DateFormat dateFormat = new SimpleDateFormat(simpleDateFormat);
+			dateFormat.setTimeZone(TimeZone.getDefault());
 			Calendar calendar = Calendar.getInstance();
 			calendar.setTime(dateFormat.parse(dateString));
 			return calendar;
@@ -98,6 +100,7 @@ public abstract class AbstractCommandLineData {
 
 	public static String formatDateString(Calendar date){
 		DateFormat dateFormat = new SimpleDateFormat(simpleDateFormat);
+		dateFormat.setTimeZone(TimeZone.getDefault());
 		return dateFormat.format(date.getTime());
 	}
 	
