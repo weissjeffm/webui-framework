@@ -6,5 +6,5 @@
 (defn connect [host port browser-type url]
   (reset! sel (ExtendedSelenium. host port browser-type url)))
 
-(defmacro ui [action & args]
+(defmacro browser [action & args]
   `(clojure.lang.Reflector/invokeInstanceMethod (deref sel) ~(str action) (into-array (quote ~args))))
