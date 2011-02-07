@@ -61,10 +61,45 @@ public class SSHCommandRunner implements Runnable {
 
 	public SSHCommandRunner(String server,
 			String user,
+			String passphrase,
+			File sshPemFile,
+			String pemPassphrase,
+			String command) throws IOException{
+		super();
+		Connection newConn = new Connection(server);
+		newConn.connect();
+		try {
+			newConn.authenticateWithPublicKey(user, sshPemFile, pemPassphrase);
+		}
+		catch (IOException e) {
+			//e.printStackTrace();
+			newConn = new Connection(server);
+			newConn.connect();
+			if (!newConn.authenticateWithPassword(user, passphrase)) {
+				throw new RuntimeException("Could not log in to " + newConn.getHostname() + " with the given credentials ("+user+").");
+			}
+		}
+
+		this.connection = newConn;
+		this.user = user;
+		this.command = command;
+	}
+
+	public SSHCommandRunner(String server,
+			String user,
 			String sshPemFile,
 			String passphrase,
 			String command) throws IOException{
 		this(server, user, new File(sshPemFile), passphrase, command);
+	}
+
+	public SSHCommandRunner(String server,
+			String user,
+			String passphrase,
+			String sshPemFile,
+			String pemPassphrase,
+			String command) throws IOException{
+		this(server, user, passphrase, new File(sshPemFile), pemPassphrase, command);
 	}
 
 	
@@ -362,14 +397,19 @@ public class SSHCommandRunner implements Runnable {
 	 */
 	public static void main(String[] args) throws Exception{
 
-		Connection conn = new Connection("jweiss-rhel3.usersys.redhat.com");
+		/*Connection conn = new Connection("jweiss-rhel3.usersys.redhat.com");
 		conn.connect();
 		if (!conn.authenticateWithPassword("jonqa", "dog8code"))
 			throw new IllegalStateException("Authentication failed.");
 		SSHCommandRunner runner = new SSHCommandRunner(conn, "sleep 3");
 		runner.run();
 		Integer exitcode = runner.waitForWithTimeout(null);
-		System.out.println("exit code: " + exitcode);
+		System.out.println("exit code: " + exitcode);*/
+		
+		SSHCommandRunner scr = new SSHCommandRunner("pulp-nightly.usersys.redhat.com", "root", "dog8code", "sdf", "sdfs", null);
+		scr.runCommandAndWait("hostname");
+		System.out.println(scr.getStdout());
+		
 		/*SCPClient scp = new SCPClient(conn);
 		scp.put(System.getProperty("user.dir")+ "/../jon/bin/DummyJVM.class", "/tmp");
 		SSHCommandRunner jrunner = new SSHCommandRunner(conn, "java -Dcom.sun.management.jmxremote.port=1500 -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false -cp /tmp DummyJVM");
