@@ -61,10 +61,43 @@ public class SSHCommandRunner implements Runnable {
 
 	public SSHCommandRunner(String server,
 			String user,
+			String passphrase,
+			File sshPemFile,
+			String pemPassphrase,
+			String command) throws IOException{
+		super();
+		Connection newConn = new Connection(server);
+		newConn.connect();
+		try {
+			newConn.authenticateWithPublicKey(user, sshPemFile, pemPassphrase);
+		}
+		catch (IOException e) {
+			//e.printStackTrace();
+			if (!newConn.authenticateWithPassword(user, passphrase)) {
+				throw new RuntimeException("Could not log in to " + newConn.getHostname() + " with the given credentials ("+user+").");
+			}
+		}
+
+		this.connection = newConn;
+		this.user = user;
+		this.command = command;
+	}
+
+	public SSHCommandRunner(String server,
+			String user,
 			String sshPemFile,
 			String passphrase,
 			String command) throws IOException{
 		this(server, user, new File(sshPemFile), passphrase, command);
+	}
+
+	public SSHCommandRunner(String server,
+			String user,
+			String passphrase,
+			String sshPemFile,
+			String pemPassphrase,
+			String command) throws IOException{
+		this(server, user, passphrase, new File(sshPemFile), pemPassphrase, command);
 	}
 
 	
