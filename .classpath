@@ -30,5 +30,6 @@
 	<classpathentry kind="lib" path="lib/asm-commons-3.2.jar"/>
 	<classpathentry kind="lib" path="lib/asm-tree-3.2.jar"/>
 	<classpathentry kind="lib" path="lib/asm-util-3.2.jar"/>
+	<classpathentry kind="lib" path="lib/antlr-2.7.7jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
