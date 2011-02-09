@@ -318,6 +318,11 @@ public class TCMSTestNGListener implements IResultListener, ISuiteListener {
 	 * @see org.testng.ITestListener#onTestStart(org.testng.ITestResult)
 	 */
 	public void onTestStart(ITestResult result) {
+		String sAppendParmOneToSummary = System.getProperty("testopia.testcase.appendParmOneToSummary");
+		if (sAppendParmOneToSummary == null) {
+			sAppendParmOneToSummary = "0";
+		}
+		
 		//create new testcaserun
 		int iteration = result.getMethod().getCurrentInvocationCount();
 		log.finer("Got getCurrentInvocationCount()=" + iteration  + ", total=" + result.getMethod().getInvocationCount());
@@ -329,7 +334,15 @@ public class TCMSTestNGListener implements IResultListener, ISuiteListener {
 		String alias =  className + "." + result.getMethod().getMethodName() + count;
 		String script = className + "." + result.getMethod().getMethodName();
 		String description = result.getMethod().getDescription();
-		String summary = description.length()>0 ? (description + count) : (script + count);
+		
+		String summary = null;
+		if ( (sAppendParmOneToSummary.equals("1")) && (result.getParameters() != null && result.getParameters().length > 0) ) {
+			summary = description.length()>0 ? description : script;
+			String parmOne = (String) result.getParameters()[0];
+			summary = summary + " - " + parmOne;
+		} else {	
+			summary = description.length()>0 ? (description + count) : (script + count);
+		}
 		
 		try {
 			try {
