@@ -406,7 +406,7 @@ public class SSHCommandRunner implements Runnable {
 		Integer exitcode = runner.waitForWithTimeout(null);
 		System.out.println("exit code: " + exitcode);*/
 		
-		SSHCommandRunner scr = new SSHCommandRunner("pulp-nightly.usersys.redhat.com", "root", "dog8code", "sdf", "sdfs", null);
+		SSHCommandRunner scr = new SSHCommandRunner(null, "root", "dog8code", "sdf", "sdfs", null);
 		scr.runCommandAndWait("hostname");
 		System.out.println(scr.getStdout());
 		
