@@ -13,10 +13,12 @@ FAQ:
 
 1) How do I run tests under hudson? 
 
-   Add a groovy task to you job that runs groovy/src/hudson.groovy.
-   The script takes a TestNG suite file argument, and an optional name
-   of a test to run from within that suite.  If no test is specified,
-   the whole suite is run.
+   We use leiningen to build our automation, which will include
+   webui-framework as a dependency.  Then it's just a simple Bash
+   build step that calls java:
+
+    java -cp `lein classpath` org.testng.TestNG [options] [suitefile]
+    
 
 2) How do I get pretty reports in Hudson?
    Several java properties should be set in your hudson groovy task:
