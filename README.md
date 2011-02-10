@@ -7,7 +7,21 @@ console applications.
 several plugins available here for TestNG to facilitate logging,
 screenshots, and interactions with Bugzilla and TCMS.
 
-Running tests under Hudson is also supported.
+Features include 
+
+* An extended selenium client that has some
+higher-level methods and includes more detailed logging (see
+com.redhat.qe.auto.selenium.ExtendedSelenium).  Also provides some API
+to create complex XPath locators.
+* An extension of TestNG's Assert class that does better logging and
+adds a bit more API.  See com.redhat.qe.auto.testng.Assert.
+* Extensions to Trilead's SSH2 java library (under
+com.redhat.qe.tools package)
+* Integration with Bugzilla (Tests can be skipped if a known bug that
+blocks the test is still open)
+* Running tests under Hudson
+* Use of [ReportNG](http://reportng.uncommons.org/) to generate pretty
+html reports with icons for assertions, and actions.
 
 FAQ:
 
@@ -19,7 +33,6 @@ FAQ:
 
     java -cp `lein classpath` org.testng.TestNG [options] [suitefile]
     
-
 2) How do I get pretty reports in Hudson?  
 
    Specify the Reportng html listener as a testng option on the
