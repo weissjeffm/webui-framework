@@ -1,9 +1,9 @@
 This project is a Java framework and library for automated testing.
 It provides functionality to enable testing of web-based applications
-(using selenium http://seleniumhq.org/ ), GNOME apps (using LDTP), and
+(using [selenium](http://seleniumhq.org/) ), GNOME apps (using LDTP), and
 console applications.
 
-TestNG ( http://testng.org ) is used as the test harness.  There are
+[TestNG](http://testng.org) is used as the test harness.  There are
 several plugins available here for TestNG to facilitate logging,
 screenshots, and interactions with Bugzilla and TCMS.
 
@@ -67,7 +67,7 @@ FAQ:
    First you'll need to get a kerberos ticket with kinit. Then you'll
    need the following jvm arguments when running your tests:
 
-   -Duser.krb5cc=[your-kerb-cache-file] -Djavax.security.auth.useSubjectCredsOnly=false 
+     -Duser.krb5cc=[your-kerb-cache-file] -Djavax.security.auth.useSubjectCredsOnly=false 
    
    Your cache file is something like /tmp/krb5cc_500.  The number at
    the end is your unix userid, check your /tmp dir for files like
