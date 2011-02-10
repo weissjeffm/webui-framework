@@ -20,24 +20,48 @@ FAQ:
     java -cp `lein classpath` org.testng.TestNG [options] [suitefile]
     
 
-2) How do I get pretty reports in Hudson?
-   Several java properties should be set in your hudson groovy task:
- 
-     -Dtestng.outputdir=[any relative path within the workspace - 
-     	  must be on the list of dirs to archive for the hudson job]
-     -Dselenium.screenshot.dir=[any subdir of the outputdir]
-     -Dselenium.screenshot.link.path=../artifact/[screenshotdir]
+2) How do I get pretty reports in Hudson?  
 
-   Also, install the HTML Reports plugin for hudson.  In the
+   Specify the Reportng html listener as a testng option on the
+   command line (can also be added to the suite file):
+ 
+     -listener org.uncommons.reportng.HTMLReporter
+
+   In your java logging settings (default settings location is
+   ~/log.properties), add
+
+     com.redhat.qe.auto.testng.TestNGReportHandler
+
+   to the list of handlers.
+
+   Several java system properties may need to be set (this can be done
+   on the command line or via properties file whose default location
+   is ~/automation.properties):
+ 
+     testng.outputdir=[any relative path within the workspace - must
+     	  be on the list of dirs to archive for the hudson job,
+     	  defaults to the dir where the jvm is invoked (same as
+     	  user.dir system property]
+     org.uncommons.reportng.escape-output=false
+     org.uncommons.reportng.stylesheet=web/reportng-custom.css
+
+    
+   (For jobs that can take screenshots, currently only selenium):
+
+     selenium.screenshot.dir=[any subdir of the outputdir]    
+     selenium.screenshot.link.path=../artifact/[screenshotdir]
+
+   Install the HTML Reports plugin for hudson.  In the
    Post-build actions for your hudson job, point the "Publish HTML
    Reports" section to the [outputdir]/html/index.html file that will
    be produced by the TestNG report.
 
-   The report will use icons that need to be present on hudson.
-   Typically the hudson war dir is ~hudson/.hudson/war.  Create a
-   subdir images/webui-framework under the war dir.  Copy the files
-   web/*.png from this repository into images/webui-framework.  Then
-   the report's icons will link to the correct files.
+   The report will use icons that need to be served by the hudson web
+   server.  Create a subdir images/webui-framework under the 'war' dir
+   (for standalone hudson - for tomcat, create it under 'webapps').
+   Copy the files resources/web/*.png from this repository, into the
+   subdirectory you created.  Then the report's icons will link to the
+   correct files.
    	  
 3) How do I use kerberos negotiate auth (with services like TCMS)?
    First you'll need to get a kerberos ticket with kinit. Then you'll
