@@ -48,6 +48,7 @@ public class TCMSTestNGListener implements IResultListener, ISuiteListener {
 	protected static String TESTOPIA_URL = "";
 	protected static String TESTOPIA_TESTRUN_TESTPLAN = "";
 	protected static String TESTOPIA_TESTRUN_PRODUCT = "";
+	protected static String sProcedurePreText = null;
 	
 	protected static Logger log = Logger.getLogger(TCMSTestNGListener.class.getName());
 	protected TestRun testrun;
@@ -314,10 +315,53 @@ public class TCMSTestNGListener implements IResultListener, ISuiteListener {
 		if (annotation == null) throw new RuntimeException("No TCMS annotation present.");
 		return new TestCase(session, annotation.caseId());
 	}
+	
+	// Remove some messages that don't belong in the tcms test case procedures
+	private String cleanUpLog(String sLogText) {
+		String sFinalString = "";
+		String[] array = sLogText.split("<br>");
+		for( int i = 0; i < array.length; i++) {
+			if (!array[i].startsWith("System property automation.propertiesfile is not set") &&
+				!array[i].startsWith("\nRunning against") &&
+				!array[i].startsWith("\nStarting TestNG Suite") &&
+				!array[i].startsWith("\nCurrent URL") &&
+				!array[i].startsWith("\nStarting TestNG Script") &&
+				!array[i].startsWith("\nStarting Test") &&
+				!array[i].startsWith("Starting Test") &&
+				!array[i].startsWith("\nTest Passed") &&
+				!array[i].startsWith("\nTest Skipped") &&
+				!array[i].startsWith("\nTest Failed")) {
+				
+				if (sFinalString.equals("")) {
+					sFinalString = array[i];
+				} else {	
+					sFinalString = sFinalString + "<br>" + array[i];
+				}	
+			}	
+		}
+		if (sFinalString.equals("\n")) {
+			sFinalString = "";
+		}
+		return sFinalString; 
+	}
+	
+	
+	
 	/* (non-Javadoc)
 	 * @see org.testng.ITestListener#onTestStart(org.testng.ITestResult)
 	 */
 	public void onTestStart(ITestResult result) {
+		
+		// if the first time, capture & cleanup the initial login process of selenium test script
+		if (sProcedurePreText == null) {
+			sProcedurePreText = TestProcedureHandler.getActiveLog();
+			sProcedurePreText = cleanUpLog(sProcedurePreText);
+		}	
+		
+		// resetting active log to remove messages from previous tests that were bleeding over
+		TestProcedureHandler.resetActiveLog();
+		
+		// useful kvp when trying to document data provided tests
 		String sAppendParmOneToSummary = System.getProperty("testopia.testcase.appendParmOneToSummary");
 		if (sAppendParmOneToSummary == null) {
 			sAppendParmOneToSummary = "0";
@@ -397,6 +441,8 @@ public class TCMSTestNGListener implements IResultListener, ISuiteListener {
 		myOverwrite = System.getProperty("testopia.testcase.overwrite");
 		//get the procedure log from the handler
 		String action= TestProcedureHandler.getActiveLog();
+		action = cleanUpLog(action);
+		action = sProcedurePreText + action;
 		if (action == null)
 			action = "no procedure found!";
 		
