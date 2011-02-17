@@ -161,7 +161,7 @@ public class SSHCommandRunner implements Runnable {
 		}
 		Integer exitCode = null;
 		if (! (kill || timedOut))
-			exitCode = session.getExitStatus();
+			exitCode = getExitCode();
 				
 		session.close();
 
@@ -172,7 +172,7 @@ public class SSHCommandRunner implements Runnable {
 	public boolean isDone(){
 		if (session == null)
 			return false;
-		return (session.getExitStatus() != 0);
+		return (getExitCode() != 0);
 	}
 
 	protected String convertStreamToString(InputStream is) {
@@ -202,6 +202,17 @@ public class SSHCommandRunner implements Runnable {
 
 		return sb.toString();
 	}
+	
+	
+	public SSHCommandResult getSSHCommandResult() {
+		return new SSHCommandResult(getExitCode(),getStdout(),getStderr());
+	}
+	
+	
+	public Integer getExitCode() {
+		return session.getExitStatus();
+	}
+
 	
 	/**
 	 * Consumes entire stdout stream of the command, this will block until the stream is closed.
@@ -278,8 +289,8 @@ public class SSHCommandRunner implements Runnable {
 			SplitStreamLogger logger = new SplitStreamLogger(this);
 			logger.log(logRecord.getLevel(), logRecord.getLevel());
 		}
-		Integer exitCode = waitForWithTimeout(timeoutMS);
-		SSHCommandResult sshCommandResult = new SSHCommandResult(exitCode,this.getStdout(),this.getStderr());
+		waitForWithTimeout(timeoutMS);
+		SSHCommandResult sshCommandResult = getSSHCommandResult();
 		if (!liveLogOutput){
 			String o = (this.getStdout().split("\n").length>1)? "\n":"";
 			String e = (this.getStderr().split("\n").length>1)? "\n":"";
