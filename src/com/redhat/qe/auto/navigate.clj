@@ -12,12 +12,11 @@
     (merge m args linkmap)))
 
 (defn page-zip [tree] (zip/zipper (constantly true)
-                          #(or (:links %) [])
+                          #(:links %)
                           #(conj %1 {:links %2})
                           tree))
 
 (defn find-node [z pred]
-  (println (str "yo " z))
   (and z (->> (iterate zip/next z)
               (take-while #(not (zip/end? %1)))
               (some  #(when (pred (zip/node %)) %)))))
