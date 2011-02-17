@@ -11,10 +11,10 @@
         linkmap (if (nil? links) {} {:links (vec links)})]
     (merge m args linkmap)))
 
-(def page-zip (zip/zipper #(contains? % :links)
+(defn page-zip [tree] (zip/zipper #(contains? % :links)
                           #(:links %)
                           #(conj %1 {:links %2})
-                          nav-tree))
+                          tree))
 
 (defn find-node [z pred]
   (->> (iterate zip/next z)
