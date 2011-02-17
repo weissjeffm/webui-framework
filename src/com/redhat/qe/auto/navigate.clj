@@ -1,4 +1,4 @@
-(ns kalpana.navigation
+(ns com.redhat.qe.auto.navigate
   (:require [clojure.zip :as zip]
             [clojure.set])
   (:import [java.util NoSuchElementException]))
