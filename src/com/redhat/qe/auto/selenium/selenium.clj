@@ -6,7 +6,6 @@
 
 (def sel (atom nil))
 
-
 (defn connect [host port browser-type url]
   (reset! sel (ExtendedSelenium. host port browser-type url)))
 
@@ -24,3 +23,12 @@
                            arg#))]
     (clojure.lang.Reflector/invokeInstanceMethod
      (deref sel) ~(str action) (into-array Object locator-args#))))
+
+(defn fill-form [items-map submit]
+  (let [fill-fn (fn [el val]
+                  (if (= "selectlist" (browser getElementType el))
+                    (browser select el val)
+                    (browser setText el val)))]
+    (doall (for [el (keys items-map)]
+             (fill-fn el (items-map el))))
+    (browser clickAndWait submit)))
