@@ -17,15 +17,14 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
-
 import org.apache.xmlrpc.XmlRpcException;
 import org.testng.ISuite;
 import org.testng.ISuiteListener;
 import org.testng.ITestContext;
 import org.testng.ITestResult;
 import org.testng.internal.IResultListener;
-
 import tcms.API.Build;
+import tcms.API.Environment;
 import tcms.API.Product;
 import tcms.API.Session;
 import tcms.API.TestCase;
@@ -49,6 +48,7 @@ public class TCMSTestNGListener implements IResultListener, ISuiteListener {
 	protected static String TESTOPIA_TESTRUN_TESTPLAN = "";
 	protected static String TESTOPIA_TESTRUN_PRODUCT = "";
 	protected static String sProcedurePreText = null;
+	protected static Environment env = null;
 	
 	protected static Logger log = Logger.getLogger(TCMSTestNGListener.class.getName());
 	protected TestRun testrun;
@@ -131,9 +131,29 @@ public class TCMSTestNGListener implements IResultListener, ISuiteListener {
 		try {
 			loginTestopia();
 			retrieveContext();
-			testrun = new TestRun(session, testplan.getId(), null, build.getId(), session.getUserid(), testname, product.getId(), product.getVersionIDByName(version));
-			testrun.create();
 			
+			// if set, onStart determine env id that needs to be set
+			String sEnvironment = System.getProperty("testopia.testrun.environment");
+			int iEnvID = -1;
+			if (sEnvironment != null) {
+				if (env == null ) {
+					String[] saEnv = sEnvironment.split(":");
+					try {
+						env = new Environment(session, product.getId(), saEnv[0], saEnv[1]);
+						iEnvID = env.getValueId();
+					} catch(Exception e) {
+						throw new TestopiaException(e);
+					}
+				}
+			}
+			
+			testrun = new TestRun(session, testplan.getId(), iEnvID, build.getId(), session.getUserid(), testname, product.getId(), product.getVersionIDByName(version));
+			testrun.create();
+
+			// if set, onStart globally set environment for test run
+			if (iEnvID != -1) {
+				testrun.applyEnvironmentValue();
+			}	
 
 		} catch(Exception e){
 			//log.severe("Could not create new test run in testopia!  Aborting!");
@@ -423,7 +443,6 @@ public class TCMSTestNGListener implements IResultListener, ISuiteListener {
 
 		log.finer("Testrun is " + testrun.getId());
 		
-			
 		testcaserun = new TestCaseRun(session, testrun.getId(), testcase.getId(), build.getId());
 		testcaserun.setStatus(TestCaseRun.Statuses.RUNNING);
 		try {

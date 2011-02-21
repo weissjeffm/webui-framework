@@ -32,7 +32,7 @@ public class TestRun extends TestopiaObject{
 	
 	//variables used to update the testRun
 	private IntegerAttribute planID = newIntegerAttribute("plan", null);  
-	private IntegerAttribute environment = newIntegerAttribute("environment", null); 
+	private IntegerAttribute environmentID = newIntegerAttribute("env_id", null); 
 	private IntegerAttribute build = newIntegerAttribute("build", null);  
 	private IntegerAttribute manager = newIntegerAttribute("manager", null);  
 	private StringAttribute summary = newStringAttribute("summary", null);
@@ -65,7 +65,7 @@ public class TestRun extends TestopiaObject{
 	public TestRun(Session session, Integer planID, Integer environment,  Integer build, Integer manager, String summary, Integer product, Integer productVersion) {
 		this.session = session;
 		this.planID.set(planID);
-		if (environment != null) this.environment.set(environment);
+		if (environment != -1) this.environmentID = newIntegerAttribute("env_id", environment);
 		this.build.set(build);
 		this.manager.set(manager);
 		this.summary.set(summary);
@@ -93,6 +93,10 @@ public class TestRun extends TestopiaObject{
 			throw new TestopiaException("runID is null.");
 		//update the testRunCase
 		return super.updateById("TestRun.update");
+	}
+	
+	public void applyEnvironmentValue() throws XmlRpcException {
+		Object result = callXmlrpcMethod("TestRun.link_env_value", id.get(), environmentID.get());
 	}
 	
 	/**
