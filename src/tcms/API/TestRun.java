@@ -95,9 +95,13 @@ public class TestRun extends TestopiaObject{
 		return super.updateById("TestRun.update");
 	}
 	
-	public void applyEnvironmentValue() throws XmlRpcException {
-		Object result = callXmlrpcMethod("TestRun.link_env_value", id.get(), environmentID.get());
+	public Object applyEnvironmentValue() throws XmlRpcException {
+		return callXmlrpcMethod("TestRun.link_env_value", id.get(), environmentID.get());
 	}
+	
+	public Object setTags(String sTags) throws XmlRpcException {
+		return callXmlrpcMethod("TestRun.add_tag", id.get(), sTags);
+	}	
 	
 	/**
 	 * Calls the create method with the attributes as-is (as set via constructors

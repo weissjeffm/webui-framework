@@ -153,7 +153,18 @@ public class TCMSTestNGListener implements IResultListener, ISuiteListener {
 			// if set, onStart globally set environment for test run
 			if (iEnvID != -1) {
 				testrun.applyEnvironmentValue();
-			}	
+			}
+			
+			// if set, onStart set tags on test run
+			String sTags = System.getProperty("testopia.testrun.tags");
+			if (sTags != null) {
+				Object result = testrun.setTags(sTags);
+				if (result != null) {
+					System.out.println("Setting tag result: " + result.toString());
+				} else {
+					System.out.println("Setting tag result: null");
+				}
+			}
 
 		} catch(Exception e){
 			//log.severe("Could not create new test run in testopia!  Aborting!");
