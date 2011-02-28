@@ -64,13 +64,6 @@ public class BugzillaTestNGListener implements IResultListener, ISuiteListener{
 	public void onTestSkipped(ITestResult arg0) {
 	}
 
-	
-	protected BzBugDependency getBzData(Object[] params){
-		for (Object param: params){
-			if (param instanceof BzBugDependency) return (BzBugDependency)param;
-		}
-		return null;
-	}
 	@Override
 	public void onTestStart(ITestResult result) {
 		if (result.getStatus() == ITestResult.SKIP) return;  //don't do anything if the test is skipping already
@@ -94,12 +87,22 @@ public class BugzillaTestNGListener implements IResultListener, ISuiteListener{
 		}
 		//if nothing found, check the param list (if there is one) for certain types
 		Object[] params = result.getParameters();
-		BzBugDependency bbb = getBzData(params);
-		if (bbb != null){
+		
+		if (params.length > 0 && params[0] instanceof BzBugDependency){
+			BzBugDependency bbb = (BzBugDependency)params[0];
 			String[] bugIds = bbb.getBugIds();
 			for (String bugId: bugIds) {
 				lookupBugAndSkipIfOpen(bugId);
 			}
+			//if we get here, we need to extract items into the list of params
+			log.finer("Extracting parameters: " + Arrays.deepToString(bbb.getParameters()));
+			result.setParameters(bbb.getParameters());
+			/*
+			 * save the bug number in a hashtable here, otherwise the info is lost
+			 * and we won't know that if the test passes, we can unblock this bug,
+			 * unless we have that bug ID after the test is run
+			 */
+			bzTests.put(result.getParameters(), bbb); 
 		}
 	}
 
