@@ -46,3 +46,4 @@ FAQ:
    Your cache file is something like /tmp/krb5cc_500.  The number at
    the end is your unix userid, check your /tmp dir for files like
    this - the one owned by you should be the one you want.
+*

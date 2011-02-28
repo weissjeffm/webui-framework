@@ -17,15 +17,14 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
-
 import org.apache.xmlrpc.XmlRpcException;
 import org.testng.ISuite;
 import org.testng.ISuiteListener;
 import org.testng.ITestContext;
 import org.testng.ITestResult;
 import org.testng.internal.IResultListener;
-
 import tcms.API.Build;
+import tcms.API.Environment;
 import tcms.API.Product;
 import tcms.API.Session;
 import tcms.API.TestCase;
@@ -48,6 +47,8 @@ public class TCMSTestNGListener implements IResultListener, ISuiteListener {
 	protected static String TESTOPIA_URL = "";
 	protected static String TESTOPIA_TESTRUN_TESTPLAN = "";
 	protected static String TESTOPIA_TESTRUN_PRODUCT = "";
+	protected static String sProcedurePreText = null;
+	protected static Environment env = null;
 	
 	protected static Logger log = Logger.getLogger(TCMSTestNGListener.class.getName());
 	protected TestRun testrun;
@@ -130,9 +131,40 @@ public class TCMSTestNGListener implements IResultListener, ISuiteListener {
 		try {
 			loginTestopia();
 			retrieveContext();
-			testrun = new TestRun(session, testplan.getId(), null, build.getId(), session.getUserid(), testname, product.getId(), product.getVersionIDByName(version));
-			testrun.create();
 			
+			// if set, onStart determine env id that needs to be set
+			String sEnvironment = System.getProperty("testopia.testrun.environment");
+			int iEnvID = -1;
+			if (sEnvironment != null) {
+				if (env == null ) {
+					String[] saEnv = sEnvironment.split(":");
+					try {
+						env = new Environment(session, product.getId(), saEnv[0], saEnv[1]);
+						iEnvID = env.getValueId();
+					} catch(Exception e) {
+						throw new TestopiaException(e);
+					}
+				}
+			}
+			
+			testrun = new TestRun(session, testplan.getId(), iEnvID, build.getId(), session.getUserid(), testname, product.getId(), product.getVersionIDByName(version));
+			testrun.create();
+
+			// if set, onStart globally set environment for test run
+			if (iEnvID != -1) {
+				testrun.applyEnvironmentValue();
+			}
+			
+			// if set, onStart set tags on test run
+			String sTags = System.getProperty("testopia.testrun.tags");
+			if (sTags != null) {
+				Object result = testrun.setTags(sTags);
+				if (result != null) {
+					System.out.println("Setting tag result: " + result.toString());
+				} else {
+					System.out.println("Setting tag result: null");
+				}
+			}
 
 		} catch(Exception e){
 			//log.severe("Could not create new test run in testopia!  Aborting!");
@@ -314,10 +346,58 @@ public class TCMSTestNGListener implements IResultListener, ISuiteListener {
 		if (annotation == null) throw new RuntimeException("No TCMS annotation present.");
 		return new TestCase(session, annotation.caseId());
 	}
+	
+	// Remove some messages that don't belong in the tcms test case procedures
+	private String cleanUpLog(String sLogText) {
+		String sFinalString = "";
+		String[] array = sLogText.split("<br>");
+		for( int i = 0; i < array.length; i++) {
+			if (!array[i].startsWith("System property automation.propertiesfile is not set") &&
+				!array[i].startsWith("\nRunning against") &&
+				!array[i].startsWith("\nStarting TestNG Suite") &&
+				!array[i].startsWith("\nCurrent URL") &&
+				!array[i].startsWith("\nStarting TestNG Script") &&
+				!array[i].startsWith("\nStarting Test") &&
+				!array[i].startsWith("Starting Test") &&
+				!array[i].startsWith("\nTest Passed") &&
+				!array[i].startsWith("\nTest Skipped") &&
+				!array[i].startsWith("\nTest Failed")) {
+				
+				if (sFinalString.equals("")) {
+					sFinalString = array[i];
+				} else {	
+					sFinalString = sFinalString + "<br>" + array[i];
+				}	
+			}	
+		}
+		if (sFinalString.equals("\n")) {
+			sFinalString = "";
+		}
+		return sFinalString; 
+	}
+	
+	
+	
 	/* (non-Javadoc)
 	 * @see org.testng.ITestListener#onTestStart(org.testng.ITestResult)
 	 */
 	public void onTestStart(ITestResult result) {
+		
+		// if the first time, capture & cleanup the initial login process of selenium test script
+		if (sProcedurePreText == null) {
+			sProcedurePreText = TestProcedureHandler.getActiveLog();
+			sProcedurePreText = cleanUpLog(sProcedurePreText);
+		}	
+		
+		// resetting active log to remove messages from previous tests that were bleeding over
+		TestProcedureHandler.resetActiveLog();
+		
+		// useful kvp when trying to document data provided tests
+		String sAppendParmOneToSummary = System.getProperty("testopia.testcase.appendParmOneToSummary");
+		if (sAppendParmOneToSummary == null) {
+			sAppendParmOneToSummary = "0";
+		}
+		
 		//create new testcaserun
 		int iteration = result.getMethod().getCurrentInvocationCount();
 		log.finer("Got getCurrentInvocationCount()=" + iteration  + ", total=" + result.getMethod().getInvocationCount());
@@ -329,7 +409,15 @@ public class TCMSTestNGListener implements IResultListener, ISuiteListener {
 		String alias =  className + "." + result.getMethod().getMethodName() + count;
 		String script = className + "." + result.getMethod().getMethodName();
 		String description = result.getMethod().getDescription();
-		String summary = description.length()>0 ? (description + count) : (script + count);
+		
+		String summary = null;
+		if ( (sAppendParmOneToSummary.equals("1")) && (result.getParameters() != null && result.getParameters().length > 0) ) {
+			summary = description.length()>0 ? description : script;
+			String parmOne = (String) result.getParameters()[0];
+			summary = summary + " - " + parmOne;
+		} else {	
+			summary = description.length()>0 ? (description + count) : (script + count);
+		}
 		
 		try {
 			try {
@@ -366,7 +454,6 @@ public class TCMSTestNGListener implements IResultListener, ISuiteListener {
 
 		log.finer("Testrun is " + testrun.getId());
 		
-			
 		testcaserun = new TestCaseRun(session, testrun.getId(), testcase.getId(), build.getId());
 		testcaserun.setStatus(TestCaseRun.Statuses.RUNNING);
 		try {
@@ -384,6 +471,8 @@ public class TCMSTestNGListener implements IResultListener, ISuiteListener {
 		myOverwrite = System.getProperty("testopia.testcase.overwrite");
 		//get the procedure log from the handler
 		String action= TestProcedureHandler.getActiveLog();
+		action = cleanUpLog(action);
+		action = sProcedurePreText + action;
 		if (action == null)
 			action = "no procedure found!";
 		
