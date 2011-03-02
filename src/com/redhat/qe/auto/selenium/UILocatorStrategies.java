@@ -36,8 +36,8 @@ public class UILocatorStrategies {
     public LocatorStrategy cellInTableMatchingTwoColumns =   new LocatorTemplate("table with row with text in row matching two columns","//table[@class='$1']//tr[td[normalize-space(.)='$2' and position()='$3'] and td[normalize-space(.)='$4' and position()='$5']]");
    //End Locator Strategies
     
-    public LocatorStrategy contains = new LocatorTemplate("contains","//a[contains(.,'$1']");
-    public LocatorStrategy startswith = new LocatorTemplate("starts-with","//a[starts-with(.,'$1']");
+    public LocatorStrategy contains = new LocatorTemplate("contains","//a[contains(.,'$1')]");
+    public LocatorStrategy startswith = new LocatorTemplate("starts-with","//a[starts-with(.,'$1')]");
     
     //COMBINATIONS
     //button under a div w/ a particular id
