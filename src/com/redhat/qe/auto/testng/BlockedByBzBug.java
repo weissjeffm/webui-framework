@@ -23,23 +23,20 @@ public class BlockedByBzBug extends BzBugDependency{
 	 * being thrown by TestNG, you need to use the BugzillaTestNGListener, which
 	 * will unwrap the arguments before passing them to TestNG)
 	 * @param bugId
-	 * @param params
 	 */
-	public BlockedByBzBug(String bugId, Object... params) {
-		this(new String[] {bugId}, params);
+	public BlockedByBzBug(String bugId) {
+		this(new String[] {bugId});
 	}
 
 	/**
 	 * * If you're getting IllegalArgumentException (or wrong number of arguments
 	 * being thrown by TestNG, you need to use the BugzillaTestNGListener, which
 	 * will unwrap the arguments before passing them to TestNG)
-	 * @param bugId
-	 * @param params
+	 * @param bugIds
 	 */
-	public BlockedByBzBug(String[] bugIds, Object... params) {
+	public BlockedByBzBug(String[] bugIds) {
 		super();
 		this.bugIds = bugIds;
-		this.params = params;
 		this.type = Type.BlockedBy; 
 	}
 

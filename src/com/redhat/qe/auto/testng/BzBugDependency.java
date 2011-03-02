@@ -2,7 +2,6 @@ package com.redhat.qe.auto.testng;
 
 public abstract class BzBugDependency {
 	protected String[] bugIds = null;
-	protected Object[] params = null;
 	protected Type type = null;
 	
 	public enum Type {BlockedBy("Blocked by bugzilla bug"), 
@@ -19,21 +18,14 @@ public abstract class BzBugDependency {
 	public String[] getBugIds() {
 		return bugIds;
 	}
-	
-	public Object[] getParameters() {
-		return params;
-	}
-	
+		
 	public Type getType() {
 		return type;
 	}
 
 	public String toString(){
 		StringBuffer sb = new StringBuffer();
-		for (Object param: params){
-			if (param==null) param = "null";
-			sb.append(param.toString() + "," );
-		}
+		
 		sb.append(" **" + type.getDescription());
 		for (String bugId: bugIds )
 			sb.append(" " + bugId);
