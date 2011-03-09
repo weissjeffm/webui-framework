@@ -36,22 +36,11 @@ public class SCPTools {
 	}
 	
 	public boolean sendFile(String source, String dest){
-		Connection newConn = new Connection(server);
+		
 		log.info("SCP: Copying "+source+" to "+this.server+":"+dest);
-		try {
-			newConn.connect();
-			newConn.authenticateWithPublicKey(userName, sshPemFile, password);
-		} catch (IOException e) {
-			newConn = new Connection(server);
-			try{newConn.connect();}
-			catch(IOException ioe){log.log(Level.INFO, "SCP: Connection failed:", ioe);}
-			try{
-				newConn.authenticateWithPassword(userName, password);
-			} catch (IOException e1) {
-				log.log(Level.INFO, "SCP: Connection failed:", e1);
-				return false;
-			}
-		}
+		Connection newConn = connect_server();
+		if(newConn ==null) return false;
+		
 		SCPClient scp = new SCPClient(newConn);
 		try {
 			scp.put(source, dest);
@@ -76,15 +65,11 @@ public class SCPTools {
 	}*/
 	
 	public boolean getFile(String remoteFile, String target){
-		Connection newConn = new Connection(server);
+		
 		log.info("SCP: Copying "+server+":"+remoteFile+" to "+target);
-		try {
-			newConn.connect();
-			newConn.authenticateWithPublicKey(userName, sshPemFile, password);
-		} catch (IOException e) {
-			log.log(Level.INFO, "SCP: Connection failed:", e);
-			return false;
-		}
+		Connection newConn = connect_server();
+		if(newConn ==null) return false;
+
 		SCPClient scp = new SCPClient(newConn);
 		try {
 			scp.get(remoteFile, target);
@@ -95,5 +80,24 @@ public class SCPTools {
 		log.info("SCP: Transfer succeeded");
 		
 		return true;
+	}
+	
+	private Connection connect_server(){
+		Connection newConn = new Connection(server);
+		try {
+			newConn.connect();
+			newConn.authenticateWithPublicKey(userName, sshPemFile, password);
+		} catch (IOException e) {
+			newConn = new Connection(server);
+			try{newConn.connect();}
+			catch(IOException ioe){log.log(Level.INFO, "SCP: Connection failed:", ioe);}
+			try{
+				newConn.authenticateWithPassword(userName, password);
+			} catch (IOException e1) {
+				log.log(Level.INFO, "SCP: Connection failed:", e1);
+				return null;
+			}
+		}
+		return newConn;
 	}
 }
