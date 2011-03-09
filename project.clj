@@ -13,4 +13,5 @@
                  [org.uncommons/reportng "1.1.3"]]
   :dev-dependencies [[org.clojure/clojure "1.2.0"]
                      [org.clojure/clojure-contrib "1.2.0"]
-                     [swank-clojure "1.2.1"]])
+                     [swank-clojure "1.2.1"]]
+  :javac-options {:debug "on"})
