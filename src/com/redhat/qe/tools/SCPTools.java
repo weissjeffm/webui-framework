@@ -42,8 +42,15 @@ public class SCPTools {
 			newConn.connect();
 			newConn.authenticateWithPublicKey(userName, sshPemFile, password);
 		} catch (IOException e) {
-			log.log(Level.INFO, "SCP: Connection failed:", e);
-			return false;
+			newConn = new Connection(server);
+			try{newConn.connect();}
+			catch(IOException ioe){log.log(Level.INFO, "SCP: Connection failed:", ioe);}
+			try{
+				newConn.authenticateWithPassword(userName, password);
+			} catch (IOException e1) {
+				log.log(Level.INFO, "SCP: Connection failed:", e1);
+				return false;
+			}
 		}
 		SCPClient scp = new SCPClient(newConn);
 		try {
