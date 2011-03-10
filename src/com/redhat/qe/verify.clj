@@ -1,5 +1,8 @@
 (ns com.redhat.qe.verify
-  (:require [clojure.contrib.logging :as log]))
+  (:require [clojure.contrib.logging :as log])
+  (:use [clojure.string :only [split]])
+  (:import [java.util.logging Logger Level]
+           [com.redhat.qe.auto.testng LogMessageUtil$Style]))
 
 (defn ^{:private true} local-bindings
   "Produces a map of the names of local bindings to their values."
@@ -16,11 +19,18 @@
            res# (try ~x (catch Exception e# (do (reset! noerr# false) e#)))
            sep#  (System/getProperty "line.separator")
            form# '~x
+           clazz# (str *ns*)
+           loc# (-> (Thread/currentThread) .getStackTrace second (split #"\$") second)
            used-bindings# (select-keys ~bindings (distinct (flatten form#)))
            msg# (apply str (if (and @noerr# res#) "Verified: " "Verification failed: ") (pr-str form#) sep#
                        (map (fn [[k# v#]] (str "\t" k# " : " v# sep#)) 
                             used-bindings#))]
-       (if (and @noerr# res#) (log/info msg#)
+       (if (and @noerr# res#) (.logp (Logger/getLogger (str *ns*))
+                                    (Level/INFO)
+                                    clazz#
+                                    loc#
+                                    msg#
+                                    (LogMessageUtil$Style/Asserted))
            (let [err# (AssertionError. msg#)]
              (throw (if (and res# (not @noerr#))
                       (.initCause err# res#)
