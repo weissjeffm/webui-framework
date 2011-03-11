@@ -1,5 +1,4 @@
 (ns com.redhat.qe.verify
-  (:require [clojure.contrib.logging :as log])
   (:use [clojure.string :only [split]])
   (:import [java.util.logging Logger Level]
            [com.redhat.qe.auto.testng LogMessageUtil$Style]))
