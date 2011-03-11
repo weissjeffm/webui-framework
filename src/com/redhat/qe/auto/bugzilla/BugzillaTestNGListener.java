@@ -16,11 +16,15 @@ import org.testng.ISuiteListener;
 import org.testng.ITestContext;
 import org.testng.ITestResult;
 import org.testng.SkipException;
+import org.testng.annotations.DataProvider;
+import org.testng.annotations.Test;
 import org.testng.internal.IResultListener;
 
 import com.redhat.qe.auto.tcms.AbstractTestProcedureHandler;
+import com.redhat.qe.auto.testng.BlockedByBzBug;
 import com.redhat.qe.auto.testng.BzBugDependency;
 import com.redhat.qe.auto.testng.BzChecker;
+import com.redhat.qe.auto.testng.TestScript;
 
 public class BugzillaTestNGListener implements IResultListener, ISuiteListener{
 
@@ -227,6 +231,22 @@ public class BugzillaTestNGListener implements IResultListener, ISuiteListener{
 		Matcher m = p.matcher("blockedByBug-12354542");
 		m.find();
 		System.out.println(m.group(1));
+	}
+	
+	static {
+		TestScript t = new TestScript();
+	}
+	@Test(groups="test", dataProvider="mydp")
+	public void mytest(Object meta, String arg){
+		
+		System.out.println("passed " + arg);
+	}
+	
+	@DataProvider(name="mydp")
+	public Object[][] dp1(){
+		return new Object[][] {{null, "what's up"},
+							{new BlockedByBzBug("683914"), "hi there"}
+		};
 	}
 
 }

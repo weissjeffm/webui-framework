@@ -19,16 +19,16 @@
            res# (try ~x (catch Exception e# (do (reset! noerr# false) e#)))
            sep#  (System/getProperty "line.separator")
            form# '~x
+           loc# (-> (Thread/currentThread) .getStackTrace second .getClassName (split #"\$"))
            clazz# (str *ns*)
-           loc# (-> (Thread/currentThread) .getStackTrace second (split #"\$") second)
            used-bindings# (select-keys ~bindings (distinct (flatten form#)))
            msg# (apply str (if (and @noerr# res#) "Verified: " "Verification failed: ") (pr-str form#) sep#
                        (map (fn [[k# v#]] (str "\t" k# " : " v# sep#)) 
                             used-bindings#))]
-       (if (and @noerr# res#) (.logp (Logger/getLogger (str *ns*))
+       (if (and @noerr# res#) (.logp (Logger/getLogger (first loc#))
                                     (Level/INFO)
-                                    clazz#
-                                    loc#
+                                    (first loc#)
+                                    (second loc#)
                                     msg#
                                     (LogMessageUtil$Style/Asserted))
            (let [err# (AssertionError. msg#)]
