@@ -285,19 +285,28 @@ public class SSHCommandRunner implements Runnable {
 	 */ 
 	public SSHCommandResult runCommandAndWait(String command, Long timeoutMS, LogRecord logRecord, boolean liveLogOutput){
 		runCommand(command,logRecord);
+		SplitStreamLogger logger = null;
 		if (liveLogOutput){
-			SplitStreamLogger logger = new SplitStreamLogger(this);
+			logger = new SplitStreamLogger(this);
 			logger.log(logRecord.getLevel(), logRecord.getLevel());
 		}
 		waitForWithTimeout(timeoutMS);
-		SSHCommandResult sshCommandResult = getSSHCommandResult();
+		SSHCommandResult sshCommandResult = null;
+		if (liveLogOutput) {
+			s_out = logger.getStdout();
+			s_err = logger.getStderr();
+		}
+		
+		sshCommandResult = getSSHCommandResult();
+		
 		if (!liveLogOutput){
 			String o = (this.getStdout().split("\n").length>1)? "\n":"";
 			String e = (this.getStderr().split("\n").length>1)? "\n":"";
 			log.log(logRecord.getLevel(), "Stdout: "+o+sshCommandResult.getStdout());
 			log.log(logRecord.getLevel(), "Stderr: "+e+sshCommandResult.getStderr());
-			log.log(logRecord.getLevel(), "ExitCode: "+sshCommandResult.getExitCode());
 		}
+		log.log(logRecord.getLevel(), "ExitCode: "+sshCommandResult.getExitCode());
+
 		return sshCommandResult;
 	}
 	
@@ -417,9 +426,10 @@ public class SSHCommandRunner implements Runnable {
 		Integer exitcode = runner.waitForWithTimeout(null);
 		System.out.println("exit code: " + exitcode);*/
 		
-		SSHCommandRunner scr = new SSHCommandRunner("pulp-nightly.usersys.redhat.com", "root", "dog8code", "sdf", "sdfs", null);
-		scr.runCommandAndWait("hostname");
-		System.out.println(scr.getStdout());
+		Logger log = Logger.getLogger(SSHCommandRunner.class.getName());
+		SSHCommandRunner scr = new SSHCommandRunner("f14-1.usersys.redhat.com", "root", "dog8code", "sdf", "sdfs", null);
+		scr.runCommandAndWait("sleep 5;echo 'hi there';sleep 3", true);
+		System.out.println("Result: " + scr.getStdout());
 		
 		/*SCPClient scp = new SCPClient(conn);
 		scp.put(System.getProperty("user.dir")+ "/../jon/bin/DummyJVM.class", "/tmp");
