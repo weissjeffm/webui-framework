@@ -26,7 +26,9 @@ function usage()
            echo "Available options are:"
            echo "--ARCH=             :: i386, x86_64 etc."
            echo "--FAMILY=           :: DISTRO FAMILY, RedHatEnterprixeLinux4/5/6"
-           echo "--TAG=              :: TAG, RELEASED,STABLE"          
+           echo "--TAG=              :: TAG, RELEASED,STABLE"  
+           echo "--VARIANT=          :: RHEL6 has Server,Workstation,ComputeNode,Client"
+           echo "--TASK=             :: Additional beaker task executed after provision"       
 }
 
 #cli
