@@ -26,7 +26,8 @@
 
 (defn fill-form [items-map submit]
   (doseq [[el val] items-map]
-    (if (= "selectlist" (browser getElementType el))
-      (browser select el val)
-      (browser setText el val)))
+    (if val
+      (if (= "selectlist" (browser getElementType el))
+       (browser select el val)
+       (browser setText el val))))
   (browser clickAndWait submit))
