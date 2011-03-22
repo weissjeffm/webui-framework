@@ -1,4 +1,5 @@
 (ns com.redhat.qe.config
+  (:use [clojure.contrib.string :only [split join]])
   (:import [com.redhat.qe.auto.testng TestScript]))
 
 (defn property-map "Takes a map as an argument, and produces a new
@@ -13,3 +14,10 @@ value if no such system property exists."
               (System/getProperty (first v) (second v))
               (System/getProperty v)))))
 
+(defn same-name "takes a collection of keywords like :registration-settings
+and returns a mapping like :registration-settings -> 'Registration Settings'" 
+  ([coll] (same-name identity identity coll))
+  ([word-fn coll] (same-name word-fn identity coll))
+  ([word-fn val-fn coll]
+     (zipmap coll (for [keyword coll]
+               (->> keyword name (split #"-") (map word-fn) (join " ") val-fn)))))

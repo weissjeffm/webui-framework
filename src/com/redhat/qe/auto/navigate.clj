@@ -35,10 +35,10 @@
            missing-args (clojure.set/difference all-req-args (set (keys args)))]
        (if-not (zero? (count missing-args))
          (throw (IllegalArgumentException. (str "Missing required keys to navigate to " page " - " missing-args)))
-         (doall (for [step path]
-                  (apply (:fn step)
-                         (for [req-arg (:req-args step)]
-                           (req-arg args))))))))
+         (doseq [step path]
+           (apply (:fn step)
+                  (for [req-arg (:req-args step)]
+                    (req-arg args)))))))
   ([page z] (navigate page z {})))
 
 (defn nav-fn "Closes over a page tree structure and returns a navigation function"

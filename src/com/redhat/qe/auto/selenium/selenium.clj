@@ -25,8 +25,8 @@
      (deref sel) ~(str action) (into-array Object locator-args#))))
 
 (defn fill-form [items-map submit]
-  (doall (for [[el val] items-map]
-           (if (= "selectlist" (browser getElementType el))
-             (browser select el val)
-             (browser setText el val))))
+  (doseq [[el val] items-map]
+    (if (= "selectlist" (browser getElementType el))
+      (browser select el val)
+      (browser setText el val)))
   (browser clickAndWait submit))
