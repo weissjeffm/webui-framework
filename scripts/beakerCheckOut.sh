@@ -81,7 +81,7 @@ for i in $*
 done
 
 
-if [[ -z $USERNAME ]] || [[ -z $PASSWORD ]] || [[ -z $ARCH ]] || [[ -z $FAMILY ]] || [[ -z $TAG ]] || [[ -z $VARIANT ]] || [[ -z $TASK ]]  ; then
+if [[ -z $USERNAME ]] || [[ -z $PASSWORD ]] || [[ -z $ARCH ]] || [[ -z $FAMILY ]] || [[ -z $TASK ]]  ; then
  usage
  exit 1
 fi
