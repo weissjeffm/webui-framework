@@ -107,45 +107,34 @@ PROVISION_RESULT=`xmlstarlet sel -t --value-of "//task[@name='/distribution/inst
 PROVISION_STATUS=`xmlstarlet sel -t --value-of "//task[@name='/distribution/install']/@status" job-result`
 echo "===================== PROVISION STATUS ================"
 PREV_STATUS="Hasn't Started Yet."
-while [ $PROVISION_RESULT != "Pass" ] || [ $PROVISION_RESULT != "Warn" ];
-do
- bkr job-results $JOB $USERNAME $PASSWORD > job-result
- PROVISION_RESULT=$(xmlstarlet sel -t --value-of "//task[@name='/distribution/install']/@result" job-result)
- PROVISION_STATUS=$(xmlstarlet sel -t --value-of "//task[@name='/distribution/install']/@status" job-result)
- if [ "$PREV_STATUS" == "$PROVISION_STATUS" ]; then
-    echo -n "."
-    sleep 60
- elif [ $PROVISION_STATUS == "Running" ]; then
+while [ true ]; do
+  bkr job-results $JOB $USERNAME $PASSWORD > job-result
+  PROVISION_RESULT=$(xmlstarlet sel -t --value-of "//task[@name='/distribution/install']/@result" job-result)
+  PROVISION_STATUS=$(xmlstarlet sel -t --value-of "//task[@name='/distribution/install']/@status" job-result)
+  if [ $PROVISION_RESULT == "Pass" ]; then
     echo
-    echo "RUNNING"
+    echo "Job has completed."
     echo "Provision Status: $PROVISION_STATUS"
     echo "Provision Result: $PROVISION_RESULT"
-    date
-    PREV_STATUS=$PROVISION_STATUS
-    sleep 60
- elif [ $PROVISION_STATUS == "None" ]; then
-    echo
-    echo "RESULT = None: JOB is running"
-    date
-    PREV_STATUS=$PROVISION_STATUS
-    sleep 60
- elif [ $PROVISION_RESULT == "Pass" ]; then
-    echo
-    echo "RESULT = Pass: JOB has completed"
     break
- elif [ $PROVISION_RESULT == "Warn" ]; then
+  elif [ $PROVISION_RESULT == "Warn" ]; then
     echo
-    echo "RESULT = WARN: JOB FAILED"
+    echo "Job FAILED!"
+    echo "Provision Status: $PROVISION_STATUS"
+    echo "Provision Result: $PROVISION_RESULT"
     exit 1
     break
- else 
+  elif [ "$PREV_STATUS" == "$PROVISION_STATUS" ]; then
+    echo -n "."
+    sleep 60
+  else 
    echo
    echo "Provision Status: $PROVISION_STATUS"
    echo "Provision Result: $PROVISION_RESULT"
    date
    PREV_STATUS=$PROVISION_STATUS
    sleep 60
- fi
+  fi
 done
 echo "===================== PROVISION STATUS ================"
 
@@ -156,43 +145,34 @@ SETUP_RESULT=`xmlstarlet sel -t --value-of "//task[@name='/CoreOS/rhsm/Install/s
 SETUP_STATUS=`xmlstarlet sel -t --value-of "//task[@name='/CoreOS/rhsm/Install/subscription-manager-env']/@status" job-result`
 echo "===================== AUTOMATION PREREQ STATUS ================"
 PREV_STATUS="Hasn't Started Yet."
-while [ $SETUP_RESULT != "Pass" ] || [ $SETUP_RESULT != "Warn" ];
-do
- bkr job-results $JOB $USERNAME $PASSWORD > job-result
- SETUP_RESULT=$(xmlstarlet sel -t --value-of "//task[@name='/CoreOS/rhsm/Install/subscription-manager-env']/@result" job-result)
- SETUP_STATUS=$(xmlstarlet sel -t --value-of "//task[@name='/CoreOS/rhsm/Install/subscription-manager-env']/@status" job-result)
- if [ "$PREV_STATUS" == "$SETUP_STATUS" ]; then
-    echo -n "."
-    sleep 60
- elif [ $SETUP_STATUS == "Running" ]; then
-    echo 
-    echo "RUNNING"
-    date
-    PREV_STATUS=$SETUP_STATUS
-    sleep 60
- elif [ $SETUP_STATUS == "None" ]; then
+while [ true ]; do
+  bkr job-results $JOB $USERNAME $PASSWORD > job-result
+  SETUP_RESULT=$(xmlstarlet sel -t --value-of "//task[@name='/CoreOS/rhsm/Install/subscription-manager-env']/@result" job-result)
+  SETUP_STATUS=$(xmlstarlet sel -t --value-of "//task[@name='/CoreOS/rhsm/Install/subscription-manager-env']/@status" job-result)
+  if [ $SETUP_RESULT == "Pass" ]; then
     echo
-    echo "RESULT = None: JOB is running"
-    date
-    PREV_STATUS=$SETUP_STATUS
-    sleep 60
- elif [ $SETUP_RESULT == "Pass" ]; then
-    echo
-    echo "RESULT = Pass: JOB has completed"
+    echo "Job has completed."
+    echo "Setup Status: $SETUP_STATUS"
+    echo "Setup Result: $SETUP_RESULT"
     break
- elif [ $SETUP_RESULT == "Warn" ]; then
+  elif [ $SETUP_RESULT == "Warn" ]; then
     echo
-    echo "RESULT = WARN: JOB FAILED"
+    echo "Job FAILED!"
+    echo "Setup Status: $SETUP_STATUS"
+    echo "Setup Result: $SETUP_RESULT"
     exit 1
     break
- else 
+  elif [ "$PREV_STATUS" == "$SETUP_STATUS" ]; then
+    echo -n "."
+    sleep 60
+  else 
     echo
     echo "Setup Status: $SETUP_STATUS"
     echo "Setup Result: $SETUP_RESULT"
     date
     PREV_STATUS=$SETUP_STATUS
     sleep 60
- fi
+  fi
 done
 echo
 echo "===================== AUTOMATION PREREQ STATUS ================"
