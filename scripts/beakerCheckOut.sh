@@ -132,12 +132,6 @@ echo "===================== JOB ID ================"
 echo $JOB
 echo "===================== JOB ID ================"
 
-pwd
-
-
-bkr job-results $JOB $USERNAME $PASSWORD > job-result
-PROVISION_RESULT=`xmlstarlet sel -t --value-of "//task[@name='/distribution/install']/@result" job-result`
-PROVISION_STATUS=`xmlstarlet sel -t --value-of "//task[@name='/distribution/install']/@status" job-result`
 echo "===================== PROVISION STATUS ================"
 echo "Timeout: $TIMEOUT minutes"
 PREV_STATUS="Hasn't Started Yet."
@@ -185,8 +179,9 @@ HOSTNAME=`xmlstarlet sel -t --value-of "//recipe/@system" job-result`
 echo "HOSTNAME = $HOSTNAME"
 echo $HOSTNAME > hostname
 
-SETUP_RESULT=`xmlstarlet sel -t --value-of "//task[@name='/CoreOS/rhsm/Install/subscription-manager-env']/@result" job-result`
-SETUP_STATUS=`xmlstarlet sel -t --value-of "//task[@name='/CoreOS/rhsm/Install/subscription-manager-env']/@status" job-result`
+DISTRO=`xmlstarlet sel -t --value-of "//recipe/@distro" job-result`
+echo $DISTRO
+
 echo "===================== AUTOMATION PREREQ STATUS ================"
 PREV_STATUS="Hasn't Started Yet."
 while [ true ]; do
@@ -199,13 +194,22 @@ while [ true ]; do
     echo "Setup Status: $SETUP_STATUS"
     echo "Setup Result: $SETUP_RESULT"
     break
-  elif [ $SETUP_RESULT == "Warn" ]; then
-    echo
-    echo "Job FAILED!"
-    echo "Setup Status: $SETUP_STATUS"
-    echo "Setup Result: $SETUP_RESULT"
-    exit 1
-    break
+  elif [[ $SETUP_RESULT == "Warn" ]] || [[ $SETUP_RESULT == "Fail" ]]; then
+    EXIT_RESULT=$(xmlstarlet sel -t --value-of "//task[@name='/CoreOS/rhsm/Install/subscription-manager-env']/results/result[@path='rhts_task/exit']/@result" job-result)
+    if [ $EXIT_RESULT == "Pass" ]; then
+      echo
+      echo "Job has completed."
+      echo "Setup Status: $SETUP_STATUS"
+      echo "Setup Result: $EXIT_RESULT"
+      break
+    else
+      echo
+      echo "Job FAILED!"
+      echo "Setup Status: $SETUP_STATUS"
+      echo "Setup Result: $SETUP_RESULT"
+      exit 1
+      break
+    fi
   elif [ "$PREV_STATUS" == "$SETUP_STATUS" ]; then
     echo -n "."
     sleep 60
