@@ -176,10 +176,14 @@ while [ $TIME -lt $TIMEOUT ]; do
 done
 if [[ $TIME -eq $TIMEOUT ]]; then
   echo "Timeout reached."
+  bkr job-cancel $JOB $USERNAME $PASSWORD
   exit 1
 fi
 echo "===================== PROVISION STATUS ================"
 
+HOSTNAME=`xmlstarlet sel -t --value-of "//recipe/@system" job-result`
+echo "HOSTNAME = $HOSTNAME"
+echo $HOSTNAME > hostname
 
 SETUP_RESULT=`xmlstarlet sel -t --value-of "//task[@name='/CoreOS/rhsm/Install/subscription-manager-env']/@result" job-result`
 SETUP_STATUS=`xmlstarlet sel -t --value-of "//task[@name='/CoreOS/rhsm/Install/subscription-manager-env']/@status" job-result`
@@ -217,6 +221,3 @@ done
 echo
 echo "===================== AUTOMATION PREREQ STATUS ================"
 
-HOSTNAME=`xmlstarlet sel -t --value-of "//recipe/@system" job-result`
-echo "HOSTNAME = $HOSTNAME"
-echo $HOSTNAME > hostname
