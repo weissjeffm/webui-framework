@@ -66,8 +66,8 @@ TASKS=""
 OTHERARGS=""
 
 for i in $*
- do
- case $i in
+  do
+  case $i in
       --help)
          usage
          exit 0
@@ -99,7 +99,7 @@ for i in $*
         echo "Adding $i to other bkr workflow-simple args."
         OTHERARGS=${OTHERARGS}" "$i
         ;;
- esac
+  esac
 done
 
 #echo "args: $@"
@@ -113,10 +113,10 @@ done
 
 
 if [[ -z $USERNAME ]] || [[ -z $PASSWORD ]] || [[ -z $ARCH ]] || [[ -z $FAMILY ]] || [[ -z $TASKS ]]  ; then
- echo "bkr workflow-simple requires that a username, password, arch, family, and task be given."
- echo
- usage
- exit 1
+  echo "bkr workflow-simple requires that a username, password, arch, family, and task be given."
+  echo
+  usage
+  exit 1
 fi
 
 
