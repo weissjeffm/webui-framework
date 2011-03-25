@@ -123,7 +123,7 @@ fi
 bkr workflow-simple $USERNAME $PASSWORD $ARCH $FAMILY $TASKS --task=/distribution/reservesys $OTHERARGS > job || (echo "bkr workflow-simple $USERNAME --password=***** $ARCH $FAMILY $TASK --task=/distribution/reservesys $OTHERARGS " && cat job && exit 1)
 
 echo "===================== JOB DETAILS ================"
-echo "bkr workflow-simple $USERNAME --password=***** $ARCH $FAMILY $TAG $VARIANT $TASK --task=/distribution/reservesys "
+echo "bkr workflow-simple $USERNAME --password=***** $ARCH $FAMILY $TASKS --task=/distribution/reservesys $OTHERARGS"
 cat job
 echo "===================== JOB DETAILS ================"
 JOB=`cat job | cut -d \' -f 2`
@@ -182,46 +182,49 @@ echo $HOSTNAME > hostname
 DISTRO=`xmlstarlet sel -t --value-of "//recipe/@distro" job-result`
 echo $DISTRO
 
-echo "===================== AUTOMATION PREREQ STATUS ================"
-PREV_STATUS="Hasn't Started Yet."
-while [ true ]; do
-  bkr job-results $JOB $USERNAME $PASSWORD > job-result
-  SETUP_RESULT=$(xmlstarlet sel -t --value-of "//task[@name='/CoreOS/rhsm/Install/subscription-manager-env']/@result" job-result)
-  SETUP_STATUS=$(xmlstarlet sel -t --value-of "//task[@name='/CoreOS/rhsm/Install/subscription-manager-env']/@status" job-result)
-  if [ $SETUP_RESULT == "Pass" ]; then
-    echo
-    echo "Job has completed."
-    echo "Setup Status: $SETUP_STATUS"
-    echo "Setup Result: $SETUP_RESULT"
-    break
-  elif [[ $SETUP_RESULT == "Warn" ]] || [[ $SETUP_RESULT == "Fail" ]]; then
-    EXIT_RESULT=$(xmlstarlet sel -t --value-of "//task[@name='/CoreOS/rhsm/Install/subscription-manager-env']/results/result[@path='rhts_task/exit']/@result" job-result)
-    if [ $EXIT_RESULT == "Pass" ]; then
+TASKS=$(echo $TASKS | sed -e s/--task=//g)
+for TASK in $TASKS; do
+  echo "===================== $TASK STATUS ================"
+  PREV_STATUS="Hasn't Started Yet."
+  while [ true ]; do
+    bkr job-results $JOB $USERNAME $PASSWORD > job-result
+    TASK_RESULT=$(xmlstarlet sel -t --value-of "//task[@name='$TASK']/@result" job-result)
+    TASK_STATUS=$(xmlstarlet sel -t --value-of "//task[@name='$TASK']/@status" job-result)
+    if [ $TASK_RESULT == "Pass" ]; then
       echo
       echo "Job has completed."
-      echo "Setup Status: $SETUP_STATUS"
-      echo "Setup Result: $EXIT_RESULT"
+      echo "Task Status: $TASK_STATUS"
+      echo "Task Result: $TASK_RESULT"
       break
-    else
+    elif [[ $TASK_RESULT == "Warn" ]] || [[ $TASK_RESULT == "Fail" ]]; then
+      EXIT_RESULT=$(xmlstarlet sel -t --value-of "//task[@name='$TASK']/results/result[@path='rhts_task/exit']/@result" job-result)
+      if [ $EXIT_RESULT == "Pass" ]; then
+        echo
+        echo "Job has completed."
+        echo "Task Status: $TASK_STATUS"
+        echo "Task Result: $EXIT_RESULT"
+        break
+      else
+        echo
+        echo "Job FAILED!"
+        echo "Task Status: $TASK_STATUS"
+        echo "Task Result: $TASK_RESULT"
+        exit 1
+        break
+      fi
+    elif [ "$PREV_STATUS" == "$TASK_STATUS" ]; then
+      echo -n "."
+      sleep 60
+    else 
       echo
-      echo "Job FAILED!"
-      echo "Setup Status: $SETUP_STATUS"
-      echo "Setup Result: $SETUP_RESULT"
-      exit 1
-      break
+      echo "Task Status: $TASK_STATUS"
+      echo "Task Result: $TASK_RESULT"
+      date
+      PREV_STATUS=$TASK_STATUS
+      sleep 60
     fi
-  elif [ "$PREV_STATUS" == "$SETUP_STATUS" ]; then
-    echo -n "."
-    sleep 60
-  else 
-    echo
-    echo "Setup Status: $SETUP_STATUS"
-    echo "Setup Result: $SETUP_RESULT"
-    date
-    PREV_STATUS=$SETUP_STATUS
-    sleep 60
-  fi
+  done
+  echo
+  echo "===================== $TASK STATUS ================"
 done
-echo
-echo "===================== AUTOMATION PREREQ STATUS ================"
 
