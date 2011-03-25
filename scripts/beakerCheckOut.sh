@@ -161,7 +161,7 @@ while [ $TIME -lt $TIMEOUT ]; do
     break
   elif [ "$PREV_STATUS" == "$PROVISION_STATUS" ]; then
     echo -n "."
-    $TIME=$(expr $TIME + 1)
+    TIME=$(expr $TIME + 1)
     sleep 60
   else 
    echo
@@ -170,7 +170,7 @@ while [ $TIME -lt $TIMEOUT ]; do
    date
    PREV_STATUS=$PROVISION_STATUS
    echo "Timeout timer reset."
-   $TIME="0"
+   TIME="0"
    sleep 60
   fi
 done
