@@ -37,6 +37,10 @@ public class SCPTools {
 	
 	public boolean sendFile(String source, String dest){
 		
+		return sendFile(source, dest, false);
+	}
+	
+	public boolean sendFile(String source, String dest, boolean closeOnExit){
 		log.info("SCP: Copying "+source+" to "+this.server+":"+dest);
 		Connection newConn = connect_server();
 		if(newConn ==null) return false;
@@ -50,7 +54,15 @@ public class SCPTools {
 		}
 		log.info("SCP: Transfer succeeded");
 		
-		return true;
+		if(closeOnExit){
+			try{
+				newConn.close();
+			}catch(Exception ex){
+				log.severe("Error on closing server SSH connection."); // not so severe :)
+			}
+		}
+		
+		return true;		
 	}
 	
 	/*public void sendStream(OutputStream os, String dest) throws IOException{
