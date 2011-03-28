@@ -175,10 +175,10 @@ if [[ $TIME -eq $TIMEOUT ]]; then
 fi
 echo "===================== PROVISION STATUS ================"
 
-HOSTNAME=`xmlstarlet sel -t --value-of "//recipe/@system" job-result`
+JOB_HOSTNAME=`xmlstarlet sel -t --value-of "//recipe/@system" job-result`
 rm -Rf hostname
-echo "HOSTNAME = $HOSTNAME"
-echo $HOSTNAME > hostname
+echo "JOB_HOSTNAME = $JOB_HOSTNAME"
+echo $JOB_HOSTNAME > hostname
 
 DISTRO=`xmlstarlet sel -t --value-of "//recipe/@distro" job-result`
 echo $DISTRO
