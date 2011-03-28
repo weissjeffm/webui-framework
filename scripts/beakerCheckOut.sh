@@ -129,7 +129,7 @@ echo "===================== JOB DETAILS ================"
 JOB=`cat job | cut -d \' -f 2`
 
 echo "===================== JOB ID ================"
-echo $JOB
+echo "${JOB} - https://beaker.engineering.redhat.com/jobs/${JOB:2}" 
 echo "===================== JOB ID ================"
 
 echo "===================== PROVISION STATUS ================"
@@ -177,7 +177,7 @@ echo "===================== PROVISION STATUS ================"
 
 JOB_HOSTNAME=`xmlstarlet sel -t --value-of "//recipe/@system" job-result`
 rm -Rf hostname
-echo "JOB_HOSTNAME = $JOB_HOSTNAME"
+echo "JOB_HOSTNAME = $JOB_HOSTNAME - https://beaker.engineering.redhat.com/view/$JOB_HOSTNAME"
 echo $JOB_HOSTNAME > hostname
 
 DISTRO=`xmlstarlet sel -t --value-of "//recipe/@distro" job-result`
