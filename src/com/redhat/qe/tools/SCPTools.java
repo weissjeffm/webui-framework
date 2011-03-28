@@ -14,6 +14,8 @@ public class SCPTools {
 	protected String password;
 	protected String server;
 	protected static Logger log = Logger.getLogger(SCPTools.class.getName());
+	protected Connection connection = null;
+	protected SCPClient client = null;
 	
 	public SCPTools(String server,
 			String user,
@@ -36,22 +38,15 @@ public class SCPTools {
 	}
 	
 	public boolean sendFile(String source, String dest){
-		Connection newConn = new Connection(server);
 		log.info("SCP: Copying "+source+" to "+this.server+":"+dest);
+
 		try {
-			newConn.connect();
-			newConn.authenticateWithPublicKey(userName, sshPemFile, password);
-		} catch (IOException e) {
-			log.log(Level.INFO, "SCP: Connection failed:", e);
-			return false;
-		}
-		SCPClient scp = new SCPClient(newConn);
-		try {
-			scp.put(source, dest);
+			init();
+			client.put(source, dest);
 		} catch (IOException e) {
 			log.log(Level.INFO, "SCP: File transfer failed:", e);
 			return false;
-		}
+		} 
 		log.info("SCP: Transfer succeeded");
 		
 		return true;
@@ -69,18 +64,11 @@ public class SCPTools {
 	}*/
 	
 	public boolean getFile(String remoteFile, String target){
-		Connection newConn = new Connection(server);
 		log.info("SCP: Copying "+server+":"+remoteFile+" to "+target);
+
 		try {
-			newConn.connect();
-			newConn.authenticateWithPublicKey(userName, sshPemFile, password);
-		} catch (IOException e) {
-			log.log(Level.INFO, "SCP: Connection failed:", e);
-			return false;
-		}
-		SCPClient scp = new SCPClient(newConn);
-		try {
-			scp.get(remoteFile, target);
+			init();
+			client.get(remoteFile, target);
 		} catch (IOException e) {
 			log.log(Level.INFO, "SCP: File transfer failed:", e);
 			return false;
@@ -89,4 +77,54 @@ public class SCPTools {
 		
 		return true;
 	}
+
+	
+	public void close() {
+		connection.close();
+	}
+	
+	private void init() throws IOException{
+		if (connection == null) {
+			connection = connect_server();
+			client = new SCPClient(connection);
+		}
+	}
+	
+	private Connection connect_server() throws IOException{
+		Connection newConn = new Connection(server);
+		try {
+			newConn.connect();
+			newConn.authenticateWithPublicKey(userName, sshPemFile, password);
+		} catch (IOException e) {
+			newConn = new Connection(server);
+			try{newConn.connect();}
+			catch(IOException ioe){log.log(Level.INFO, "SCP: Connection failed:", ioe);}
+			newConn.authenticateWithPassword(userName, password);
+			
+		}
+		return newConn;
+	}
+	
+	public static void main(String... args) {
+		SCPTools copier = new SCPTools("f14-1.usersys.redhat.com", "root", new File(""), "dog8code");
+		copier.sendFile("/tmp/blah1", "/tmp/");
+		copier.sendFile("/tmp/blah2", "/tmp");
+		copier.sendFile("/tmp/blah3", "/tmp");
+		copier.sendFile("/tmp/blah4", "/tmp");
+		copier.sendFile("/tmp/blah5", "/tmp");
+		copier.sendFile("/tmp/blah6", "/tmp");
+		copier.sendFile("/tmp/blah7", "/tmp");
+		copier.sendFile("/tmp/blah8", "/tmp");
+		copier.sendFile("/tmp/blah9", "/tmp");
+		copier.sendFile("/tmp/blah1", "/tmp/");
+		copier.sendFile("/tmp/blah2", "/tmp");
+		copier.sendFile("/tmp/blah3", "/tmp");
+		copier.sendFile("/tmp/blah4", "/tmp");
+		copier.sendFile("/tmp/blah5", "/tmp");
+		copier.sendFile("/tmp/blah6", "/tmp");
+		copier.sendFile("/tmp/blah7", "/tmp");
+		copier.sendFile("/tmp/blah8", "/tmp");
+		copier.sendFile("/tmp/blah9", "/tmp");
+	}
+
 }
