@@ -23,6 +23,7 @@ public class UILocatorStrategies {
     public LocatorStrategy buttonWithParentHeader = new LocatorTemplate("buttonWithParentHeader","//h3[text()='$1']/following-sibling::input[@value='Launch']"); 
     public LocatorStrategy value = new LocatorTemplate("value", "//input[@value='$1']");
     public LocatorStrategy span = new LocatorTemplate("span", "//span[@class='$1']");
+    public LocatorStrategy select_id = new LocatorTemplate("select_id","//select[@id='$1']");
    
     // find a particular table
     public LocatorStrategy wrappedTable = new LocatorTemplate("wrapped table","//div[@class='wrapped_table']//div[@class='title' and normalize-space(.)='$1']");
@@ -35,6 +36,9 @@ public class UILocatorStrategies {
     public LocatorStrategy tableRowWithTextInColumnNumber =   new LocatorTemplate("table with row with text in column number","//table[@class='$1']//tr[td[normalize-space(.)='$2' and position()='$3']]");
     public LocatorStrategy cellInTableMatchingTwoColumns =   new LocatorTemplate("table with row with text in row matching two columns","//table[@class='$1']//tr[td[normalize-space(.)='$2' and position()='$3'] and td[normalize-space(.)='$4' and position()='$5']]");
    //End Locator Strategies
+    
+    public LocatorStrategy contains = new LocatorTemplate("contains","//a[contains(.,'$1')]");
+    public LocatorStrategy startswith = new LocatorTemplate("starts-with","//a[starts-with(.,'$1')]");
     
     //COMBINATIONS
     //button under a div w/ a particular id

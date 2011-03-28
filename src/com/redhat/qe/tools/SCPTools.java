@@ -49,7 +49,9 @@ public class SCPTools {
 		} 
 		log.info("SCP: Transfer succeeded");
 		
-		return true;
+		
+		
+		return true;		
 	}
 	
 	/*public void sendStream(OutputStream os, String dest) throws IOException{
@@ -69,6 +71,7 @@ public class SCPTools {
 		try {
 			init();
 			client.get(remoteFile, target);
+		
 		} catch (IOException e) {
 			log.log(Level.INFO, "SCP: File transfer failed:", e);
 			return false;
@@ -125,6 +128,7 @@ public class SCPTools {
 		copier.sendFile("/tmp/blah7", "/tmp");
 		copier.sendFile("/tmp/blah8", "/tmp");
 		copier.sendFile("/tmp/blah9", "/tmp");
+	
 	}
 
 }

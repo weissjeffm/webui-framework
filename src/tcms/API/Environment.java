@@ -34,9 +34,12 @@ import com.redhat.qe.xmlrpc.Session;
  * @author anelson
  *
  */
+@SuppressWarnings("unchecked")
 public class Environment extends TestopiaObject{
 
 	private IntegerAttribute productId = newIntegerAttribute("product", null);
+	private IntegerAttribute valueId = newIntegerAttribute("value", null);
+	private IntegerAttribute propertyId = newIntegerAttribute("property", null);
 	private StringAttribute name = newStringAttribute("name", null);
 	private BooleanAttribute isactive = newBooleanAttribute("isactive", null);
 
@@ -52,6 +55,14 @@ public class Environment extends TestopiaObject{
 		this.id = newIntegerAttribute("environment_id", null);
 	}
 
+	public Environment(Session session, Integer productId, String sPropertyName, String sValueName) throws XmlRpcException {
+		this.session = session;
+		this.productId.set(productId);
+		this.name.set(sPropertyName + ":" + sValueName);
+		//this.id = newIntegerAttribute("environment_id", null);
+		this.propertyId.set(getEnvironmentPropertyIdByName(sPropertyName));
+		this.valueId.set(getEnvironmentValueIdByName(sPropertyName, sValueName));
+	}
 
 	/**
 	 * Updates are not called when the .set is used. You must call update after all your sets
@@ -85,7 +96,6 @@ public class Environment extends TestopiaObject{
 	 * @return
 	 * @throws XmlRpcException 
 	 */
-	@SuppressWarnings("unchecked")
 	public HashMap<String, Object> getEnvironment(int environmentID)
 	throws XmlRpcException
 	{
@@ -99,7 +109,6 @@ public class Environment extends TestopiaObject{
 	 * @return
 	 * @throws XmlRpcException 
 	 */
-	@SuppressWarnings("unchecked")
 	public HashMap<String, Object> listEnvironments(String productName, String environmentName)
 	throws XmlRpcException
 	{
@@ -148,6 +157,46 @@ public class Environment extends TestopiaObject{
 	}
 
 
+	public Object[] getAllEnvironmentProperties() throws XmlRpcException	{
+		return (Object[])callXmlrpcMethod("Env.get_properties");
+	}
+	
+	public Object[] getAllEnvironmentValues() throws XmlRpcException	{
+		return (Object[])callXmlrpcMethod("Env.get_values");
+	}
+	
+	public int getEnvironmentPropertyIdByName(String sPropertyName) throws XmlRpcException {
+		Object[] objArray = getAllEnvironmentProperties();
+		
+		for (int i = 0; i < objArray.length; i++) {
+			HashMap<String, Object> map = (HashMap<String, Object>) objArray[i];
+				
+			if (map.get("name").equals(sPropertyName)) {
+				return (Integer) map.get("id");
+			}
+		}
+
+		throw new TestopiaException("TCMS env property(" + sPropertyName + ") not found");
+	}
+	
+	public int getEnvironmentValueIdByName(String sPropertyName, String sValueName) throws XmlRpcException {
+		int pId = getEnvironmentPropertyIdByName(sPropertyName);
+		
+		Object[] objArray = getAllEnvironmentValues();
+		
+		for (int i = 0; i < objArray.length; i++) {
+			HashMap<String, Object> map = (HashMap<String, Object>) objArray[i];
+			
+			if (((Integer) map.get("property_id")) == pId) {
+				if (map.get("value").equals(sValueName)) {
+					return (Integer) map.get("id");
+				}
+			}
+		}
+
+		throw new TestopiaException("TCMS env property:value(" + sPropertyName + ":" + sValueName + ") not found");
+	}
+	
 	/**
 	 * 
 	 * @param BuildName the name of the build that the ID will be returned for. 0 Will be 
@@ -155,7 +204,6 @@ public class Environment extends TestopiaObject{
 	 * @return the ID of the specified product
 	 * @throws XmlRpcException 
 	 */
-	@SuppressWarnings("unchecked")
 	public int getEnvironemntIDByName(String environmentName) throws XmlRpcException
 	{
 		get("Environment.check_environment",environmentName, productId.get());
@@ -167,6 +215,9 @@ public class Environment extends TestopiaObject{
 		return productId.get();
 	}
 
+	public Integer getValueId() {
+		return valueId.get();
+	}
 
 	public void setProductId(Integer productId) {
 		this.productId.set(productId);
