@@ -130,6 +130,7 @@ JOB=`cat job | cut -d \' -f 2`
 
 echo "===================== JOB ID ================"
 echo "${JOB} - https://beaker.engineering.redhat.com/jobs/${JOB:2}" 
+echo "Cancel job = https://beaker.engineering.redhat.com/jobs/cancel?id=${JOB:2}"
 echo "===================== JOB ID ================"
 
 echo "===================== PROVISION STATUS ================"
