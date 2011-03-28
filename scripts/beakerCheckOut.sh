@@ -176,6 +176,7 @@ fi
 echo "===================== PROVISION STATUS ================"
 
 HOSTNAME=`xmlstarlet sel -t --value-of "//recipe/@system" job-result`
+rm -Rf hostname
 echo "HOSTNAME = $HOSTNAME"
 echo $HOSTNAME > hostname
 
