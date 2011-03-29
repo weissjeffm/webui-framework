@@ -23,6 +23,9 @@ import org.testng.ISuiteListener;
 import org.testng.ITestContext;
 import org.testng.ITestResult;
 import org.testng.internal.IResultListener;
+
+import com.redhat.qe.auto.testng.BlockedByBzBug;
+
 import tcms.API.Build;
 import tcms.API.Environment;
 import tcms.API.Product;
@@ -413,11 +416,21 @@ public class TCMSTestNGListener implements IResultListener, ISuiteListener {
 		String summary = null;
 		if ( (sAppendParmOneToSummary.equals("1")) && (result.getParameters() != null && result.getParameters().length > 0) ) {
 			summary = description.length()>0 ? description : script;
-			String parmOne = (String) result.getParameters()[0];
-			summary = summary + " - " + parmOne;
-		} else {	
+			
+			int indexToCheck = 0;
+			
+			// check/skip blockedByBugzillaBug
+			if (result.getParameters()[0] instanceof BlockedByBzBug)
+				indexToCheck = 1;
+			
+			if (result.getParameters()[indexToCheck] instanceof String) {
+				String parmOne = (String) result.getParameters()[indexToCheck];
+				summary = summary + " - " + parmOne;
+			} else
+				summary = description.length()>0 ? (description + count) : (script + count);
+			
+		} else
 			summary = description.length()>0 ? (description + count) : (script + count);
-		}
 		
 		try {
 			try {
