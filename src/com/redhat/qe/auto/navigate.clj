@@ -3,13 +3,14 @@
             [clojure.set])
   (:import [java.util NoSuchElementException]))
 
-(defmacro page [name-kw fndef & links]
-  (let [m {:page name-kw         
-              :fn fndef}
-        fn-args (second fndef)
-        args  (if (empty? fn-args) {} {:req-args (vec (map keyword fn-args))})
-        linkmap (if (nil? links) {} {:links (vec links)})]
-    (merge m args linkmap)))
+(defmacro nav-tree "takes a nested vector structure and returns nested maps" [[page-id args form & links]]
+  (merge `{:page ~page-id
+           :fn (fn ~args ~form)
+           :req-args ~(vec (map keyword args))}
+         (if links
+           {:links (vec (for [link links]
+                          `(nav-tree ~link)))}
+           {})))
 
 (defn page-zip [tree] (zip/zipper (constantly true)
                           #(:links %)
