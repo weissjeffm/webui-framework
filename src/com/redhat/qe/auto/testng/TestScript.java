@@ -2,6 +2,10 @@ package com.redhat.qe.auto.testng;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
+
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
@@ -29,15 +33,24 @@ public class TestScript {
 			
 			
 			propFile = System.getProperty("log.propertiesfile", defaultLogPropertiesFile);
-			if (! new File(propFile).exists()) {
-				log.fine("No log.propertiesfile specified, nor found in HOME dir, trying to use default in project.");
-				propFile = "log.properties";
+			try {
+				LogManager.getLogManager().readConfiguration(new URL(propFile).openStream());
 			}
-			else{
-				log.info("Found log properties file: "+propFile);
+			catch (Exception e) {
+				if (e instanceof MalformedURLException) 
+					log.info("Unable to parse as a URL: " + propFile + ", trying as a filename.");
+				else 
+					log.log(Level.WARNING, "Unable to read log configuration from: " + propFile + ".", e);
+				if (! new File(propFile).exists()) {
+					log.fine("No log.propertiesfile specified, nor found in HOME dir, trying to use default in project.");
+					propFile = "log.properties";
+				}
+				else{
+					log.info("Found log properties file: "+propFile);
+				}
+				LogManager.getLogManager().readConfiguration(new FileInputStream(propFile));
 			}
-
-			LogManager.getLogManager().readConfiguration(new FileInputStream(propFile));
+			
 			log.fine("Loaded logger configuration from log.propertiesfile: "+propFile);
 
 		} catch(Throwable e){
@@ -54,11 +67,22 @@ public class TestScript {
 				propFile = defaultAutomationPropertiesFile;
 			}
 			Properties p = new Properties();
-			p.load(new FileInputStream(propFile));
-			for (Object key: p.keySet()){
-				System.setProperty((String)key, p.getProperty((String)(key)));
+			try {
+				p.load(new URL(propFile).openStream());
+			}catch(Exception e) {
+				if (e instanceof MalformedURLException) 
+					log.info("Unable to parse as a URL: " + propFile + ", trying as a filename.");
+				else 
+					log.log(Level.WARNING, "Unable to read automation.properties configuration from: " + propFile + ".", e);
+
+				p.load(new FileInputStream(propFile));
+				for (Object key: p.keySet()){
+					System.setProperty((String)key, p.getProperty((String)(key)));
+				}
+				log.fine("Loaded automation properties from automation.propertiesfile: "+propFile);
 			}
-			log.fine("Loaded automation properties from automation.propertiesfile: "+propFile);
+			
+			
 			
 			// default automation.dir to user.dir
 			if(System.getProperty("automation.dir") == null){
