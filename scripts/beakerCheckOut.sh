@@ -129,7 +129,7 @@ echo "===================== JOB DETAILS ================"
 JOB=`cat job | cut -d \' -f 2`
 
 echo "===================== JOB ID ================"
-echo $JOB
+echo "${JOB} - https://beaker.engineering.redhat.com/jobs/${JOB:2}" 
 echo "===================== JOB ID ================"
 
 echo "===================== PROVISION STATUS ================"
@@ -175,9 +175,10 @@ if [[ $TIME -eq $TIMEOUT ]]; then
 fi
 echo "===================== PROVISION STATUS ================"
 
-HOSTNAME=`xmlstarlet sel -t --value-of "//recipe/@system" job-result`
-echo "HOSTNAME = $HOSTNAME"
-echo $HOSTNAME > hostname
+JOB_HOSTNAME=`xmlstarlet sel -t --value-of "//recipe/@system" job-result`
+rm -Rf hostname
+echo "JOB_HOSTNAME = $JOB_HOSTNAME - https://beaker.engineering.redhat.com/view/$JOB_HOSTNAME"
+echo $JOB_HOSTNAME > hostname
 
 DISTRO=`xmlstarlet sel -t --value-of "//recipe/@distro" job-result`
 echo $DISTRO
@@ -209,6 +210,7 @@ for TASK in $TASKS; do
         echo "Job FAILED!"
         echo "Task Status: $TASK_STATUS"
         echo "Task Result: $TASK_RESULT"
+        bkr job-cancel $JOB $USERNAME $PASSWORD 	
         exit 1
         break
       fi
