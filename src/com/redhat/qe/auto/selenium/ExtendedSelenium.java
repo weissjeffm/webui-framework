@@ -943,6 +943,8 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 			Thread.currentThread().sleep(Integer.parseInt(millis));
 		}
 		catch (InterruptedException e) {
+			log.log(Level.INFO, "Thread sleep error: ", e);
+			e.printStackTrace();
 		}
 	}
 
