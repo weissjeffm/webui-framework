@@ -6,25 +6,42 @@
 
 (def sel (atom nil))
 
-(defn connect [host port browser-type url]
+(defn connect "Create a new selenium instance." [host port browser-type url]
   (reset! sel (ExtendedSelenium. host port browser-type url)))
 
 (defn new-element [locator-strategy & args]
   (Element. locator-strategy (into-array args)))
 
-(defmacro browser [action & args]
-  `(let [locator-args# (for [arg# [~@args]]
-                         (if (keyword? arg#)
-                           (let [locator# (sel-locator arg#)]
-                             (if (nil? locator#)
-                               (throw (IllegalArgumentException.
-                                       (str "Locator " arg# " not found in UI mapping.")))
-                               locator#))
-                           arg#))]
-    (clojure.lang.Reflector/invokeInstanceMethod
-     (deref sel) ~(str action) (into-array Object locator-args#))))
+(defn locator-args
+  "If any args are keywords, look them up via
+SeleniumLocatable protocol (which should return a selenium String
+locator). Returns the args list with those Strings in place of the
+keywords."
+  [ & args]
+  (for [arg args]
+    (if (keyword? arg) 
+      (or (sel-locator arg)
+          (throw (IllegalArgumentException.
+                  (str "Locator " arg " not found in UI mapping."))))
+      arg)))
 
-(defn fill-form [items-map submit]
+(defmacro browser
+  "Call method 'action' on selenium, with the given args - keywords
+will be looked up and converted to String locators (see locator-args)"
+[action & args]
+  `(clojure.lang.Reflector/invokeInstanceMethod
+   (deref sel) ~(str action) (into-array Object (locator-args ~@args))))
+
+(defmacro ->browser "Performs a series of actions using the browser"
+  [ & forms]
+  `(do ~@(for [form forms] `(browser ~@form))))
+
+(defn fill-form
+  "Fills in a standard HTML form.  items-map is a
+mapping of locators of form elements, to the string values that should
+be selected or entered.  'submit' is a locator for the submit button
+to click at the end."
+  [items-map submit]
   (doseq [[el val] items-map]
     (if val
       (if (= "selectlist" (browser getElementType el))
