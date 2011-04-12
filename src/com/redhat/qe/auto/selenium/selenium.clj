@@ -17,7 +17,7 @@
 SeleniumLocatable protocol (which should return a selenium String
 locator). Returns the args list with those Strings in place of the
 keywords."
-  [ & args]
+  [& args]
   (for [arg args]
     (if (keyword? arg) 
       (or (sel-locator arg)
@@ -25,12 +25,15 @@ keywords."
                   (str "Locator " arg " not found in UI mapping."))))
       arg)))
 
+(defn call-sel [action & args]
+  (clojure.lang.Reflector/invokeInstanceMethod
+   (deref sel) action (into-array Object (apply locator-args args))))
+
 (defmacro browser
   "Call method 'action' on selenium, with the given args - keywords
 will be looked up and converted to String locators (see locator-args)"
-[action & args]
-  `(clojure.lang.Reflector/invokeInstanceMethod
-   (deref sel) ~(str action) (into-array Object (locator-args ~@args))))
+  [action & args]
+  `(call-sel ~(str action) ~@args))
 
 (defmacro ->browser "Performs a series of actions using the browser"
   [ & forms]
@@ -48,3 +51,16 @@ to click at the end."
        (browser select el val)
        (browser setText el val))))
   (browser clickAndWait submit))
+
+(defmacro loop-with-timeout [timeout bindings & forms]
+  `(let [starttime# (System/currentTimeMillis)]
+     (loop ~bindings
+       (if  (> (- (System/currentTimeMillis) starttime#) ~timeout)
+	 (throw (RuntimeException. (str "Hit timeout of " ~timeout "ms.")))
+	 (do ~@forms)))))
+
+(defn first-present [timeout & elements]
+  (loop-with-timeout timeout []
+    (or (some #(if (browser isElementPresent %1) %1) elements)
+        (do (Thread/sleep 1000)
+            (recur)))))
