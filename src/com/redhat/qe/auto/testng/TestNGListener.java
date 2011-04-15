@@ -1,8 +1,5 @@
 package com.redhat.qe.auto.testng;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
@@ -13,10 +10,7 @@ import org.testng.ISuiteListener;
 import org.testng.ITestContext;
 import org.testng.ITestResult;
 import org.testng.Reporter;
-import org.testng.SkipException;
 import org.testng.internal.IResultListener;
-
-import com.redhat.qe.auto.tcms.ImplementsNitrateTest;
 
 
 /**
@@ -82,34 +76,6 @@ public class TestNGListener implements IResultListener, ISuiteListener {
 		r.setParameters(new Object[]{LogMessageUtil.Style.Banner, LogMessageUtil.Style.StartTest});
 		log.log(r);
 				
-		// embed an entry in the log to the corresponding Nitrate test case
-		Method	method = result.getMethod().getMethod();
-		Annotation[] annotations = method.getAnnotations();
-		for(Annotation annotation : annotations){
-		    if(annotation instanceof ImplementsNitrateTest){
-		    	ImplementsNitrateTest nitrateTest = (ImplementsNitrateTest) annotation;
-
-		    	// Examples:
-				// https://tcms.engineering.redhat.com/case/7889/history/?from_plan=792&case_text_version=6"
-				// https://tcms.engineering.redhat.com/case/7889/?from_plan=792
-				// https://tcms.engineering.redhat.com/case/7889
-				// https://tcms.engineering.redhat.com/case/7889/history/?from_plan=&case_text_version=6
-
-	    		int caseId = nitrateTest.caseId();
-	    		int version = nitrateTest.version();
-	    		int fromPlan = nitrateTest.fromPlan();
-	    		String baseUrl = nitrateTest.baseUrl();
-	    		String logMsg = String.format("This automated test implements Nitrate test %s/case/%d/history/?from_plan=%s&case_text_version=%s", baseUrl, caseId, fromPlan==0?"":fromPlan, version==0?"":version);
-				if (version==0) {
-					logMsg = logMsg.replace("&case_text_version=", "");
-					logMsg = logMsg.replace("history/", "");
-					if (fromPlan==0) {
-						logMsg = logMsg.replace("?from_plan=", "");
-					}
-				}
-				log.info(logMsg);
-		    }
-		}
 	}
 	
 	@Override
