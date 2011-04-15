@@ -577,7 +577,7 @@ public class TCMSTestNGListener implements IResultListener, ISuiteListener {
 		//session.login();
 	}
 	
-	protected void retrieveContext() throws XmlRpcException{
+	public void retrieveContext() throws XmlRpcException{
 		product = new Product(session, System.getProperty("testopia.testrun.product"));
 		testplan = new TestPlan(session, product.getId(), System.getProperty("testopia.testrun.testplan"), version);
 		
