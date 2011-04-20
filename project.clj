@@ -1,4 +1,4 @@
-(defproject webui-framework "1.0.2-SNAPSHOT"
+(defproject webui-framework "1.1.0-SNAPSHOT"
   :description "A library of automated testing related functions."
   :java-source-path "src"
   :dependencies [[com.google.collections/google-collections "1.0"]
