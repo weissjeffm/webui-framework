@@ -1,5 +1,6 @@
 package com.redhat.qe.auto.selenium;
 
+import java.awt.event.KeyEvent;
 import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -13,7 +14,6 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Properties;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
@@ -430,11 +430,40 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 	}
 	
 
+	
+	public void open(String url, boolean ignoreSSLError) {
+		final String SSLUnderstandRisks = "//*[normalize-space(@id)='expertContentHeading']";
+		final String SSLExceptionAccept = "//*[normalize-space(@id)='exceptionDialogButton']";
+		final String tab = new Integer(KeyEvent.VK_TAB).toString();
+		final String space = new Integer(KeyEvent.VK_SPACE).toString();
+		try {
+			log.log(Level.INFO, "Open URL '" + url + "'.", LogMessageUtil.Style.Action);  
+			super.open(url);
+			log.info("Current URL is " + getLocation() + " .");	
+		}
+		catch(SeleniumException se){
+			if (!ignoreSSLError) throw se;
+			
+			if(isVisible(SSLUnderstandRisks)){
+				click(SSLUnderstandRisks);
+				windowFocus();
+			}
+			
+			if(isElementPresent(SSLExceptionAccept)){
+				log.info("Confirming security exception in browser.");
+				for (String k: new String[] {tab, tab, space})
+					keyPressNative(k);
+				sleep(5000);
+				windowFocus();
+				for (String k: new String[] {tab, tab, tab, tab, space})
+					keyPressNative(k);				
+			}
+		}
+	}
+
 	@Override
 	public void open(String url) {
-		log.log(Level.INFO, "Open URL '" + url + "'.", LogMessageUtil.Style.Action);  
-		super.open(url);
-		log.info("Current URL is " + getLocation() + " .");
+		open(url, true);
 	}
 
 	@Override
@@ -925,11 +954,14 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 	}
 	
 	public static void main (String... args) {
-		System.out.println(Pattern.quote("^//td[(normalize-space(.)='jweiss-rhel1.usersys.redhat.com')]/..//input[@type='checkbox']"));
+/*		System.out.println(Pattern.quote("^//td[(normalize-space(.)='jweiss-rhel1.usersys.redhat.com')]/..//input[@type='checkbox']"));
 	
 		String elementType = "submit button", elementStr="button in a table";
 		if (elementType.contains(" ")) elementStr=elementStr.replaceAll("^" +Pattern.quote(elementType.substring(elementType.lastIndexOf(" ")).trim()) + " ", ""); 
-
+*/
+		ExtendedSelenium sel = new ExtendedSelenium("localhost", 4444, "", "https://smqe-sat04.lab.eng.brq.redhat.com:3000/");
+		sel.start();
+		sel.open("https://smqe-sat04.lab.eng.brq.redhat.com:3000/");
 		
 	}
 	
