@@ -1,16 +1,10 @@
 package com.redhat.qe.auto.selenium;
 
-import java.util.Arrays;
 import java.util.logging.Level;
-import java.util.logging.LogRecord;
-import java.util.logging.Logger;
 
-import org.testng.ISuite;
 import org.testng.ISuiteListener;
-import org.testng.ITestContext;
 import org.testng.ITestResult;
 import org.testng.Reporter;
-import org.testng.SkipException;
 import org.testng.internal.IResultListener;
 
 import com.redhat.qe.auto.testng.LogMessageUtil;
