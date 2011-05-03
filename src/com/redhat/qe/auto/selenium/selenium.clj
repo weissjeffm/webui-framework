@@ -44,13 +44,18 @@ will be looked up and converted to String locators (see locator-args)"
 mapping of locators of form elements, to the string values that should
 be selected or entered.  'submit' is a locator for the submit button
 to click at the end."
-  [items-map submit]
+  [items-map submit & [post-fn]]
   (doseq [[el val] items-map]
-    (if val
-      (if (= "selectlist" (browser getElementType el))
-       (browser select el val)
-       (browser setText el val))))
-  (browser clickAndWait submit))
+    
+    (let [eltype (browser getElementType el)]
+      (cond (= eltype "selectlist") (if val (browser select el val))
+            (= eltype "checkbox") (if-not (nil? val)  ;;<-yup
+                                    (browser checkUncheck el (boolean val)))
+            :else (browser setText el val))))
+  (if post-fn
+    (do (browser click submit)
+        (post-fn))
+    (browser clickAndWait submit)))
 
 (defmacro loop-with-timeout [timeout bindings & forms]
   `(let [starttime# (System/currentTimeMillis)]
