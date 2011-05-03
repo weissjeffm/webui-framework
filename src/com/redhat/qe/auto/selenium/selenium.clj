@@ -51,7 +51,7 @@ to click at the end."
       (cond (= eltype "selectlist") (if val (browser select el val))
             (= eltype "checkbox") (if-not (nil? val)  ;;<-yup
                                     (browser checkUncheck el (boolean val)))
-            :else (browser setText el val))))
+            :else (if val (browser setText el val)))))
   (if post-fn
     (do (browser click submit)
         (post-fn))
