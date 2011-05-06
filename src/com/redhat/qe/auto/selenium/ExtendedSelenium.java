@@ -952,6 +952,35 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 	public static String escape(String locator){
 		return locator.replace("\"", "\\\"");
 	}
+
+
+	public void waitForEnabled(Element elem, String millis) {
+		// FIXME: Until the javascript portion of this method performs more consistently, 
+		//		  sleep is a better alternative.
+		/*
+		log.info("Wait for enabled'" + elem + "', with timeout of " + millis + ".");
+		String locatorStr = escape(elem.getLocator());
+		String script = "" //
+			+ "{var elem = selenium.browserbot.findElement(\""
+			+ locatorStr
+			+ "\");" //
+			+ "var canvas = selenium.browserbot.getUserWindow().isc.AutoTest.locateCanvasFromDOMElement(elem);" //
+			+ "!canvas.isDisabled();}";
+		sel().waitForCondition(script, millis);
+		*/
+		try {
+			Thread.currentThread().sleep(Integer.parseInt(millis));
+		}
+		catch (InterruptedException e) {
+			log.log(Level.INFO, "Thread sleep error: ", e);
+			e.printStackTrace();
+		}
+	}
+
+	public void waitForEnabledAndClick(Element elem, String millis) {
+		waitForEnabled(elem, millis);
+		click(elem);
+	}
 	
 	public static void main (String... args) {
 /*		System.out.println(Pattern.quote("^//td[(normalize-space(.)='jweiss-rhel1.usersys.redhat.com')]/..//input[@type='checkbox']"));
@@ -964,6 +993,4 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 		sel.open("https://smqe-sat04.lab.eng.brq.redhat.com:3000/");
 		
 	}
-	
-	
 }
