@@ -149,6 +149,30 @@ public class RemoteFileTasks {
 	}
 	
 	/**
+	 * Use echo to append a marker string to the end of a file (e.g. a log file).<br>
+	 * @param runner
+	 * @param filePath
+	 * @param marker
+	 * @return exit code from echo
+	 * @author jsefler
+	 */
+	public static int markFile (SSHCommandRunner runner, String filePath, String marker) {
+		return runCommandAndWait(runner, "echo '"+marker+"'  >> "+filePath, LogMessageUtil.action());
+	}
+	
+	/**
+	 * Return the tail of a file up to, but not including, the marker string that was previously appended to the file (e.g. a log file).<br>
+	 * @param runner
+	 * @param filePath
+	 * @param marker
+	 * @return stdout
+	 * @author jsefler
+	 */
+	public static String getTailFromMarkedFile (SSHCommandRunner runner, String filePath, String marker) {
+		return runCommandAndAssert(runner,"(LINES=''; IFS=$'\n'; for line in $(tac "+filePath+"); do if [[ $line = '"+marker+"' ]]; then break; fi; LINES=${LINES}'\n'$line; done; echo -e $LINES)",0).getStdout();
+	}
+	
+	/**
 	 * Test for the existence of a file.<br>
 	 * test -e filePath && echo 1 || echo 0
 	 * @param runner
