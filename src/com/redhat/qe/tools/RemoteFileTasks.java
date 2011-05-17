@@ -169,6 +169,7 @@ public class RemoteFileTasks {
 	 * @author jsefler
 	 */
 	public static String getTailFromMarkedFile (SSHCommandRunner runner, String filePath, String marker) {
+		// "(LINES=''; IFS=$'\n'; for line in $(tac "+proxyLog+"); do if [[ $line = '"+proxyLogMarker+"' ]]; then break; fi; LINES=${LINES}'\n'$line; done; echo -e $LINES) | grep "+clienttasks.ipaddr
 		return runCommandAndAssert(runner,"(LINES=''; IFS=$'\n'; for line in $(tac "+filePath+"); do if [[ $line = '"+marker+"' ]]; then break; fi; LINES=${LINES}'\n'$line; done; echo -e $LINES)",0).getStdout();
 	}
 	
