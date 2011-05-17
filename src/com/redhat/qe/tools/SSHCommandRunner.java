@@ -256,19 +256,23 @@ public class SSHCommandRunner implements Runnable {
 	}
 	
 	public SSHCommandResult runCommandAndWait(String command){
-		return runCommandAndWait(command,null,LogMessageUtil.fine(), false);
+		return runCommandAndWait(command,null,LogMessageUtil.fine(), false, true);
 	}
 	
 	public SSHCommandResult runCommandAndWait(String command, boolean liveLogOutput){
-		return runCommandAndWait(command,null,LogMessageUtil.fine(), liveLogOutput);
+		return runCommandAndWait(command,null,LogMessageUtil.fine(), liveLogOutput, true);
 	}
 	
 	public SSHCommandResult runCommandAndWait(String command, Long timeoutMS){
-		return runCommandAndWait(command,timeoutMS,LogMessageUtil.fine(), false);
+		return runCommandAndWait(command,timeoutMS,LogMessageUtil.fine(), false, true);
 	}
 	
 	public SSHCommandResult runCommandAndWait(String command, LogRecord logRecord){
-		return runCommandAndWait(command,null,logRecord, false);
+		return runCommandAndWait(command,null,logRecord, false, true);
+	}
+	
+	public SSHCommandResult runCommandAndWaitWithoutLogging(String command){
+		return runCommandAndWait(command,null,LogMessageUtil.fine(), false, false);
 	}
 	
 	/**
@@ -281,31 +285,35 @@ public class SSHCommandRunner implements Runnable {
 	 * @param liveLogOutput - if true, log output as the command runs.  Good for long running
 	 * commands, or commands that could potentially hang or timeout.  If false, don't log 
 	 * any output until the command has finished running.
+	 * @param logOutput - if false, the stdout, stderr, and exitCode will not be logged at all
 	 * @return the integer return code of the command
 	 */ 
-	public SSHCommandResult runCommandAndWait(String command, Long timeoutMS, LogRecord logRecord, boolean liveLogOutput){
+	public SSHCommandResult runCommandAndWait(String command, Long timeoutMS, LogRecord logRecord, boolean liveLogOutput, boolean logOutput){
 		runCommand(command,logRecord);
 		SplitStreamLogger logger = null;
-		if (liveLogOutput){
+		if (liveLogOutput && logOutput){
 			logger = new SplitStreamLogger(this);
 			logger.log(logRecord.getLevel(), logRecord.getLevel());
 		}
 		waitForWithTimeout(timeoutMS);
 		SSHCommandResult sshCommandResult = null;
-		if (liveLogOutput) {
+		if (liveLogOutput && logOutput) {
 			s_out = logger.getStdout();
 			s_err = logger.getStderr();
 		}
 		
 		sshCommandResult = getSSHCommandResult();
 		
-		if (!liveLogOutput){
+		if (!liveLogOutput && logOutput){
 			String o = (this.getStdout().split("\n").length>1)? "\n":"";
 			String e = (this.getStderr().split("\n").length>1)? "\n":"";
 			log.log(logRecord.getLevel(), "Stdout: "+o+sshCommandResult.getStdout());
 			log.log(logRecord.getLevel(), "Stderr: "+e+sshCommandResult.getStderr());
 		}
-		log.log(logRecord.getLevel(), "ExitCode: "+sshCommandResult.getExitCode());
+		
+		if (logOutput){
+			log.log(logRecord.getLevel(), "ExitCode: "+sshCommandResult.getExitCode());
+		}
 
 		return sshCommandResult;
 	}
