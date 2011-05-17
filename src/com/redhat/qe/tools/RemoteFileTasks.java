@@ -170,6 +170,7 @@ public class RemoteFileTasks {
 	 * @param marker - string that was previously appended to the file by calling the markFile(...) method
 	 * @param grepPattern - if not null, the tail of the file past the marker string will be greped for this pattern and the matching lines are returned.
 	 * @return stdout
+	 * @author jmolet
 	 * @author jsefler
 	 */
 	public static String getTailFromMarkedFile (SSHCommandRunner runner, String filePath, String marker, String grepPattern) {
