@@ -151,26 +151,32 @@ public class RemoteFileTasks {
 	/**
 	 * Use echo to append a marker string to the end of a file (e.g. a log file).<br>
 	 * @param runner
-	 * @param filePath
-	 * @param marker
+	 * @param filePath - path to the file on the runner machine
+	 * @param marker - this string will be appended to the file and act as a marker.  DO NOT USE CHARACTERS THAT WILL BE INTERPRETED BY BASH IN THIS STRING (e.g. PARENTHESIS).
 	 * @return exit code from echo
 	 * @author jsefler
 	 */
 	public static int markFile (SSHCommandRunner runner, String filePath, String marker) {
-		return runCommandAndWait(runner, "echo '"+marker+"'  >> "+filePath, LogMessageUtil.action());
+		return runCommandAndWait(runner, "echo '"+marker+"' >> "+filePath, LogMessageUtil.action());
 	}
 	
 	/**
-	 * Return the tail of a file up to, but not including, the marker string that was previously appended to the file (e.g. a log file).<br>
+	 * Return the tail of a file up to, but not including, the marker string (that was previously appended to the file).<br>
+	 * This method is intended for use with the static markFile() method.  The idea is that a log file is first marked by your test,
+	 * then the program that you are testing will append information to the log file, then by calling this method your test can get the tail
+	 * of the log from the point after the mark to the end of file. 
 	 * @param runner
-	 * @param filePath
-	 * @param marker
+	 * @param filePath - path to the file on the runner machine
+	 * @param marker - string that was previously appended to the file by calling the markFile(...) method
+	 * @param grepPattern - if not null, the tail of the file past the marker string will be greped for this pattern and the matching lines are returned.
 	 * @return stdout
 	 * @author jsefler
 	 */
-	public static String getTailFromMarkedFile (SSHCommandRunner runner, String filePath, String marker) {
-		// "(LINES=''; IFS=$'\n'; for line in $(tac "+proxyLog+"); do if [[ $line = '"+proxyLogMarker+"' ]]; then break; fi; LINES=${LINES}'\n'$line; done; echo -e $LINES) | grep "+clienttasks.ipaddr
-		return runCommandAndAssert(runner,"(LINES=''; IFS=$'\n'; for line in $(tac "+filePath+"); do if [[ $line = '"+marker+"' ]]; then break; fi; LINES=${LINES}'\n'$line; done; echo -e $LINES)",0).getStdout();
+	public static String getTailFromMarkedFile (SSHCommandRunner runner, String filePath, String marker, String grepPattern) {
+		String grepCommand = "";
+		if (grepPattern!=null) grepCommand =  " | grep -E '"+grepPattern+"'";
+		SSHCommandResult result = runCommandAndAssert(runner,"(TAIL=''; IFS=$'\\n'; for line in $(tac "+filePath+"); do if [[ $line = '"+marker+"' ]]; then break; fi; if [[ $TAIL = '' ]]; then TAIL=$line; else TAIL=$line'\\n'${TAIL}; fi; done; echo -e $TAIL)"+grepCommand,0);
+		return result.getStdout();
 	}
 	
 	/**
