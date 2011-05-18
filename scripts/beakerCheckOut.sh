@@ -132,6 +132,12 @@ echo "===================== JOB ID ================"
 echo "${JOB} - https://beaker.engineering.redhat.com/jobs/${JOB:2}" 
 echo "===================== JOB ID ================"
 
+# had a instance where beaker returned 'bkr.server.bexceptions.BX:u' but the script just continued, trying to prevent that in the future - DJ-110415
+# now checking for a valid number after dropping 'j:'
+if ! [[ ${JOB:2} =~ ^[0-9]+$ ]] ; then
+   echo "error: job (${JOB}) doesn't appear to be valid"; exit 1
+fi
+
 echo "===================== PROVISION STATUS ================"
 echo "Timeout: $TIMEOUT minutes"
 PREV_STATUS="Hasn't Started Yet."
