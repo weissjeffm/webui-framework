@@ -39,19 +39,20 @@ will be looked up and converted to String locators (see locator-args)"
   [ & forms]
   `(do ~@(for [form forms] `(browser ~@form))))
 
+(defn fill-item [el val]
+  (let [eltype (browser getElementType el)]
+      (cond (= eltype "selectlist") (if val (browser select el val))
+            (= eltype "checkbox") (if-not (nil? val)  ;;<-yup
+                                    (browser checkUncheck el (boolean val)))
+            :else (if val (browser setText el val)))))
+
 (defn fill-form
   "Fills in a standard HTML form.  items-map is a
 mapping of locators of form elements, to the string values that should
 be selected or entered.  'submit' is a locator for the submit button
 to click at the end."
   [items-map submit & [post-fn]]
-  (doseq [[el val] items-map]
-    
-    (let [eltype (browser getElementType el)]
-      (cond (= eltype "selectlist") (if val (browser select el val))
-            (= eltype "checkbox") (if-not (nil? val)  ;;<-yup
-                                    (browser checkUncheck el (boolean val)))
-            :else (if val (browser setText el val)))))
+  (doseq [[el val] items-map] (fill-item el val))
   (if post-fn
     (do (browser click submit)
         (post-fn))

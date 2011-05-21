@@ -9,6 +9,10 @@
   (let [symbols (map key env)]
     (zipmap (map (fn [sym] `(quote ~sym)) symbols) symbols)))
 
+(defn symbols [sexp]
+  "Returns just the symbols from the expression, including those
+   inside literals (sets, maps, lists, vectors)."
+  (distinct (filter symbol? (tree-seq coll? seq sexp))))
 
 (defmacro verify
   "Evaluates expr and either logs what was evaluated, or throws an exception if it does not evaluate to logical true."
@@ -20,7 +24,7 @@
            form# '~x
            loc# (-> (Thread/currentThread) .getStackTrace second .getClassName (split #"\$"))
            clazz# (str *ns*)
-           used-bindings# (select-keys ~bindings (distinct (flatten form#)))
+           used-bindings# (select-keys ~bindings (symbols form#))
            msg# (apply str (if (and @noerr# res#) "Verified: " "Verification failed: ") (pr-str form#) sep#
                        (map (fn [[k# v#]] (str "\t" k# " : " v# sep#)) 
                             used-bindings#))]
