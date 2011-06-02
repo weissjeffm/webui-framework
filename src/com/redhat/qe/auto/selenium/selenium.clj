@@ -65,8 +65,14 @@ to click at the end."
 	 (throw (RuntimeException. (str "Hit timeout of " ~timeout "ms.")))
 	 (do ~@forms)))))
 
-(defn first-present [timeout & elements]
+(defn- first-appear [sel-fn timeout & elements]
   (loop-with-timeout timeout []
-    (or (some #(if (browser isElementPresent %1) %1) elements)
+    (or (some #(if (call-sel sel-fn %1) %1) elements)
         (do (Thread/sleep 1000)
             (recur)))))
+
+(defn first-present [timeout & elements]
+  (apply first-appear "isElementPresent" timeout elements))
+
+(defn first-visible [timeout & elements]
+  (apply first-appear "isVisible" timeout elements))
