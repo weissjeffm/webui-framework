@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="lib-src"/>
 	<classpathentry kind="src" path="groovy/src"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry exported="true" kind="lib" path="lib/selenium-java-client-driver.jar" sourcepath="/usr/local/selenium-remote-control-1.0.1/selenium-java-client-driver-1.0.1/selenium-java-client-driver-sources.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/sahi.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/xmlrpc-client-3.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/xmlrpc-common-3.1.jar"/>
@@ -34,5 +34,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/antlr-2.7.7.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/ant-antlr-1.8.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/junit-4.8.2.jar"/>
+	<classpathentry kind="lib" path="lib/selenium-java-2.0rc2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
