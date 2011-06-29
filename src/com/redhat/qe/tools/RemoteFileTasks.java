@@ -174,10 +174,17 @@ public class RemoteFileTasks {
 	 * @author jsefler
 	 */
 	public static String getTailFromMarkedFile (SSHCommandRunner runner, String filePath, String marker, String grepPattern) {
-		String grepCommand = "";
-		if (grepPattern!=null) grepCommand =  " | grep -E '"+grepPattern+"'";
-		SSHCommandResult result = runCommandAndAssert(runner,"(TAIL=''; IFS=$'\\n'; for line in $(tac "+filePath+"); do if [[ $line = '"+marker+"' ]]; then break; fi; if [[ $TAIL = '' ]]; then TAIL=$line; else TAIL=$line'\\n'${TAIL}; fi; done; echo -e $TAIL)"+grepCommand,0);
-		return result.getStdout();
+// INEFFICIENT ALGORITHM...
+//		String grepCommand = "";
+//		if (grepPattern!=null) grepCommand =  " | grep -E '"+grepPattern+"'";
+//		SSHCommandResult result = runCommandAndAssert(runner,"(TAIL=''; IFS=$'\\n'; for line in $(tac "+filePath+"); do if [[ $line = '"+marker+"' ]]; then break; fi; if [[ $TAIL = '' ]]; then TAIL=$line; else TAIL=$line'\\n'${TAIL}; fi; done; echo -e $TAIL)"+grepCommand,0,1); // when grepCommand!=null, exitCode=0 means a match was found exitCode=1 means no match was found 
+//		return result.getStdout();
+
+		if (grepPattern!=null) {
+			return runCommandAndAssert(runner,"(TAIL=''; IFS=$'\\n'; for line in $(egrep '"+grepPattern+"|"+marker+"' "+filePath+" | tac); do if [[ $line = '"+marker+"' ]]; then break; fi; if [[ $TAIL = '' ]]; then TAIL=$line; else TAIL=$line'\\n'${TAIL}; fi; done; echo -e $TAIL)",0).getStdout();
+		} else {
+			return runCommandAndAssert(runner,"(TAIL=''; IFS=$'\\n'; for line in $(tac "+filePath+"); do if [[ $line = '"+marker+"' ]]; then break; fi; if [[ $TAIL = '' ]]; then TAIL=$line; else TAIL=$line'\\n'${TAIL}; fi; done; echo -e $TAIL)",0).getStdout();
+		}
 	}
 	
 	/**
