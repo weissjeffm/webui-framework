@@ -205,7 +205,7 @@ for TASK in $TASKS; do
       break
     elif [[ $TASK_RESULT == "Warn" ]] || [[ $TASK_RESULT == "Fail" ]]; then
       EXIT_RESULT=$(xmlstarlet sel -t --value-of "//task[@name='$TASK']/results/result[@path='rhts_task/exit']/@result" job-result)
-      if [ $EXIT_RESULT == "Pass" ]; then
+      if [[ $EXIT_RESULT == "Pass" ]]; then
         echo
         echo "Job has completed."
         echo "Task Status: $TASK_STATUS"
@@ -220,7 +220,7 @@ for TASK in $TASKS; do
         exit 1
         break
       fi
-    elif [ "$PREV_STATUS" == "$TASK_STATUS" ]; then
+    elif [[ "$PREV_STATUS" == "$TASK_STATUS" ]]; then
       echo -n "."
       sleep 60
     else 
