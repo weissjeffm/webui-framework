@@ -4,10 +4,13 @@
 (defprotocol SeleniumLocatable
   (sel-locator [x]))
 
-(def sel (atom nil))
+(declare sel)
+
+(defn new-sel [host port browser-type url]
+  (ExtendedSelenium. host port browser-type url))
 
 (defn connect "Create a new selenium instance." [host port browser-type url]
-  (reset! sel (ExtendedSelenium. host port browser-type url)))
+  (def sel (new-sel)))
 
 (defn new-element [locator-strategy & args]
   (Element. locator-strategy (into-array args)))
@@ -27,7 +30,7 @@ keywords."
 
 (defn call-sel [action & args]
   (clojure.lang.Reflector/invokeInstanceMethod
-   (deref sel) action (into-array Object (apply locator-args args))))
+    sel action (into-array Object (apply locator-args args))))
 
 (defmacro browser
   "Call method 'action' on selenium, with the given args - keywords
