@@ -59,6 +59,26 @@ public class TestScript {
 		}
 		
 		//load automation properties
+		loadProperties();
+	
+		
+		// echo all the system properties
+		Set<String> keySet = System.getProperties().stringPropertyNames();
+		List<String> keyList = CollectionSorter.asSortedList(keySet);
+		for (Object key: keyList){
+			String value = System.getProperty((String) key);
+			if (key.toString().toLowerCase().contains("password") ||
+				key.toString().toLowerCase().contains("passphrase"))
+				value = "********";
+			log.finer("Property("+key+")= "+ value);
+		}
+		
+		initialized = true;
+		
+	}
+		
+	public static void loadProperties(){
+		String propFile = "";
 		try{
 			propFile = (System.getProperty("automation.propertiesfile"));
 			
@@ -93,23 +113,6 @@ public class TestScript {
 			e.printStackTrace();
 			log.log(Level.SEVERE, "Could not load automation properties from "+propFile, e);
 		}
-	
-		
-		// echo all the system properties
-		Set<String> keySet = System.getProperties().stringPropertyNames();
-		List<String> keyList = CollectionSorter.asSortedList(keySet);
-		for (Object key: keyList){
-			String value = System.getProperty((String) key);
-			if (key.toString().toLowerCase().contains("password") ||
-				key.toString().toLowerCase().contains("passphrase"))
-				value = "********";
-			log.finer("Property("+key+")= "+ value);
-		}
-		
-		initialized = true;
-		
 	}
-		
-
 
 }
