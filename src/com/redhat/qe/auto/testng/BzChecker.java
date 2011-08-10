@@ -34,7 +34,7 @@ public class BzChecker {
 	public enum bzState { NEW, ASSIGNED, MODIFIED, ON_DEV, ON_QA, VERIFIED, FAILS_QA, RELEASE_PENDING, POST, CLOSED };
 	
 	protected static Logger log = Logger.getLogger(BzChecker.class.getName());
-	protected Bug bug;
+	protected static Bug bug;
 	protected static bzState[] defaultFixedBugStates = new bzState[] {
 			BzChecker.bzState.ON_QA,
 			BzChecker.bzState.VERIFIED,
@@ -47,7 +47,7 @@ public class BzChecker {
 	private BzChecker() {		
 	}
 	
-	private void init() {
+	private synchronized void init() {
 		bug = new Bug();
 		try {
 			bug.connectBZ();
@@ -64,7 +64,7 @@ public class BzChecker {
 		}
 	}
 
-	public static BzChecker getInstance(){
+	public static synchronized BzChecker getInstance(){
 		if (instance == null)	{
 			instance = new BzChecker();
 			instance.init();
@@ -258,6 +258,11 @@ public class BzChecker {
 	}
 	
 	public static void main(String[] args) throws Exception{
+		
+		System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.SimpleLog");
+		System.setProperty("org.apache", "debug");
+
+		System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.commons.httpclient", "debug");
 		try {
 			LogManager.getLogManager().readConfiguration(new FileInputStream("/home/jweiss/log.properties"));
 		}catch(Exception e){
@@ -268,6 +273,7 @@ public class BzChecker {
 		for (Object key: p.keySet()){
 			System.setProperty((String)key, p.getProperty((String)(key)));
 		}
+		log.info("connecting to " + p.getProperty("bugzilla.url"));
 		/*Bug myBug = new BzChecker().new Bug();
 		//List<>
 		myBug.connectBZ();
@@ -281,8 +287,9 @@ public class BzChecker {
 			Map internals = (Map)bmap.get("internals");
 			log.info("Bug status is " + internals.get("bug_status"));
 		}*/
-		BzChecker checker = new BzChecker();
-		checker.init();
+		log.info("Starting");
+		BzChecker checker = BzChecker.getInstance();
+		log.info("initialized.");
 		//String id = "497793";
 		//log.info("State of " + id + " is " + checker.getBugState(id));
 		//checker.login("jweiss@redhat.com", System.getProperty("bugzilla.password"));
@@ -290,7 +297,7 @@ public class BzChecker {
 		//checker.setBugState("470058", bzState.ON_QA);
 		//checker.addKeywords("470058", "AutoVerified");
 		log.info("Keywords: " + checker.getBugField("470058","keywords"));
-		log.info(""+checker.isBugOpen("571833"));
+		log.info(""+checker.getBugState("571833"));
 		
 	}
 

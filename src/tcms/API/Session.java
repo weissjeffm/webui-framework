@@ -35,7 +35,6 @@ public class Session extends com.redhat.qe.xmlrpc.Session {
 
 		HashMap<String, Object> hash = (HashMap<String, Object>) client
 				.execute(loginMethod, params);
-
 		this.userid = (Integer) hash.get(returnKey);
 		return hash;
 
