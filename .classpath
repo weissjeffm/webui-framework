@@ -35,5 +35,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/ant-antlr-1.8.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/junit-4.8.2.jar"/>
 	<classpathentry kind="lib" path="lib/selenium-java-2.0rc2.jar"/>
+	<classpathentry kind="lib" path="lib/typica.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
