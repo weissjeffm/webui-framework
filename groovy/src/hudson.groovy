@@ -90,6 +90,8 @@ def compileProject() {
 	//	ant.echo("COMPILE OF GROOVY FAILED")
 	//	e.printStackTrace()
 	//}
+	
+	taskdef(name: "groovyc", classname: "org.codehaus.groovy.ant.Groovyc")
 	try {
 		ant.groovyc(srcdir: "$automationDir/src", destdir: automationBinDir, classpath: eclipseClasspath) {
 			ant.javac()
