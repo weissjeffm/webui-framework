@@ -80,7 +80,9 @@ def compileProject() {
 	ant.javac(srcdir: "$webuiFramework/src", destdir: webuiBinDir, classpath: eclipseClasspath)
 	
 	ant.mkdir(dir: automationBinDir)
+	println("Compile Java now")
 	ant.javac(srcdir: "$automationDir/src", destdir: automationBinDir, classpath: eclipseClasspath)
+	println("Compile Groovy now")
 	ant.groovyc(srcdir: "$automationDir/src", destdir: automationBinDir, classpath: eclipseClasspath)
 	
 	//<javac srcdir="${test.src.dir}" destdir="${test.build.dir}" classpathref="tests.cp" debug="on" />
