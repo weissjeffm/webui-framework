@@ -83,7 +83,13 @@ def compileProject() {
 	println("Compile Java now")
 	ant.javac(srcdir: "$automationDir/src", destdir: automationBinDir, classpath: eclipseClasspath)
 	println("Compile Groovy now")
+	try{
 	ant.groovyc(srcdir: "$automationDir/src", destdir: automationBinDir, classpath: eclipseClasspath)
+	}
+	catch(Exception e){
+		ant.echo("COMPILE OF GROOVY FAILED")
+		e.printStackTrace()
+	}
 	
 	//<javac srcdir="${test.src.dir}" destdir="${test.build.dir}" classpathref="tests.cp" debug="on" />
 	
