@@ -91,7 +91,8 @@ def compileProject() {
 	//	e.printStackTrace()
 	//}
 	
-	taskdef(name: "groovyc", classname: "org.codehaus.groovy.ant.Groovyc")
+	
+	ant.taskdef(name: "groovyc", classname: "org.codehaus.groovy.ant.Groovyc")
 	try {
 		ant.groovyc(srcdir: "$automationDir/src", destdir: automationBinDir, classpath: eclipseClasspath) {
 			ant.javac()
