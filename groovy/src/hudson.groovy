@@ -81,6 +81,7 @@ def compileProject() {
 	
 	ant.mkdir(dir: automationBinDir)
 	ant.javac(srcdir: "$automationDir/src", destdir: automationBinDir, classpath: eclipseClasspath)
+	ant.groovyc(srcdir: "$automationDir/src", destdir: automationBinDir, classpath: eclipseClasspath)
 	
 	//<javac srcdir="${test.src.dir}" destdir="${test.build.dir}" classpathref="tests.cp" debug="on" />
 	
