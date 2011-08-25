@@ -11,6 +11,7 @@ public class UILocatorStrategies {
     public LocatorStrategy h1 = new LocatorTemplate("h1", "//h1[normalize-space(.)='$1']");
     public LocatorStrategy name = new StringSandwichLocatorStrategy("name", "name=");
     public LocatorStrategy button = new LocatorTemplate("button", "//*[@value='$1']");
+    public LocatorStrategy buttonLabel = new LocatorTemplate("buttonLabel", "//button[normalize-space(.)='$1']");
     public LocatorStrategy id = new LocatorTemplate("element with id", "//*[normalize-space(@id)='$1']");
     public LocatorStrategy nav = new LocatorTemplate("nav bar", "//nav[@class='$1']");
     public LocatorStrategy href = new LocatorTemplate("href","//a[@href='$1']");
