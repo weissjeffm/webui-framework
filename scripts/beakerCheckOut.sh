@@ -21,6 +21,7 @@ function usage()
   echo "Available options are:"
   echo "--help                                     Prints this message and then exits"
   echo "--timeout=TIMEOUT                          The timeout in minutes to wait for a beaker box (default: 180)"
+  echo "--kspackage=PACKAGE or @GROUP or -@GROUP   Package or group to include/exclude during the kickstart"
   echo 
   echo "The following options are avalable to bkr workflow-simple:"
   echo "--username=USERNAME                        specify user"
@@ -63,6 +64,7 @@ PASSWORD=""
 ARCH=""
 FAMILY=""
 TASKS=""
+KSPKGS=""
 OTHERARGS=""
 
 for i in $*
@@ -95,6 +97,10 @@ for i in $*
         echo "Adding arg to tasks: $i"
         TASKS=${TASKS}" "$i
         ;;
+      --kspackage=*)
+        echo "Adding arg to Kickstart Packages: $(echo $i | sed -e s/--kspackage=//g)"
+        KSPKGS=${KSPKGS}" <package name=\\\"$(echo $i | sed -e s/--kspackage=//g)\\\"\/>"
+        ;;
       *)
         echo "Adding $i to other bkr workflow-simple args."
         OTHERARGS=${OTHERARGS}" "$i
@@ -102,12 +108,14 @@ for i in $*
   esac
 done
 
+#debug stuff
 #echo "args: $@"
 #echo "USERNAME: $USERNAME"
 #echo "PASSWORD: $PASSWORD"
 #echo "ARCH: $ARCH"
 #echo "FAMILY: $FAMILY"
 #echo "TASKS: $TASKS"
+#echo "KSPKGS: $KSPKGS"
 #echo "OTHERARGS: $OTHERARGS"
 #echo "TIMEOUT: $TIMEOUT"
 
@@ -119,10 +127,17 @@ if [[ -z $USERNAME ]] || [[ -z $PASSWORD ]] || [[ -z $ARCH ]] || [[ -z $FAMILY ]
   exit 1
 fi
 
-bkr workflow-simple $USERNAME $PASSWORD $ARCH $FAMILY $TASKS --task=/distribution/reservesys $OTHERARGS --dryrun --debug --prettyxml
-echo
+bkr workflow-simple $USERNAME $PASSWORD $ARCH $FAMILY $TASKS --task=/distribution/reservesys $OTHERARGS --dryrun --debug --prettyxml > bkrjob.xml
 
-bkr workflow-simple $USERNAME $PASSWORD $ARCH $FAMILY $TASKS --task=/distribution/reservesys $OTHERARGS > job || (echo "bkr workflow-simple $USERNAME --password=***** $ARCH $FAMILY $TASK --task=/distribution/reservesys $OTHERARGS " && cat job && exit 1)
+if [[ -z $KSPKGS ]]; then
+  cat bkrjob.xml
+  rm bkrjob.xml
+  bkr workflow-simple $USERNAME $PASSWORD $ARCH $FAMILY $TASKS --task=/distribution/reservesys $OTHERARGS > job || (echo "bkr workflow-simple $USERNAME --password=***** $ARCH $FAMILY $TASK --task=/distribution/reservesys $OTHERARGS " && cat job && exit 1)
+else
+  sed -i -e s/"<\/distroRequires>"/"<\/distroRequires> <packages> $(echo $KSPKGS) <\/packages>"/g bkrjob.xml
+  cat bkrjob.xml
+  bkr job-submit $USERNAME $PASSWORD bkrjob.xml > job || (rm bkrjob.xml && exit 1)
+fi
 
 echo "===================== JOB DETAILS ================"
 echo "bkr workflow-simple $USERNAME --password=***** $ARCH $FAMILY $TASKS --task=/distribution/reservesys $OTHERARGS"
