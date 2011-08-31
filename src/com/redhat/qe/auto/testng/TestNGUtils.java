@@ -1,6 +1,8 @@
 package com.redhat.qe.auto.testng;
 
 import java.util.List;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class TestNGUtils {
 	
