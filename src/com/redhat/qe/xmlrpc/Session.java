@@ -65,7 +65,7 @@ public class Session {
 		    factory.setHttpClient(httpclient);
 		    client.setTypeFactory(new MyTypeFactory(client));
 		    client.setTransportFactory(factory);
-		    client.setMaxThreads(16);
+		    client.setMaxThreads(32);
 	        List<String> schemes = new ArrayList<String>();
 	        String jaas_user = "not_needed_for_kerb";
 	        String jaas_pw = "not_needed_for_kerb";
