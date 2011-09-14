@@ -45,7 +45,7 @@
     (let [sep (System/getProperty "line.separator")
           msg (apply str "Verification failed: "
                      (pr-str form) sep
-                     (for [[k v] bindings] (str "\t" k " : " v sep)))
+                     (for [[k v] bindings] (str "\t" k " : " (pr-str v) sep)))
           e (AssertionError. msg)]
       (when err (.initCause e err))
       (throw e))

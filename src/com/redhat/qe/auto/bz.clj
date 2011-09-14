@@ -4,7 +4,7 @@
 (def docheck 
   (memoize (fn [checker id] (.isBugOpen checker id))))
 
-(defn blocked-by-bz-bugs [ & ids]
+(defn open-bz-bugs "Filters bug ids and returns only those that are still open." [ & ids]
   (with-meta (fn [_]
                (let [checker (BzChecker/getInstance)
                      still-open (filter (fn [id] (docheck checker id))
@@ -12,7 +12,7 @@
                  (if (= 0 (count still-open)) nil
                      still-open)))
     {:type :bz-blocker
-     ::source `(~'blocked-by-bz-bugs ~@ids)}))
+     ::source `(~'open-bz-bugs ~@ids)}))
 
 (defmethod print-method :bz-blocker [o ^Writer w]
   (print-method (::source (meta o)) w))
