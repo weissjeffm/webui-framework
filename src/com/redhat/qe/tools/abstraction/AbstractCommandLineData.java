@@ -1,5 +1,6 @@
 package com.redhat.qe.tools.abstraction;
 
+import java.io.File;
 import java.lang.reflect.Field;
 import java.math.BigInteger;
 import java.text.DateFormat;
@@ -37,6 +38,8 @@ public abstract class AbstractCommandLineData {
 					abstractionField.set(this, this.parseDateString(productData.get(keyField)));
 				else if (abstractionField.getType().equals(Integer.class))
 					abstractionField.set(this, this.parseInt(productData.get(keyField)));
+				else if (abstractionField.getType().equals(File.class))
+					abstractionField.set(this, this.parseFile(productData.get(keyField)));
 				else if (abstractionField.getType().equals(Long.class))
 					abstractionField.set(this, this.parseLong(productData.get(keyField)));
 				else if (abstractionField.getType().equals(BigInteger.class))
@@ -123,6 +126,10 @@ public abstract class AbstractCommandLineData {
 	
 	protected BigInteger parseBigInteger(String bigIntegerString){
 		return new BigInteger(bigIntegerString);
+	}
+	
+	protected File parseFile(String pathname){
+		return new File(pathname);
 	}
 	
 	static protected boolean addRegexMatchesToList(Pattern regex, String to_parse, List<Map<String,String>> matchList, String sub_key) {
