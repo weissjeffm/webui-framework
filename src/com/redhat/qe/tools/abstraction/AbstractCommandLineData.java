@@ -110,6 +110,8 @@ public abstract class AbstractCommandLineData {
 	protected Boolean parseBoolean(String booleanString){
 		if (booleanString.toLowerCase().equals("true")) return Boolean.TRUE;
 		if (booleanString.toLowerCase().equals("false")) return Boolean.FALSE;
+		if (booleanString.toLowerCase().equals("yes")) return Boolean.TRUE;
+		if (booleanString.toLowerCase().equals("no")) return Boolean.FALSE;
 		if (booleanString.equals("1")) return Boolean.TRUE; 
 		if (booleanString.equals("0")) return Boolean.FALSE;
 		log.warning("Do not know how to infer a Boolean value from '"+booleanString+"'.");
