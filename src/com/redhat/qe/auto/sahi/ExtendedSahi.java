@@ -14,6 +14,7 @@ import net.sf.sahi.config.Configuration;
  * provides logging of UI actions (via java standard logging),
  * and some convenience methods.
  * @author dgao
+ * @author jkandasa (Jeeva Kandasamy)
  */
 public class ExtendedSahi extends Browser {
 	private static Logger _logger = Logger.getLogger(ExtendedSahi.class.getName());
@@ -27,9 +28,9 @@ public class ExtendedSahi extends Browser {
 	public void selectComboBoxDivRow(Browser browser, String comboBoxIdentifier, String optionToSelect){
 		//browser.focus(browser.div(comboBoxIdentifier));
 		browser.xy(browser.div(comboBoxIdentifier), 3, 3).click();
-		//browser.focus(browser.row(optionToSelect));
+		//browser.row(optionToSelect).focus();
 		browser.xy(browser.row(optionToSelect), 3, 3).click();
-		_logger.log(Level.INFO, "Clicked on \""+optionToSelect+"\"");
+		_logger.log(Level.INFO, "Selected the element ["+optionToSelect+"]");
 	}
 	
 	//Getting array value from String
@@ -70,47 +71,49 @@ public class ExtendedSahi extends Browser {
 	}
 	
 	//Wait until the element get present or timeout, which one is lesser
-	public void waitForElementDivExists(Browser browser, String element, int waitTimeMilliSeconds){
-		waitForElementExists(browser, browser.div(element), element, waitTimeMilliSeconds);
+	public boolean waitForElementDivExists(Browser browser, String element, int waitTimeMilliSeconds){
+		return waitForElementExists(browser, browser.div(element), element, waitTimeMilliSeconds);
 	}
 
-	public void waitForElementRowExists(Browser browser, String element, int waitTimeMilliSeconds){
-		waitForElementExists(browser, browser.row(element), element, waitTimeMilliSeconds);
+	public boolean waitForElementRowExists(Browser browser, String element, int waitTimeMilliSeconds){
+		return waitForElementExists(browser, browser.row(element), element, waitTimeMilliSeconds);
 	}
 	
-	public void waitForElementDivVisible(Browser browser, String element, int waitTimeMilliSeconds){
-		waitForElementVisible(browser, browser.row(element), element, waitTimeMilliSeconds);
+	public boolean waitForElementDivVisible(Browser browser, String element, int waitTimeMilliSeconds){
+		return waitForElementVisible(browser, browser.row(element), element, waitTimeMilliSeconds);
 	}
 	
-	public void waitForElementRowVisible(Browser browser, String element, int waitTimeMilliSeconds){
-		waitForElementVisible(browser, browser.row(element), element, waitTimeMilliSeconds);
+	public boolean waitForElementRowVisible(Browser browser, String element, int waitTimeMilliSeconds){
+		return waitForElementVisible(browser, browser.row(element), element, waitTimeMilliSeconds);
 	}
 
-	public void waitForElementExists(Browser browser, ElementStub elementStub, String element, int waitTimeMilliSeconds){
+	public boolean waitForElementExists(Browser browser, ElementStub elementStub, String element, int waitTimeMilliSeconds){
 		while(waitTimeMilliSeconds >=  0){
 			if(elementStub.exists()){
-				_logger.info("Element \""+elementStub.getText()+"\" is available now!");
-				return;
+				_logger.info("Element ["+element+"] exists.");
+				return true;
 			}else{
 				browser.waitFor(500);
 				waitTimeMilliSeconds -= 500;
-				_logger.finer("Waiting for the element: \""+element+"\", Remaining wait time: "+waitTimeMilliSeconds+" milli Second(s)");
+				_logger.finer("Waiting for the element: ["+element+"], Remaining wait time: "+waitTimeMilliSeconds+" milli Second(s)...");
 			}
 		}		
-		_logger.warning("Failed to get the element: \""+element+"\" on time!");
+		_logger.warning("Failed to get the element! ["+element+"]");
+		return false;
 	}
 
-	public void waitForElementVisible(Browser browser, ElementStub elementStub, String element, int waitTimeMilliSeconds){
+	public boolean waitForElementVisible(Browser browser, ElementStub elementStub, String element, int waitTimeMilliSeconds){
 		while(waitTimeMilliSeconds >=  0){
 			if(elementStub.isVisible()){
-				_logger.info("Element \""+elementStub.getText()+"\" is visable now!");
-				return;
+				_logger.info("Element ["+element+"] is visable");
+				return true;
 			}else{
 				browser.waitFor(500);
 				waitTimeMilliSeconds -= 500;
-				_logger.finer("Waiting for the element: \""+element+"\", Remaining wait time: "+waitTimeMilliSeconds+" milli Second(s)");
+				_logger.finer("Waiting for the element: ["+element+"], Remaining wait time: "+waitTimeMilliSeconds+" milli Second(s)...");
 			}
 		}		
-		_logger.warning("Failed to get the element: \""+element+"\" on time!");
+		_logger.warning("Failed to get the element! ["+element+"]");
+		return false;
 	}
 }
