@@ -29,11 +29,12 @@ public abstract class AbstractCommandLineData {
 			Field abstractionField = null;
 			try {
 				abstractionField = this.getClass().getField(keyField);
-				if (productData.get(keyField).equals("")) {
-					abstractionField.set(this, null);
-					log.finer("No value was parsed for abstractionField '"+this.getClass().getName()+"."+abstractionField.getName()+"'.  Setting it to null.");
-					continue;
-				}
+// this is wrong since an empty string is a valid non-null value
+//				if (productData.get(keyField).equals("")) {
+//					abstractionField.set(this, null);
+//					log.finer("No value was parsed for abstractionField '"+this.getClass().getName()+"."+abstractionField.getName()+"'.  Setting it to null.");
+//					continue;
+//				}
 				if (abstractionField.getType().equals(Calendar.class))
 					abstractionField.set(this, this.parseDateString(productData.get(keyField)));
 				else if (abstractionField.getType().equals(Integer.class))
@@ -45,12 +46,11 @@ public abstract class AbstractCommandLineData {
 				else if (abstractionField.getType().equals(BigInteger.class))
 					abstractionField.set(this, this.parseBigInteger(productData.get(keyField)));
 				else if (abstractionField.getType().equals(Boolean.class))
-					//abstractionField.set(this, productData.get(keyField).toLowerCase().equals("true")||productData.get(keyField).equals("1"));
 					abstractionField.set(this, this.parseBoolean(productData.get(keyField)));
 				else
 					abstractionField.set(this, productData.get(keyField));
 			} catch (Exception e){
-				log.warning("Exception caught while creating Candlepin abstraction: " + e.getMessage());
+				log.warning("Exception caught while parsing the value for this abstraction field: " + e.getMessage());
 				if (abstractionField != null)
 					try {
 						abstractionField.set(this, null);
