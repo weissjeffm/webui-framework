@@ -23,6 +23,7 @@ function usage()
   echo "--timeout=TIMEOUT                          The timeout in minutes to wait for a beaker box (default: 180)"
   echo "--kspackage=PACKAGE or @GROUP or -@GROUP   Package or group to include/exclude during the kickstart"
   echo "--recipe_option=RECIPE_OPTION              Adds RECIPE_OPTION to the <recipe> section"
+  echo "--ks_meta=KS_META                          Adds KS_META to the kickstart metadata"
   echo "--debugxml                                 Preforms a dryrun and prints out the job xml"
   echo 
   echo "The following options are avalable to bkr workflow-simple:"
@@ -67,6 +68,7 @@ ARCH=""
 FAMILY=""
 TASKS=""
 ROPTS=""
+KSMETA=""
 KSPKGS=""
 OTHERARGS=""
 DEBUGXML=false
@@ -108,6 +110,10 @@ for i in $*
         echo "Adding arg to Recipe Options: $(echo $i | sed -e s/--recipe_option=//g)"
         ROPTS=${ROPTS}" "$(echo $i |sed -e s/--recipe_option=//g)
         ;;
+      --ks_meta=*)
+        echo "Adding arg to ks_meta: $(echo $i | sed -e s/--ks_meta=//g)"
+        KSMETA=${KSMETA}" "$(echo $i |sed -e s/--ks_meta=//g)
+        ;;
       --kspackage=*)
         echo "Adding arg to Kickstart Packages: $(echo $i | sed -e s/--kspackage=//g)"
         KSPKGS=${KSPKGS}" <package name=\\\"$(echo $i | sed -e s/--kspackage=//g)\\\"\/>"
@@ -140,7 +146,7 @@ fi
 
 bkr workflow-simple $USERNAME $PASSWORD $ARCH $FAMILY $TASKS --task=/distribution/reservesys $OTHERARGS --dryrun --debug --prettyxml > bkrjob.xml
 
-if [[ -z $KSPKGS ]] && [[ -z $ROPTS ]]; then
+if [[ -z $KSPKGS ]] && [[ -z $ROPTS ]] && [[ -z $KSMETA ]]; then
   cat bkrjob.xml
   if [[ $DEBUGXML == false ]]; then
     bkr workflow-simple $USERNAME $PASSWORD $ARCH $FAMILY $TASKS --task=/distribution/reservesys $OTHERARGS > job || (echo "bkr workflow-simple $USERNAME --password=***** $ARCH $FAMILY $TASK --task=/distribution/reservesys $OTHERARGS " && cat job && rm bkrjob.xml exit 1)
@@ -149,8 +155,11 @@ else
   if [[ -n $KSPKGS ]]; then
     sed -i -e s/"<\/distroRequires>"/"<\/distroRequires> <packages> $(echo $KSPKGS) <\/packages>"/g bkrjob.xml
   fi
+  if [[ -n $KSMETA ]]; then
+    sed -i -e s/"\(ks_meta=\"[method=]*[a-zA-Z]*\)"/"\1 $(echo $KSMETA)"/g bkrjob.xml 
+  fi
   if [[ -n $ROPTS ]]; then
-    sed -i -e s/"<recipe"/"<recipe $(echo $ROPTS)"/g bkrjob.xml
+    sed -i -e s/"<recipe "/"<recipe $(echo $ROPTS) "/g bkrjob.xml
   fi
   cat bkrjob.xml
   if [[ $DEBUGXML == false ]]; then
