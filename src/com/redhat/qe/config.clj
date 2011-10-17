@@ -1,5 +1,5 @@
 (ns com.redhat.qe.config
-  (:use [clojure.contrib.string :only [split join]])
+  (:use [clojure.string :only [split join]])
   (:import [com.redhat.qe.auto.testng TestScript]))
 
 (defn property-map
