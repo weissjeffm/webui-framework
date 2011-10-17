@@ -19,4 +19,6 @@ and returns a mapping like :registration-settings -> 'Registration Settings'"
   ([word-fn coll] (same-name word-fn identity coll))
   ([word-fn val-fn coll]
      (zipmap coll (for [keyword coll]
-               (->> keyword name (split #"-") (map word-fn) (join " ") val-fn)))))
+                    (->>
+                     (-> keyword name (split #"-"))
+                     (map word-fn) (join " ") val-fn)))))
