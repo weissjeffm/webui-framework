@@ -13,6 +13,7 @@ public class UILocatorStrategies {
     public LocatorStrategy button = new LocatorTemplate("button", "//*[@value='$1']");
     public LocatorStrategy buttonLabel = new LocatorTemplate("buttonLabel", "//button[normalize-space(.)='$1']");
     public LocatorStrategy id = new LocatorTemplate("element with id", "//*[normalize-space(@id)='$1']");
+    public LocatorStrategy id_alt = new LocatorTemplate("element with id", "//*[@id='$1']");
     public LocatorStrategy nav = new LocatorTemplate("nav bar", "//nav[@class='$1']");
     public LocatorStrategy href = new LocatorTemplate("href","//a[@href='$1']");
     public LocatorStrategy div = new LocatorTemplate("div","//div[@class='$1']");
