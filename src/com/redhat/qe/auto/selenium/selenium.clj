@@ -4,13 +4,13 @@
 (defprotocol SeleniumLocatable
   (sel-locator [x]))
 
-(declare sel)
+(declare ^:dynamic sel)
 
 (defn new-sel [host port browser-type url]
   (ExtendedSelenium. host port browser-type url))
 
 (defn connect "Create a new selenium instance." [host port browser-type url]
-  (def sel (new-sel host port browser-type url)))
+  (def ^:dynamic sel (new-sel host port browser-type url)))
 
 (defn new-element [locator-strategy & args]
   (Element. locator-strategy (into-array args)))
