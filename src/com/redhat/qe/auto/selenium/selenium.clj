@@ -50,10 +50,11 @@ will be looked up and converted to String locators (see locator-args)"
             :else (if val (browser setText el val)))))
 
 (defn fill-form
-  "Fills in a standard HTML form.  items-map is a
-mapping of locators of form elements, to the string values that should
-be selected or entered.  'submit' is a locator for the submit button
-to click at the end."
+  "Fills in a standard HTML form.  items-map is a mapping of locators
+   of form elements, to the string values that should be selected or
+   entered.  'submit' is a locator for the submit button to click at
+   the end.  Optional no-arg fn argument post-fn will be called after the
+   submit click."
   [items-map submit & [post-fn]]
   (doseq [[el val] items-map] (fill-item el val))
   (if post-fn
