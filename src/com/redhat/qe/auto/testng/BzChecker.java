@@ -66,8 +66,9 @@ public class BzChecker {
 
 	public static synchronized BzChecker getInstance(){
 		if (instance == null)	{
-			instance = new BzChecker();
-			instance.init();
+			BzChecker newinst = new BzChecker();
+			newinst.init();
+			instance = newinst;  //if init() fails, don't set the instance
 		}
 		return instance;
 	}
@@ -181,16 +182,13 @@ public class BzChecker {
 		protected void connectBZ() throws XmlRpcException, GeneralSecurityException, IOException{
 			BZ_URL = System.getProperty("bugzilla.url");
 			session = new Session(System.getProperty("bugzilla.login"), System.getProperty("bugzilla.password"), new URL(BZ_URL));
-			try {
-				session.init();
-				// initiate a login here because some bugzilla projects (e.g. Cloud Enablement Tools) are not anonymously
-				// readable which will result in org.apache.xmlrpc.XmlRpcException: You are not authorized to access bug #
-				// when calling lookupBugAndSkipIfOpen.  For reliability, we need to login.  jsefler 3/16/09
-				login(System.getProperty("bugzilla.login"), System.getProperty("bugzilla.password"));
-			}
-			catch(Exception e){
-				log.log(Level.FINE, "Couldn't set up bugzilla connection.", e);
-			}
+			
+			session.init();
+			// initiate a login here because some bugzilla projects (e.g. Cloud Enablement Tools) are not anonymously
+			// readable which will result in org.apache.xmlrpc.XmlRpcException: You are not authorized to access bug #
+			// when calling lookupBugAndSkipIfOpen.  For reliability, we need to login.  jsefler 3/16/09
+			login(System.getProperty("bugzilla.login"), System.getProperty("bugzilla.password"));
+			
 		}
 		
 		public int login(String userid, String password) throws XmlRpcException{
