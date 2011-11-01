@@ -14,5 +14,5 @@
     {:type :bz-blocker
      ::source `(~'open-bz-bugs ~@ids)}))
 
-(defmethod print-method :bz-blocker [o ^Writer w]
+(defmethod print-method :bz-blocker [o ^java.io.Writer w]
   (print-method (::source (meta o)) w))
