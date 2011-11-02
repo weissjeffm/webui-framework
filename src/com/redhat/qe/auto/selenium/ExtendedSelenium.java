@@ -832,17 +832,20 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 		fos.flush();
 		fos.close();
 	}
-	
 	public String screenCapture(String dirName) throws Exception {
+		String outFileName = dateFormat.format(new Date()) + ".png";
+		return screenCapture(dirName, outFileName, true);
+	}
+	
+	public String screenCapture(String dirName, String outFileName, boolean writeHtml) throws Exception {
 		String fullPathtoFile = null;
 		mkdir(dirName);
 		
-
-		Date rightNow = new Date();
-		String outFileName = dateFormat.format(rightNow) + ".png";
 		try {
 			File htmlDir = localHtmlDir != null? localHtmlDir : screenshotDir;
-			writeHtmlOnError(htmlDir);
+			if (writeHtml) {
+				writeHtmlOnError(htmlDir);
+			}
 			//if success use that next time
 			localHtmlDir = htmlDir;
 			fullPathtoFile = localHtmlDir.getCanonicalPath()+ File.separator + outFileName;
