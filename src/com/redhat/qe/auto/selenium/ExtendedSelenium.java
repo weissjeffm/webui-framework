@@ -49,7 +49,12 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 	protected static final String DEFAULT_WAITFORPAGE_TIMEOUT = "60000";
 	protected static String WAITFORPAGE_TIMEOUT = DEFAULT_WAITFORPAGE_TIMEOUT;
 	private DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd-HHmmssS");
+	protected String ajaxFinishedCondition = null;
+	public static final String JQUERY_AJAX_FINISHED_CONDITION = "selenium.browserbot.getCurrentWindow().jQuery.active == 0";
+	public static final String PROTOTYPE_AJAX_FINISHED_CONDITION = "selenium.browserbot.getCurrentWindow().Ajax.activeRequestCount == 0";
+	public static final String DOJO_AJAX_FINISHED_CONDITION = "selenium.browserbot.getCurrentWindow().dojo.io.XMLHTTPTransport.inFlight.length == 0";
 	
+
 	public ExtendedSelenium(CommandProcessor processor) {
 		super(processor);
 
@@ -117,11 +122,13 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 
 	public void clickAndWait(String locator) {
 		clickAndWait(locator, WAITFORPAGE_TIMEOUT, true);
+		ajaxWait();
 	}
 	
 	public void clickAndWait(Element element) {
 		click(element);
 		waitForPageToLoad(WAITFORPAGE_TIMEOUT);
+		ajaxWait();
 	}
 
 		
@@ -136,6 +143,7 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 	public void clickAndWait(String locator, String timeout, boolean highlight) {
 		click(locator, highlight);
 		waitForPageToLoad(timeout);
+		ajaxWait();
 	}
 	
 	public void clickAndWait(Element element, String timeout, boolean highlight) {
@@ -160,6 +168,7 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 		log.finer("Wait for page to load.");
 		long start = System.currentTimeMillis();
 		super.waitForPageToLoad(timeout);
+		ajaxWait();
 		Double waitedInSecs = ((System.currentTimeMillis() - start)) / 1000.0;
 		
 		log.finer("Waited " + numFormat.format(waitedInSecs) + "s for page to load.");
@@ -174,12 +183,14 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 		log.log(Level.INFO, "Click on " + getDescription(locator), LogMessageUtil.Style.Action);
 		if (highlight) highlight(locator);
 		super.click(locator);
+		ajaxWait();
 	}
 	
 	public void doubleClick(String locator, boolean highlight)  {
 		log.log(Level.INFO, "Double click on " + getDescription(locator), LogMessageUtil.Style.Action);
 		if (highlight) highlight(locator);
 		super.doubleClick(locator);
+		ajaxWait();
 	}
 
 	@Override
@@ -206,6 +217,7 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 		}
 	    highlight(element);
 		super.click(element.getLocator());
+		ajaxWait();
 	}
 	
 	public void doubleClick(Element element) {
@@ -221,6 +233,7 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 		}
 		highlight(element);
 		super.doubleClick(element.getLocator());
+		ajaxWait();
 	}
 	
 	public String getText(Element element){
@@ -269,6 +282,7 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 		log.log(Level.INFO, "Click on : " + humanReadableName, LogMessageUtil.Style.Action);
 		if (highlight) highlight(locator);
 		super.click(locator);
+		ajaxWait();
 	}
 
 
@@ -413,6 +427,7 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 		log.log(Level.INFO, "Type '" + value + "' into " + getElementType(locator) + ": " + humanReadableName + "'", LogMessageUtil.Style.Action);
 		highlight(locator);
 		super.type(locator, value);
+		ajaxWait();
 	}
 	
 	public void setText(String locator, String value){
@@ -423,6 +438,7 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 		log.log(Level.INFO, "Type '" + value + "' into " + getDescription(element), LogMessageUtil.Style.Action);
 		highlight(element);
 		super.type(element.getLocator(), value);
+		ajaxWait();
 	}
 	
 	public void setText(String locator, String humanReadableName,String value){
@@ -465,6 +481,11 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 	public void open(String url) {
 		open(url, true);
 	}
+	
+	public void open(String url, String ajaxFinishedCondition) {
+		setAjaxFinishedCondition(ajaxFinishedCondition);
+		open(url, true);
+	}
 
 	@Override
 	public void check(String locator) {
@@ -500,6 +521,7 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 					super.check(locator); //just to be sure
 				else super.uncheck(locator);
 			}
+			ajaxWait();
 		}
 		else {
 			highlight(locator);
@@ -512,6 +534,7 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 		log.log(Level.INFO, "Select option '"	+ optionLocator + "' in list '" + selectLocator + "'.", LogMessageUtil.Style.Action);
 		highlight(selectLocator);
 		super.select(selectLocator, optionLocator);
+		ajaxWait();
 	}
 	
 	public void select(Element element, String optionLocator) {
@@ -527,6 +550,7 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 		}
 		highlight(element);
 		super.select(element.getLocator(), optionLocator);
+		ajaxWait();
 	}
 	
 	/**
@@ -983,6 +1007,16 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 	public void waitForEnabledAndClick(Element elem, String millis) {
 		waitForEnabled(elem, millis);
 		click(elem);
+	}
+
+	public void setAjaxFinishedCondition(String ajaxFinishedCondition) {
+		this.ajaxFinishedCondition = ajaxFinishedCondition;
+	}
+	
+	protected void ajaxWait(){
+		if (ajaxFinishedCondition != null) {
+			waitForCondition(ajaxFinishedCondition, WAITFORPAGE_TIMEOUT);
+		}
 	}
 	
 	public static void main (String... args) {

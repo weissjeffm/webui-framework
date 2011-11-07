@@ -5,6 +5,9 @@
   (sel-locator [x]))
 
 (declare ^:dynamic sel)
+(def jquery-ajax-finished (ExtendedSelenium/JQUERY_AJAX_FINISHED_CONDITION))
+(def prototype-ajax-finished (ExtendedSelenium/PROTOTYPE_AJAX_FINISHED_CONDITION))
+(def dojo-ajax-finished (ExtendedSelenium/DOJO_AJAX_FINISHED_CONDITION))
 
 (defn new-sel [host port browser-type url]
   (ExtendedSelenium. host port browser-type url))
