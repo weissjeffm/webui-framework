@@ -41,6 +41,9 @@ public class ExtendedSahi extends Browser {
 	//String to key value map
 	public HashMap<String, String> getKeyValueMap(String keyValuesString){
 		HashMap<String, String> keyValueMap = new HashMap<String, String>();
+		if(keyValuesString == null){
+			return keyValueMap;
+		}		
 		String[] keyValuesArray = keyValuesString.split(",");
 		for(String keyValue: keyValuesArray){
 			String[] keyVal = keyValue.split("=");
@@ -72,22 +75,23 @@ public class ExtendedSahi extends Browser {
 	
 	//Wait until the element get present or timeout, which one is lesser
 	public boolean waitForElementDivExists(Browser browser, String element, int waitTimeMilliSeconds){
-		return waitForElementExists(browser, browser.div(element), element, waitTimeMilliSeconds);
+		return waitForElementExists(browser, browser.div(element), "Div: "+element, waitTimeMilliSeconds);
 	}
 
 	public boolean waitForElementRowExists(Browser browser, String element, int waitTimeMilliSeconds){
-		return waitForElementExists(browser, browser.row(element), element, waitTimeMilliSeconds);
+		return waitForElementExists(browser, browser.row(element), "Row: "+element, waitTimeMilliSeconds);
 	}
 	
 	public boolean waitForElementDivVisible(Browser browser, String element, int waitTimeMilliSeconds){
-		return waitForElementVisible(browser, browser.row(element), element, waitTimeMilliSeconds);
+		return waitForElementVisible(browser, browser.row(element), "Div: "+element, waitTimeMilliSeconds);
 	}
 	
 	public boolean waitForElementRowVisible(Browser browser, String element, int waitTimeMilliSeconds){
-		return waitForElementVisible(browser, browser.row(element), element, waitTimeMilliSeconds);
+		return waitForElementVisible(browser, browser.row(element), "Row: "+element, waitTimeMilliSeconds);
 	}
 
 	public boolean waitForElementExists(Browser browser, ElementStub elementStub, String element, int waitTimeMilliSeconds){
+		_logger.finer("Waiting for the element: ["+element+"], Remaining wait time: "+(waitTimeMilliSeconds/1000)+" Second(s)...");
 		while(waitTimeMilliSeconds >=  0){
 			if(elementStub.exists()){
 				_logger.info("Element ["+element+"] exists.");
@@ -95,7 +99,9 @@ public class ExtendedSahi extends Browser {
 			}else{
 				browser.waitFor(500);
 				waitTimeMilliSeconds -= 500;
-				_logger.finer("Waiting for the element: ["+element+"], Remaining wait time: "+waitTimeMilliSeconds+" milli Second(s)...");
+				if((waitTimeMilliSeconds%(1000*5)) == 0){
+					_logger.finer("Waiting for the element: ["+element+"], Remaining wait time: "+(waitTimeMilliSeconds/1000)+" Second(s)...");
+				}
 			}
 		}		
 		_logger.warning("Failed to get the element! ["+element+"]");
@@ -103,6 +109,7 @@ public class ExtendedSahi extends Browser {
 	}
 
 	public boolean waitForElementVisible(Browser browser, ElementStub elementStub, String element, int waitTimeMilliSeconds){
+		_logger.finer("Waiting for the element: ["+element+"], Remaining wait time: "+(waitTimeMilliSeconds/1000)+" Second(s)...");
 		while(waitTimeMilliSeconds >=  0){
 			if(elementStub.isVisible()){
 				_logger.info("Element ["+element+"] is visable");
@@ -110,7 +117,9 @@ public class ExtendedSahi extends Browser {
 			}else{
 				browser.waitFor(500);
 				waitTimeMilliSeconds -= 500;
-				_logger.finer("Waiting for the element: ["+element+"], Remaining wait time: "+waitTimeMilliSeconds+" milli Second(s)...");
+				if((waitTimeMilliSeconds%(1000*5)) == 0){
+					_logger.finer("Waiting for the element: ["+element+"], Remaining wait time: "+(waitTimeMilliSeconds/1000)+" Second(s)...");
+				}
 			}
 		}		
 		_logger.warning("Failed to get the element! ["+element+"]");
