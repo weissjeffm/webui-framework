@@ -50,7 +50,8 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 	protected static String WAITFORPAGE_TIMEOUT = DEFAULT_WAITFORPAGE_TIMEOUT;
 	private DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd-HHmmssS");
 	protected String ajaxFinishedCondition = null;
-	public static final String JQUERY_AJAX_FINISHED_CONDITION = "selenium.browserbot.getCurrentWindow().jQuery.active == 0";
+	public static final String JQUERY_AJAX_FINISHED_CONDITION = 
+			"try { selenium.browserbot.getCurrentWindow().jQuery.active == 0 } catch (e) { false }";
 	public static final String PROTOTYPE_AJAX_FINISHED_CONDITION = "selenium.browserbot.getCurrentWindow().Ajax.activeRequestCount == 0";
 	public static final String DOJO_AJAX_FINISHED_CONDITION = "selenium.browserbot.getCurrentWindow().dojo.io.XMLHTTPTransport.inFlight.length == 0";
 	
@@ -1015,7 +1016,7 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 	
 	protected void ajaxWait(){
 		if (ajaxFinishedCondition != null) {
-			waitForCondition(ajaxFinishedCondition, WAITFORPAGE_TIMEOUT);
+			waitForCondition(ajaxFinishedCondition, WAITFORPAGE_TIMEOUT);			
 		}
 	}
 	
