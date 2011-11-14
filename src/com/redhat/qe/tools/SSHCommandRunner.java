@@ -84,6 +84,30 @@ public class SSHCommandRunner implements Runnable {
 		this.user = user;
 		this.command = command;
 	}
+	
+	public SSHCommandRunner(String server,
+			String user,
+			String password,
+			String command) throws IOException{
+		super();
+		Connection newConn = new Connection(server);
+		newConn.connect();
+		try {
+			newConn.authenticateWithPassword(user, password);
+		}
+		catch (IOException e) {
+			//e.printStackTrace();
+			newConn = new Connection(server);
+			newConn.connect();
+			if (!newConn.authenticateWithPassword(user, password)) {
+				throw new RuntimeException("Could not log in to " + newConn.getHostname() + " with the given credentials ("+user+").");
+			}
+		}
+
+		this.connection = newConn;
+		this.user = user;
+		this.command = command;
+	}
 
 	public SSHCommandRunner(String server,
 			String user,
