@@ -11,6 +11,5 @@
 		 [commons-logging/commons-logging "1.1.1"]
 		 [org.seleniumhq.selenium.client-drivers/selenium-java-client-driver "1.0.2"]
                  [org.uncommons/reportng "1.1.3"]
-		 [org.apache.httpcomponents/httpclient "4.1.2"]
                  [sahi "3.5"]]
   :javac-options {:debug "on"})
