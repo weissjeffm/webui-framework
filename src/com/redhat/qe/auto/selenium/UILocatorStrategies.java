@@ -11,7 +11,9 @@ public class UILocatorStrategies {
     public LocatorStrategy h1 = new LocatorTemplate("h1", "//h1[normalize-space(.)='$1']");
     public LocatorStrategy name = new StringSandwichLocatorStrategy("name", "name=");
     public LocatorStrategy button = new LocatorTemplate("button", "//*[@value='$1']");
+    public LocatorStrategy buttonLabel = new LocatorTemplate("buttonLabel", "//button[normalize-space(.)='$1']");
     public LocatorStrategy id = new LocatorTemplate("element with id", "//*[normalize-space(@id)='$1']");
+    public LocatorStrategy id_alt = new LocatorTemplate("element with id", "//*[@id='$1']");
     public LocatorStrategy nav = new LocatorTemplate("nav bar", "//nav[@class='$1']");
     public LocatorStrategy href = new LocatorTemplate("href","//a[@href='$1']");
     public LocatorStrategy div = new LocatorTemplate("div","//div[@class='$1']");
@@ -24,6 +26,7 @@ public class UILocatorStrategies {
     public LocatorStrategy value = new LocatorTemplate("value", "//input[@value='$1']");
     public LocatorStrategy span = new LocatorTemplate("span", "//span[@class='$1']");
     public LocatorStrategy select_id = new LocatorTemplate("select_id","//select[@id='$1']");
+    public LocatorStrategy imgAlt = new LocatorTemplate("imgAlt","//img[@alt='$1']");
    
     // find a particular table
     public LocatorStrategy wrappedTable = new LocatorTemplate("wrapped table","//div[@class='wrapped_table']//div[@class='title' and normalize-space(.)='$1']");
