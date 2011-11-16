@@ -26,6 +26,7 @@ public class UILocatorStrategies {
     public LocatorStrategy value = new LocatorTemplate("value", "//input[@value='$1']");
     public LocatorStrategy span = new LocatorTemplate("span", "//span[@class='$1']");
     public LocatorStrategy select_id = new LocatorTemplate("select_id","//select[@id='$1']");
+    public LocatorStrategy imgAlt = new LocatorTemplate("imgAlt","//img[@alt='$1']");
    
     // find a particular table
     public LocatorStrategy wrappedTable = new LocatorTemplate("wrapped table","//div[@class='wrapped_table']//div[@class='title' and normalize-space(.)='$1']");
