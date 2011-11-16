@@ -91,7 +91,7 @@ public class ExtendedSahi extends Browser {
 	}
 
 	public boolean waitForElementExists(Browser browser, ElementStub elementStub, String element, int waitTimeMilliSeconds){
-		_logger.finer("Waiting for the element: ["+element+"], Remaining wait time: "+(waitTimeMilliSeconds/1000)+" Second(s)...");
+		_logger.info("Waiting for the element: ["+element+"], Remaining wait time: "+(waitTimeMilliSeconds/1000)+" Second(s)...");
 		while(waitTimeMilliSeconds >=  0){
 			if(elementStub.exists()){
 				_logger.info("Element ["+element+"] exists.");
@@ -100,7 +100,7 @@ public class ExtendedSahi extends Browser {
 				browser.waitFor(500);
 				waitTimeMilliSeconds -= 500;
 				if((waitTimeMilliSeconds%(1000*5)) == 0){
-					_logger.finer("Waiting for the element: ["+element+"], Remaining wait time: "+(waitTimeMilliSeconds/1000)+" Second(s)...");
+					_logger.info("Waiting for the element: ["+element+"], Remaining wait time: "+(waitTimeMilliSeconds/1000)+" Second(s)...");
 				}
 			}
 		}		
