@@ -196,7 +196,9 @@ public class SSHCommandRunner implements Runnable {
 	public boolean isDone(){
 		if (session == null)
 			return false;
-		return (getExitCode() != 0);
+		if (getExitCode() == null) 
+			return false;
+		return true;
 	}
 
 	protected String convertStreamToString(InputStream is) {
