@@ -81,12 +81,12 @@ public class HttpClient {
 					requestBody += "&" + key.getName() + "=" + key.getValue() + "";
 			}
 		}
-		log.info("cmdline curl equivalent: curl -X " +method.getMethod().toString() + sArgs +" "+ method.getURI() );
-		
 		
 		if (sContentType != null)
+			sArgs += " -H \"Content-Type: " + sContentType + "\"";
 			method.addHeader("Content-Type", sContentType);
 		if (sAcceptHeader != null) {
+			sArgs += " -H \"Accept: " + sAcceptHeader + "\"";
 			method.addHeader("Accept", sAcceptHeader);
 		}    
 		
@@ -106,9 +106,14 @@ public class HttpClient {
 		setCredentials(method.getURI().getHost(), method.getURI().getPort(), username, password);
 		String x = method.getURI().getScheme();
 		if (method.getURI().getScheme().equalsIgnoreCase("https")) {
+			sArgs += " --insecure";
 			setupHTTPS(method);	
 		}
 		
+		if ((username != null) && (password != null))
+			sArgs += " -u " + username + ":" + password;
+		
+		log.info("cmdline curl equivalent: curl -X " +method.getMethod().toString() + sArgs +" "+ method.getURI() );
 		return processRequest(method, username, password);
 	}	
 	
