@@ -38,22 +38,22 @@ public class HttpClient {
 	private static Logger log = Logger.getLogger(HttpClient.class.getName());
 
 	public static String[] getRequest(String protocol, String server, String port, String path, String username, String password, String sContentType, String sAcceptHeader, NameValuePair[] nvpList) throws Exception {
-		HttpGet get = new HttpGet(protocol + "://"+server+":"+port+path);
+		HttpGet get = new HttpGet( buildUrl(protocol,server,port,path) );
 		return finishRequest(get, username, password, null, sContentType, sAcceptHeader, nvpList);
 	}
 
 	public static String[] postRequest(String protocol, String server, String port, String path, String username, String password, String requestBody, String sContentType, String sAcceptHeader, NameValuePair[] nvpList) throws Exception {
-		HttpPost post = new HttpPost(protocol + "://"+server+":"+port+path);
+		HttpPost post = new HttpPost( buildUrl(protocol,server,port,path) );
 		return finishRequest(post, username, password, requestBody, sContentType, sAcceptHeader, nvpList);
 	}
 	
 	public static String[] putRequest(String protocol, String server, String port, String path, String username, String password, String requestBody, String sContentType, String sAcceptHeader, NameValuePair[] nvpList) throws Exception {
-		HttpPut put = new HttpPut(protocol + "://"+server+":"+port+path);
+		HttpPut put = new HttpPut( buildUrl(protocol,server,port,path) );
 		return finishRequest(put, username, password, requestBody, sContentType, sAcceptHeader, nvpList);
 	}
 	
 	public static String[] deleteRequest(String protocol, String server, String port, String path, String username, String password, String requestBody, String sContentType, String sAcceptHeader) throws Exception {
-		HttpDeleteWithBody delete = new HttpDeleteWithBody(protocol + "://"+server+":"+port+path);
+		HttpDeleteWithBody delete = new HttpDeleteWithBody( buildUrl(protocol,server,port,path) );
 		return finishRequest(delete, username, password, requestBody, sContentType, sAcceptHeader, null);
 	}
 	
@@ -187,5 +187,9 @@ public class HttpClient {
 	        setURI(uri);
 	    }
 	    public HttpDeleteWithBody() { super(); }
+	}
+	
+	private static String buildUrl(String protocol, String server, String port, String path) {
+		return (port == null) ? protocol + "://"+server+path : protocol + "://"+server+":"+port+path;	
 	}
 }	
