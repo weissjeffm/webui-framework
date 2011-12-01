@@ -9,6 +9,10 @@ import java.util.logging.Logger;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
+import javax.net.ssl.SSLSocket;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.SSLException;
+import org.apache.http.conn.ssl.X509HostnameVerifier;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -30,7 +34,9 @@ import org.apache.http.util.EntityUtils;
 
 import oauth.signpost.OAuth;
 import oauth.signpost.OAuthConsumer;
-import oauth.signpost.basic.DefaultOAuthConsumer;
+import oauth.signpost.commonshttp.CommonsHttpOAuthConsumer;
+
+import java.io.IOException;
 
 public class HttpClient {
 	private static DefaultHttpClient httpclient = new DefaultHttpClient();
@@ -40,7 +46,7 @@ public class HttpClient {
 	public static void setOAuthCredentials(String key, String secret) {
 		log.info("Setting client oath key to " + key);
 		log.info("Setting client oath secret to " + secret);
-		consumer = new DefaultOAuthConsumer(key, secret);
+		consumer = new CommonsHttpOAuthConsumer(key, secret);
 	}
 
 	public static String[] getRequest(String protocol, String server, String port, String path, String username, String password, String sContentType, String sAcceptHeader, NameValuePair[] nvpList) throws Exception {
@@ -114,6 +120,7 @@ public class HttpClient {
 		else {
 			setCredentials(method.getURI().getHost(), method.getURI().getPort(), username, password);
 		}
+
 		String x = method.getURI().getScheme();
 		if (method.getURI().getScheme().equalsIgnoreCase("https")) {
 			sArgs += " --insecure";
@@ -154,17 +161,36 @@ public class HttpClient {
 			}		    
 		};
 
+		X509HostnameVerifier verifier = new X509HostnameVerifier() {
+			@Override
+				public void verify(String string, SSLSocket ssls) throws IOException {
+				}
+
+			@Override
+				public void verify(String string, X509Certificate xc) throws SSLException {
+				}
+
+			@Override
+				public void verify(String string, String[] strings, String[] strings1) throws SSLException {
+				}
+
+			@Override
+				public boolean verify(String string, SSLSession ssls) {
+					return true;
+				}
+		};
+
 		SSLContext sslcontext = SSLContext.getInstance("SSL");
 		sslcontext.init(null, new TrustManager[] { easyTrustManager }, null);
 		SSLSocketFactory socketFactory = new SSLSocketFactory(sslcontext); 
-		Scheme sch = new Scheme("https", method.getURI().getPort(), socketFactory);
+		socketFactory.setHostnameVerifier(verifier);
+		Scheme sch = new Scheme("https", method.getURI().getPort()==-1?443:method.getURI().getPort(), socketFactory);
 		httpclient.getConnectionManager().getSchemeRegistry().register(sch);
 	}
 
 	private static String[] processRequest(HttpUriRequest method, String username, String password)	throws Exception {
 		String[] response = new String[2];
 		String server = method.getURI().getHost();
-		int port = method.getURI().getPort();
 
 		HttpResponse httpResponse = httpclient.execute(method);
 		response[0] = Integer.toString(httpResponse.getStatusLine().getStatusCode());
