@@ -28,14 +28,20 @@ import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 
-// http://hc.apache.org/httpcomponents-client-ga/httpclient/apidocs/index.html
-// http://hc.apache.org/httpcomponents-client-ga/examples.html
-// http://dyutiman.wordpress.com/2011/04/13/rest-template-using-apache-httpclient/
+import oauth.signpost.OAuth;
+import oauth.signpost.OAuthConsumer;
+import oauth.signpost.basic.DefaultOAuthConsumer;
 
 public class HttpClient {
-	
-	static DefaultHttpClient httpclient = new DefaultHttpClient();
+	private static DefaultHttpClient httpclient = new DefaultHttpClient();
 	private static Logger log = Logger.getLogger(HttpClient.class.getName());
+	private static OAuthConsumer consumer = null;
+
+	public static void setOAuthCredentials(String key, String secret) {
+		log.info("Setting client oath key to " + key);
+		log.info("Setting client oath secret to " + secret);
+		consumer = new DefaultOAuthConsumer(key, secret);
+	}
 
 	public static String[] getRequest(String protocol, String server, String port, String path, String username, String password, String sContentType, String sAcceptHeader, NameValuePair[] nvpList) throws Exception {
 		HttpGet get = new HttpGet( buildUrl(protocol,server,port,path) );
@@ -46,21 +52,20 @@ public class HttpClient {
 		HttpPost post = new HttpPost( buildUrl(protocol,server,port,path) );
 		return finishRequest(post, username, password, requestBody, sContentType, sAcceptHeader, nvpList);
 	}
-	
+
 	public static String[] putRequest(String protocol, String server, String port, String path, String username, String password, String requestBody, String sContentType, String sAcceptHeader, NameValuePair[] nvpList) throws Exception {
 		HttpPut put = new HttpPut( buildUrl(protocol,server,port,path) );
 		return finishRequest(put, username, password, requestBody, sContentType, sAcceptHeader, nvpList);
 	}
-	
+
 	public static String[] deleteRequest(String protocol, String server, String port, String path, String username, String password, String requestBody, String sContentType, String sAcceptHeader) throws Exception {
 		HttpDeleteWithBody delete = new HttpDeleteWithBody( buildUrl(protocol,server,port,path) );
 		return finishRequest(delete, username, password, requestBody, sContentType, sAcceptHeader, null);
 	}
-	
+
 	private static String[] finishRequest(HttpUriRequest method, String username, String password, String requestBody, String sContentType, String sAcceptHeader, NameValuePair[] nvpList) throws Exception {
-		
 		String sArgs = "";
-		
+
 		if (requestBody != null) {
 			if ( requestBody.contains("&") && !requestBody.contains("&&") ) {
 				String[] items = requestBody.split("&");
@@ -69,7 +74,7 @@ public class HttpClient {
 			} else 	
 				sArgs += " -d '" + requestBody + "'";
 		}	
-		
+
 		if (nvpList != null) {
 			for (NameValuePair key: nvpList) {
 				key.getName();
@@ -81,20 +86,20 @@ public class HttpClient {
 					requestBody += "&" + key.getName() + "=" + key.getValue() + "";
 			}
 		}
-		
+
 		if (sContentType != null)
 			sArgs += " -H \"Content-Type: " + sContentType + "\"";
-			method.addHeader("Content-Type", sContentType);
+		method.addHeader("Content-Type", sContentType);
 		if (sAcceptHeader != null) {
 			sArgs += " -H \"Accept: " + sAcceptHeader + "\"";
 			method.addHeader("Accept", sAcceptHeader);
 		}    
-		
+
 		if (requestBody != null) {
 			StringEntity entity = new StringEntity(requestBody, HTTP.UTF_8);
 			BasicHeader basicHeader = new BasicHeader(HTTP.CONTENT_TYPE,sContentType);
 			entity.setContentType(basicHeader);
-			
+
 			if (method instanceof HttpPut)
 				((HttpPut)method).setEntity(entity);
 			else if (method instanceof HttpPost)
@@ -103,20 +108,25 @@ public class HttpClient {
 				((HttpDeleteWithBody)method).setEntity(entity);
 		}
 
-		setCredentials(method.getURI().getHost(), method.getURI().getPort(), username, password);
+		if (consumer != null) {
+			consumer.sign(method);
+		} 
+		else {
+			setCredentials(method.getURI().getHost(), method.getURI().getPort(), username, password);
+		}
 		String x = method.getURI().getScheme();
 		if (method.getURI().getScheme().equalsIgnoreCase("https")) {
 			sArgs += " --insecure";
 			setupHTTPS(method);	
 		}
-		
+
 		if ((username != null) && (password != null))
 			sArgs += " -u " + username + ":" + password;
-		
+
 		log.info("cmdline curl equivalent: curl -X " +method.getMethod().toString() + sArgs +" "+ method.getURI() );
 		return processRequest(method, username, password);
 	}	
-	
+
 	private static void setCredentials(String fqdn, int port, String username, String password) {
 		if (!username.equals(""))
 			httpclient.getCredentialsProvider().setCredentials(
@@ -125,7 +135,6 @@ public class HttpClient {
 	}	
 
 	private static void setupHTTPS(HttpUriRequest method) throws NoSuchAlgorithmException, KeyManagementException {
-
 		// Override check cert validity to avoid SSL handshake exception
 		// http://stackoverflow.com/questions/1828775/httpclient-and-ssl
 		TrustManager easyTrustManager = new X509TrustManager() {
@@ -133,12 +142,12 @@ public class HttpClient {
 			public void checkClientTrusted(X509Certificate[] chain,	String authType) throws CertificateException {
 				// do nothing
 			}
-				
+
 			@Override
 			public void checkServerTrusted(X509Certificate[] chain,	String authType) throws CertificateException {
 				// do nothing
 			}
-				
+
 			@Override
 			public X509Certificate[] getAcceptedIssuers() {
 				return null;
@@ -151,49 +160,41 @@ public class HttpClient {
 		Scheme sch = new Scheme("https", method.getURI().getPort(), socketFactory);
 		httpclient.getConnectionManager().getSchemeRegistry().register(sch);
 	}
-	
+
 	private static String[] processRequest(HttpUriRequest method, String username, String password)	throws Exception {
-		
 		String[] response = new String[2];
 		String server = method.getURI().getHost();
 		int port = method.getURI().getPort();
-	
-		//log.finer("Running HTTP request: " + method.getName() + " on " + method.getURI() + " with credentials for '"+username+"' on server '"+server+"'...");
-		//log.finer("HTTP Request Headers: " + TestHelper.interpose(", ", method.getRequestHeaders()));
 
-        HttpResponse httpResponse = httpclient.execute(method);
-        response[0] = Integer.toString(httpResponse.getStatusLine().getStatusCode());
+		HttpResponse httpResponse = httpclient.execute(method);
+		response[0] = Integer.toString(httpResponse.getStatusLine().getStatusCode());
 		HttpEntity entity = httpResponse.getEntity();
 		if (entity != null) {
-		    long len = entity.getContentLength();
-		    //if (len != -1 && len < 2048) {
-		    	response[1] = EntityUtils.toString(entity);
-		    //} else {
-		        // TODO: Stream content out
-		    //}
+			//long len = entity.getContentLength();
+			response[1] = EntityUtils.toString(entity);
 		}
 		return response;
 	}
-	
+
 	// We override HttpEntityEnclosingRequestBase in order to allow a body to be passed in a delete request
 	// Needed for RhevmApiClient class
 	// http://stackoverflow.com/questions/3773338/httpdelete-with-body
 	@NotThreadSafe
-	private static class HttpDeleteWithBody extends HttpEntityEnclosingRequestBase {
-	    public static final String METHOD_NAME = "DELETE";
-	    public String getMethod() { return METHOD_NAME; }
+		private static class HttpDeleteWithBody extends HttpEntityEnclosingRequestBase {
+			public static final String METHOD_NAME = "DELETE";
+			public String getMethod() { return METHOD_NAME; }
 
-	    public HttpDeleteWithBody(final String uri) {
-	        super();
-	        setURI(URI.create(uri));
-	    }
-	    public HttpDeleteWithBody(final URI uri) {
-	        super();
-	        setURI(uri);
-	    }
-	    public HttpDeleteWithBody() { super(); }
-	}
-	
+			public HttpDeleteWithBody(final String uri) {
+				super();
+				setURI(URI.create(uri));
+			}
+			public HttpDeleteWithBody(final URI uri) {
+				super();
+				setURI(uri);
+			}
+			public HttpDeleteWithBody() { super(); }
+		}
+
 	private static String buildUrl(String protocol, String server, String port, String path) {
 		return (port == null) ? protocol + "://"+server+path : protocol + "://"+server+":"+port+path;	
 	}
