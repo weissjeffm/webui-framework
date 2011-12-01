@@ -27,6 +27,7 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HTTP;
@@ -114,21 +115,23 @@ public class HttpClient {
 				((HttpDeleteWithBody)method).setEntity(entity);
 		}
 
-		if (consumer != null) {
-			consumer.sign(method);
-		} 
-		else {
-			setCredentials(method.getURI().getHost(), method.getURI().getPort(), username, password);
-		}
-
-		String x = method.getURI().getScheme();
 		if (method.getURI().getScheme().equalsIgnoreCase("https")) {
 			sArgs += " --insecure";
 			setupHTTPS(method);	
 		}
 
-		if ((username != null) && (password != null))
+		if (consumer != null) {
+			consumer.sign(method);
+		} else if ((username != null) && (password != null)) {
 			sArgs += " -u " + username + ":" + password;
+			
+			// http://stackoverflow.com/questions/2014700/preemptive-basic-authentication-with-apache-httpclient-4
+			// forcing authentication (needed for conductor api)
+     		UsernamePasswordCredentials creds = new UsernamePasswordCredentials(username, password);
+     		method.addHeader(new BasicScheme().authenticate(creds, method));
+     		
+     		setCredentials(method.getURI().getHost(), method.getURI().getPort(), username, password);
+		}
 
 		log.info("cmdline curl equivalent: curl -X " +method.getMethod().toString() + sArgs +" "+ method.getURI() );
 		return processRequest(method, username, password);
