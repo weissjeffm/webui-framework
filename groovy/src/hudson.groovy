@@ -80,7 +80,28 @@ def compileProject() {
 	ant.javac(srcdir: "$webuiFramework/src", destdir: webuiBinDir, classpath: eclipseClasspath)
 	
 	ant.mkdir(dir: automationBinDir)
-	ant.javac(srcdir: "$automationDir/src", destdir: automationBinDir, classpath: eclipseClasspath)
+	//println("Compile Java now")
+	//ant.javac(srcdir: "$automationDir/src", destdir: automationBinDir, classpath: eclipseClasspath)
+	//println("Compile Groovy now")
+	//try{
+	//ant.groovyc(srcdir: "$automationDir/src", destdir: automationBinDir, classpath: eclipseClasspath)
+	//}
+	//catch(Exception e){
+	//	ant.echo("COMPILE OF GROOVY FAILED")
+	//	e.printStackTrace()
+	//}
+	
+	
+	ant.taskdef(name: "groovyc", classname: "org.codehaus.groovy.ant.Groovyc")
+	try {
+		ant.groovyc(srcdir: "$automationDir/src", destdir: automationBinDir, classpath: eclipseClasspath) {
+			ant.javac()
+		}
+	}catch (Exception e) {
+		ant.echo("Groovyc compilation failed, falling back to javac: " + e.getMessage())
+		ant.javac(srcdir: "$automationDir/src", destdir: automationBinDir, classpath: eclipseClasspath)
+	}
+	
 	
 	//<javac srcdir="${test.src.dir}" destdir="${test.build.dir}" classpathref="tests.cp" debug="on" />
 	
