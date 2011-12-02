@@ -14,5 +14,6 @@
 		 [org.uncommons/reportng "1.1.3"]
 		 [sahi "3.5"]
 		 [oauth.signpost/signpost-core "1.2"]
+		 [oauth.signpost/signpost-commonshttp4 "1.2"]
 		]
   :javac-options {:debug "on"})
