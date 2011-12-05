@@ -146,6 +146,10 @@ fi
 
 bkr workflow-simple $USERNAME $PASSWORD $ARCH $FAMILY $TASKS --task=/distribution/reservesys $OTHERARGS --dryrun --debug --prettyxml > bkrjob.xml
 
+## adding host requires so we don't screw over the kernel team
+sed -ie '/<hostRequires>/{n;d}' bkrjob.xml
+sed -ie 's/<hostRequires>/<hostRequires> <and> <cpu_count op="\&gt;=" value="1"\/> <\/and> <system_type value="Machine"\/>/g' bkrjob.xml
+
 if [[ -z $KSPKGS ]] && [[ -z $ROPTS ]] && [[ -z $KSMETA ]]; then
   cat bkrjob.xml
   if [[ $DEBUGXML == false ]]; then
