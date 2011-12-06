@@ -1014,7 +1014,7 @@ public class ExtendedSelenium extends DefaultSelenium implements ITestNGScreenCa
 		this.ajaxFinishedCondition = ajaxFinishedCondition;
 	}
 	
-	protected void ajaxWait(){
+	public void ajaxWait(){
 		if (ajaxFinishedCondition != null) {
 			waitForCondition(ajaxFinishedCondition, WAITFORPAGE_TIMEOUT);			
 		}

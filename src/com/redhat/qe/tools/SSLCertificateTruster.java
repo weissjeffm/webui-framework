@@ -108,6 +108,10 @@ public class SSLCertificateTruster {
 			sc.init(null, trustAllCerts, new java.security.SecureRandom());
 			HttpsURLConnection
 					.setDefaultSSLSocketFactory(sc.getSocketFactory());
+                        sc = SSLContext.getInstance("TLS");
+			sc.init(null, trustAllCerts, new java.security.SecureRandom());
+			HttpsURLConnection
+					.setDefaultSSLSocketFactory(sc.getSocketFactory());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
