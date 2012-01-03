@@ -136,7 +136,6 @@ done
 #echo "OTHERARGS: $OTHERARGS"
 #echo "TIMEOUT: $TIMEOUT"
 
-
 if [[ -z $USERNAME ]] || [[ -z $PASSWORD ]] || [[ -z $ARCH ]] || [[ -z $FAMILY ]] || [[ -z $TASKS ]]  ; then
   echo "bkr workflow-simple requires that a username, password, arch, family, and task be given."
   echo
@@ -149,7 +148,11 @@ bkr workflow-simple $USERNAME $PASSWORD $ARCH $FAMILY $TASKS --task=/distributio
 ## adding host requires so we don't screw over the kernel team
 sed -i -e '/<hostRequires>/{n;d}' bkrjob.xml 
 #sed -i -e 's/<hostRequires>/<hostRequires> <and> <cpu_count op="\&gt;=" value="1"\/> <\/and> <system_type value="Machine"\/>/g' bkrjob.xml
-sed -i -e 's/<hostRequires>/<hostRequires> <and> <system_type value="Machine"\/> <cpu_count op="\&gt;=" value="1"\/> <\/and>/g' bkrjob.xml
+if [[ $OTHERARGS == *--keyvalue* ]] || [[ $OTHERARGS == *--machine* ]]; then
+  sed -i -e 's/<hostRequires>/<hostRequires> <and> <system_type value="Machine"\/> <cpu_count op="\&gt;=" value="1"\/>/g' bkrjob.xml
+else
+  sed -i -e 's/<hostRequires>/<hostRequires> <and> <system_type value="Machine"\/> <cpu_count op="\&gt;=" value="1"\/> <\/and>/g' bkrjob.xml
+fi
 
 if [[ -z $KSPKGS ]] && [[ -z $ROPTS ]] && [[ -z $KSMETA ]]; then
   cat bkrjob.xml
