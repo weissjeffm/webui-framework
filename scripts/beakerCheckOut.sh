@@ -281,15 +281,20 @@ echo "===================== PROVISION STATUS ================"
 
 
 JOB_HOSTNAME=""
-for i in `seq 1 $TOTAL_HOSTS`; do
-    NAME=`xmlstarlet sel -t -v //recipe[$i]/@system job-result-dajo`
-    if [[ -z $JOB_HOSTNAME ]]; then
-        JOB_HOSTNAME="${NAME}"
-    else
-        JOB_HOSTNAME="${JOB_HOSTNAME}:${NAME}"
-    fi
+if [[ $TOTAL_HOSTS > 0 ]]; then
+    for i in `seq 1 $TOTAL_HOSTS`; do
+        NAME=`xmlstarlet sel -t -v //recipe[$i]/@system job-result`
+        if [[ -z $JOB_HOSTNAME ]]; then
+            JOB_HOSTNAME="${NAME}"
+        else
+            JOB_HOSTNAME="${JOB_HOSTNAME}:${NAME}"
+        fi
+        echo "HOSTNAME = $NAME - https://beaker.engineering.redhat.com/view/$NAME"
+    done
+else
+    JOB_HOSTNAME=`xmlstarlet sel -t -v //recipe/@system job-result`
     echo "HOSTNAME = $NAME - https://beaker.engineering.redhat.com/view/$NAME"
-done
+fi
 rm -Rf hostname
 echo $JOB_HOSTNAME > hostname
 
