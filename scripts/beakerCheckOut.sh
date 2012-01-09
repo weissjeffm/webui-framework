@@ -293,7 +293,7 @@ if [[ $TOTAL_HOSTS > 0 ]]; then
     done
 else
     JOB_HOSTNAME=`xmlstarlet sel -t -v //recipe/@system job-result`
-    echo "HOSTNAME = $NAME - https://beaker.engineering.redhat.com/view/$NAME"
+    echo "HOSTNAME = $JOB_HOSTNAME - https://beaker.engineering.redhat.com/view/$JOB_HOSTNAME"
 fi
 rm -Rf hostname
 echo $JOB_HOSTNAME > hostname
