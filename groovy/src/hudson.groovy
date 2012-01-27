@@ -68,6 +68,7 @@ catch(Exception e){
 	throw e
 }
 !testng.hasFailure()
+System.exit(0)
 /* ----- internal methods ----- */
 
 
