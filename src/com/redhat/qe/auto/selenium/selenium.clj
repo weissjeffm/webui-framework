@@ -90,3 +90,6 @@ will be looked up and converted to String locators (see locator-args)"
 
 (defn first-visible [timeout & elements]
   (apply first-appear "isVisible" timeout elements))
+
+(defmethod print-method Element [e out]
+  (print-ctor e (fn [o w] (print-method (.getLocator o) w)) out))
