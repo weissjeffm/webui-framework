@@ -1,6 +1,5 @@
 (ns com.redhat.qe.config
-  (:use [clojure.string :only [split join]])
-  (:import [com.redhat.qe.auto.testng TestScript]))
+  (:use [clojure.string :only [split join]]))
 
 (defn property-map
   "Takes a map as an argument, and produces a new map, where the
@@ -13,12 +12,15 @@
 	  (for [[k d] (vals map)]
             (System/getProperty k d))))
 
+(defn kw-to-text
+  "Convert a keyword to plain text, eg, :hi-there 'Hi There'. Passes
+   each word through word-fn, and the entire text through val-fn."
+  ([kw] (kw-to-text kw identity identity))
+  ([kw word-fn] (kw-to-text kw word-fn identity))
+  ([kw word-fn val-fn] (->> (-> kw name (split #"-"))
+                          (map word-fn) (join " ") val-fn)))
+
 (defn same-name "takes a collection of keywords like :registration-settings
 and returns a mapping like :registration-settings -> 'Registration Settings'" 
-  ([coll] (same-name identity identity coll))
-  ([word-fn coll] (same-name word-fn identity coll))
   ([word-fn val-fn coll]
-     (zipmap coll (for [keyword coll]
-                    (->>
-                     (-> keyword name (split #"-"))
-                     (map word-fn) (join " ") val-fn)))))
+     (zipmap coll (for [kw coll] (kw-to-text kw word-fn val-fn)))))
