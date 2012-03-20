@@ -149,14 +149,15 @@ public class RemoteFileTasks {
 	}
 	
 	/**
-	 * Use echo to append a marker string to the end of a file (e.g. a log file).<br>
+	 * Use echo to append a marker string to the end of an existing file (e.g. a log file).<br>
 	 * @param runner
-	 * @param filePath - path to the file on the runner machine
+	 * @param filePath - path to an existing file on the runner machine.  If this file does not exist, then 1 is returned and no mark is made.
 	 * @param marker - this string will be appended to the file and act as a marker.  DO NOT USE CHARACTERS THAT WILL BE INTERPRETED BY BASH IN THIS STRING (e.g. PARENTHESIS).
 	 * @return exit code from echo
 	 * @author jsefler
 	 */
 	public static int markFile (SSHCommandRunner runner, String filePath, String marker) {
+		if (!testExists(runner, filePath)) return 1;	// avoid inadvertently creating a file that does not exist
 		return runCommandAndWait(runner, "echo '"+marker+"' >> "+filePath, LogMessageUtil.action());
 	}
 	
@@ -195,11 +196,26 @@ public class RemoteFileTasks {
 	 * @return 1 (file exists), 0 (file does not exist), -1 (could not determine existence)
 	 * @author jsefler
 	 */
+	@Deprecated
 	public static int testFileExists (SSHCommandRunner runner, String filePath) {
 		runCommandAndWait(runner, "test -e "+filePath+" && echo 1 || echo 0", LogMessageUtil.info());
 		if (runner.getStdout().trim().equals("1")) return 1;
 		if (runner.getStdout().trim().equals("0")) return 0;
 		return -1;
+		
+		// Note: Another more informative way to implement this is using: stat filePath
+	}
+	
+	/**
+	 * Test for the existence of a file.<br>
+	 * @param runner
+	 * @param filePath - absolute path to the file to test for existence
+	 * @return boolean
+	 * @author jsefler
+	 */
+	public static boolean testExists (SSHCommandRunner runner, String filePath) {
+		SSHCommandResult result = runner.runCommandAndWait("test -e "+filePath);
+		return (result.exitCode==0)?true:false;
 		
 		// Note: Another more informative way to implement this is using: stat filePath
 	}
