@@ -16,4 +16,5 @@
 		 [oauth.signpost/signpost-core "1.2"]
 		 [oauth.signpost/signpost-commonshttp4 "1.2"]
 		]
-  :javac-options {:debug "on"})
+  :javac-options {:debug "on"}
+  :plugins [[lein-eclipse "1.0.0"]])
