@@ -171,10 +171,12 @@ public class BzChecker {
 	}
 	public class Bug extends TestopiaObject{
 		private String BZ_URL;
+        private Map<String,Object> buglist;
 		//private StringAttribute bug_status = newStringAttribute("bug_status", null);
 		
 		public Bug(){
 			listMethod = "Bug.get_bugs";
+            buglist = new HashMap<String,Object>();
 			//System.setProperty("bugzilla.url", "https://bugzilla.redhat.com/bugzilla/xmlrpc.cgi");
 			//System.setProperty("bugzilla.url", "https://bz-web2-test.devel.redhat.com/bugzilla/xmlrpc.cgi");
 		}
@@ -200,7 +202,16 @@ public class BzChecker {
 		}
 		
 		public Map<String, Object> getBug(String bugId) throws XmlRpcException{
-			return (Map) this.callXmlrpcMethod("bugzilla.getBug", bugId);
+            Object bug = null;
+            if ( System.getProperty("bugzilla.cache", "false").equals( "true" ) ) {
+                log.info( "Cache hit" );
+                bug = buglist.get(bugId);
+            }
+            if ( bug == null ) {
+                bug = this.callXmlrpcMethod("bugzilla.getBug", bugId);
+                buglist.put(bugId,bug);
+            }
+            return (Map) bug;
 		}
 		
 		/*
