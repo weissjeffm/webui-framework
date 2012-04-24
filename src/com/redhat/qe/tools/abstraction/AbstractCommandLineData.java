@@ -178,9 +178,9 @@ public abstract class AbstractCommandLineData {
 	
 	
 	/**
-	 * Given a List of instances of some class (e.g. getCurrentEntitlementCerts()), this
-	 * method is useful for finding the first instance (e.g. an EntitlementCert) whose public
-	 * field by the name "fieldName" has a value of fieldValue.  If no match is found, null is returned.
+	 * Given a List of instances of some class that derives from AbstractCommandLineData, this
+	 * method is useful for finding the first instance whose public field by the name "fieldName"
+	 * has a value that matches fieldValue.  If no match is found, null is returned.
 	 * @param <T>
 	 * @param fieldName
 	 * @param fieldValue
@@ -194,11 +194,27 @@ public abstract class AbstractCommandLineData {
 		}
 		return dataInstancesWithMatchingField.get(0);
 	}
+	/**
+	 * Same as findFirstInstanceWithMatchingFieldFromList except that when comparing the fieldValue, an .equalsIgnoreCase(fieldValue) comparison is made.
+	 * Note that this method works only for fieldValues of type String.
+	 * @param <T>
+	 * @param fieldName
+	 * @param fieldValue
+	 * @param dataInstances
+	 * @return
+	 */
+	public static <T> T findFirstInstanceWithCaseInsensitiveMatchingFieldFromList(String fieldName, String fieldValue, List<T> dataInstances) {
+		List<T> dataInstancesWithMatchingField = findAllInstancesWithCaseInsensitiveMatchingFieldFromList(fieldName,fieldValue,dataInstances);
+		if (dataInstancesWithMatchingField.isEmpty()) {
+			return null;
+		}
+		return dataInstancesWithMatchingField.get(0);
+	}
 	
 	/**
-	 * Given a List of instances of some class (e.g. getAllAvailableSubscriptionPools()), this
+	 * Given a List of instances of some class that derives from AbstractCommandLineData, this
 	 * method is useful for finding a subset of instances whose public field by the name "fieldName"
-	 * has a value of fieldValue.  If no match is found, an empty list is returned.
+	 * has a value that matches fieldValue.  If no match is found, an empty list is returned.
 	 * @param <T>
 	 * @param fieldName
 	 * @param fieldValue
@@ -212,6 +228,42 @@ public abstract class AbstractCommandLineData {
 				if (dataInstance.getClass().getField(fieldName).get(dataInstance).equals(fieldValue)) {
 					dataInstancesWithMatchingField.add(dataInstance);
 				}
+			} catch (IllegalArgumentException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (SecurityException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (NoSuchFieldException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return dataInstancesWithMatchingField;
+	}
+	/**
+	 * Same as findAllInstancesWithMatchingFieldFromList except that when comparing the fieldValue, an .equalsIgnoreCase(fieldValue) comparison is made.
+	 * Note that this method works only for fieldValues of type String.
+	 * @param <T>
+	 * @param fieldName
+	 * @param fieldValue
+	 * @param dataInstances
+	 * @return
+	 */
+	public static <T> List<T> findAllInstancesWithCaseInsensitiveMatchingFieldFromList(String fieldName, String fieldValue, List<T> dataInstances) {
+		List<T> dataInstancesWithMatchingField = new ArrayList<T>();
+		for (T dataInstance : dataInstances) {
+			try {
+				if (dataInstance.getClass().getField(fieldName).get(dataInstance) instanceof String ) {
+					String instance = (String) dataInstance.getClass().getField(fieldName).get(dataInstance);
+					if (instance.equalsIgnoreCase(fieldValue)) {
+						dataInstancesWithMatchingField.add(dataInstance);
+					}
+				}
+
 			} catch (IllegalArgumentException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
