@@ -53,4 +53,9 @@ public @interface CheckRemoteLog {
 	 * says whether checking is enabled. Set this to false to disable log checking for particular class or method
 	 */
 	boolean enabled() default true;
+	/**
+	 * enabled this option agent log will be checked even for failed tests and found messages possibly appended to failure stacktrace
+	 * @return
+	 */
+	boolean assertFailed() default true;
 }
