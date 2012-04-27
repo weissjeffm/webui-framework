@@ -65,19 +65,22 @@ public abstract class AbstractCommandLineData {
 	}
 	
 	
-	@Override
-	public boolean equals(Object obj){
+	//@Override
+	public boolean equals(Object obj) {
 		AbstractCommandLineData certObj = (AbstractCommandLineData)obj;
-		boolean matched = true;
 		for(Field certField:certObj.getClass().getDeclaredFields()){
+			
 			try {
 				Field correspondingField = this.getClass().getField(certField.getName());
-				matched = correspondingField.get(this).equals(certField.get(certObj));
-			} catch (Exception e) {
+				if (correspondingField.get(this)==null && certField.get(certObj)==null) continue;
+				if (correspondingField.get(this)==null && certField.get(certObj)!=null) return false;
+				if (!correspondingField.get(this).equals(certField.get(certObj))) return false;
+			} catch (Exception e)  {
+				log.warning("Exception caught while comparing abstraction fields: " + e.getMessage());
 				return false;
 			}
 		}
-		return matched;
+		return true;
 	}
 	
 	
