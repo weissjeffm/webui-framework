@@ -243,19 +243,16 @@ while [ $TIME -lt $TIMEOUT ]; do
     echo "Provision Result: $PROVISION_RESULT"
     exit 1
     break
-  elif [[ $PROVISION_RESULT != *None* ]]; then
+  elif [[ $PROVISION_RESULT != *None* ]] && ([[ $PROVISION_RESULT == *Warn* ]] || [[ $PROVISION_RESULT == *Fail* ]]); then
     echo
     echo "Provision Status: $PROVISION_STATUS"
     echo "Provision Result: $PROVISION_RESULT"
     if [[ $IGNORE_PROBLEMS == true ]]; then
       echo "Job has completed."
       break
-    elif [[ $PROVISION_RESULT == *Warn* ]] || [[ $PROVISION_RESULT == *Fail* ]]; then
+    else
       echo "Job FAILED!"
       exit 1
-    else
-      echo "Job has completed."
-      break
     fi    
   elif [[ "$PREV_STATUS" == "$PROVISION_STATUS" ]]; then
     echo -n "."
