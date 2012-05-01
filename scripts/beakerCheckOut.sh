@@ -59,6 +59,9 @@ function usage()
   echo "--kernel_options=KERNEL_OPTIONS            Boot arguments to supply (optional)"
   echo "--kernel_options_post=KERNEL_OPTIONS_POST  Boot arguments to supply post install (optional)"
   echo "--product=PRODUCT                          This should be a unique identifierf or a product"   
+  echo "--clients=CLIENTS                          Specify how many client hosts to be involved in multihost test"
+  echo "--servers=SERVERS                          Specify how many server hosts to be involved in multihost test"
+  echo "--ignoreProblems                           Ignore beaker provision warnings/failures [ ignore fail/warn result when status != (cancelled || aborted) ]"
 }
 
 TIMEOUT="180"
@@ -72,6 +75,8 @@ KSMETA=""
 KSPKGS=""
 OTHERARGS=""
 DEBUGXML=false
+TOTAL_HOSTS=0
+IGNORE_PROBLEMS=false
 
 for i in $*
   do
@@ -118,6 +123,19 @@ for i in $*
         echo "Adding arg to Kickstart Packages: $(echo $i | sed -e s/--kspackage=//g)"
         KSPKGS=${KSPKGS}" <package name=\\\"$(echo $i | sed -e s/--kspackage=//g)\\\"\/>"
         ;;
+      --servers=*)
+        echo "Servers needed: $(echo $i | sed -e s/--servers=//g)"
+        TOTAL_HOSTS=$(($TOTAL_HOSTS + $(echo $i | sed -e s/--servers=//g)  ))
+        OTHERARGS=${OTHERARGS}" "$i
+        ;;
+      --clients=*)
+        echo "Clients needed: $(echo $i | sed -e s/--clients=//g)"
+        TOTAL_HOSTS=$(($TOTAL_HOSTS + $(echo $i | sed -e s/--clients=//g) ))
+        OTHERARGS=${OTHERARGS}" "$i
+        ;;
+      --ignoreProblems)
+         IGNORE_PROBLEMS=true
+         ;;
       *)
         echo "Adding $i to other bkr workflow-simple args."
         OTHERARGS=${OTHERARGS}" "$i
@@ -135,6 +153,7 @@ done
 #echo "KSPKGS: $KSPKGS"
 #echo "OTHERARGS: $OTHERARGS"
 #echo "TIMEOUT: $TIMEOUT"
+#echo "TOTAL_HOSTS: $TOTAL_HOSTS"
 
 if [[ -z $USERNAME ]] || [[ -z $PASSWORD ]] || [[ -z $ARCH ]] || [[ -z $FAMILY ]] || [[ -z $TASKS ]]  ; then
   echo "bkr workflow-simple requires that a username, password, arch, family, and task be given."
@@ -197,28 +216,45 @@ if ! [[ ${JOB:2} =~ ^[0-9]+$ ]] ; then
    echo "error: job (${JOB}) doesn't appear to be valid"; exit 1
 fi
 
+PASS_STRING="Pass"
+if [[ $TOTAL_HOSTS > 0 ]]; then
+    MAX=`expr $TOTAL_HOSTS + 1`
+    PASS_STRING=`seq -s "Pass" $MAX | sed 's/[0-9]//g'`
+fi
+
 echo "===================== PROVISION STATUS ================"
 echo "Timeout: $TIMEOUT minutes"
 PREV_STATUS="Hasn't Started Yet."
 TIME="0"
 while [ $TIME -lt $TIMEOUT ]; do
   bkr job-results $JOB $USERNAME $PASSWORD > job-result
-  PROVISION_RESULT=$(xmlstarlet sel -t --value-of "//task[@name='/distribution/install']/@result" job-result)
   PROVISION_STATUS=$(xmlstarlet sel -t --value-of "//task[@name='/distribution/install']/@status" job-result)
-  if [ $PROVISION_RESULT == "Pass" ]; then
+  PROVISION_RESULT=$(xmlstarlet sel -t --value-of "//task[@name='/distribution/install']/@result" job-result)
+  if [[ $PROVISION_RESULT == $PASS_STRING ]]; then
     echo
     echo "Job has completed."
     echo "Provision Status: $PROVISION_STATUS"
     echo "Provision Result: $PROVISION_RESULT"
     break
-  elif [ $PROVISION_RESULT == "Warn" ]; then
+  elif [[ $PROVISION_STATUS == *Aborted* ]] || [[ $PROVISION_STATUS == *Cancelled* ]]; then
     echo
     echo "Job FAILED!"
     echo "Provision Status: $PROVISION_STATUS"
     echo "Provision Result: $PROVISION_RESULT"
     exit 1
     break
-  elif [ "$PREV_STATUS" == "$PROVISION_STATUS" ]; then
+  elif [[ $PROVISION_RESULT != *None* ]] && ([[ $PROVISION_RESULT == *Warn* ]] || [[ $PROVISION_RESULT == *Fail* ]]); then
+    echo
+    echo "Provision Status: $PROVISION_STATUS"
+    echo "Provision Result: $PROVISION_RESULT"
+    if [[ $IGNORE_PROBLEMS == true ]]; then
+      echo "Job has completed."
+      break
+    else
+      echo "Job FAILED!"
+      exit 1
+    fi    
+  elif [[ "$PREV_STATUS" == "$PROVISION_STATUS" ]]; then
     echo -n "."
     TIME=$(expr $TIME + 1)
     sleep 60
@@ -240,9 +276,23 @@ if [[ $TIME -eq $TIMEOUT ]]; then
 fi
 echo "===================== PROVISION STATUS ================"
 
-JOB_HOSTNAME=`xmlstarlet sel -t --value-of "//recipe/@system" job-result`
+
+JOB_HOSTNAME=""
+if [[ $TOTAL_HOSTS > 0 ]]; then
+    for i in `seq 1 $TOTAL_HOSTS`; do
+        NAME=`xmlstarlet sel -t -v //recipe[$i]/@system job-result`
+        if [[ -z $JOB_HOSTNAME ]]; then
+            JOB_HOSTNAME="${NAME}"
+        else
+            JOB_HOSTNAME="${JOB_HOSTNAME}:${NAME}"
+        fi
+        echo "HOSTNAME = $NAME - https://beaker.engineering.redhat.com/view/$NAME"
+    done
+else
+    JOB_HOSTNAME=`xmlstarlet sel -t -v //recipe/@system job-result`
+    echo "HOSTNAME = $JOB_HOSTNAME - https://beaker.engineering.redhat.com/view/$JOB_HOSTNAME"
+fi
 rm -Rf hostname
-echo "JOB_HOSTNAME = $JOB_HOSTNAME - https://beaker.engineering.redhat.com/view/$JOB_HOSTNAME"
 echo $JOB_HOSTNAME > hostname
 
 DISTRO=`xmlstarlet sel -t --value-of "//recipe/@distro" job-result`
@@ -256,12 +306,14 @@ for TASK in $TASKS; do
     bkr job-results $JOB $USERNAME $PASSWORD > job-result
     TASK_RESULT=$(xmlstarlet sel -t --value-of "//task[@name='$TASK']/@result" job-result)
     TASK_STATUS=$(xmlstarlet sel -t --value-of "//task[@name='$TASK']/@status" job-result)
-    if [ $TASK_RESULT == "Pass" ]; then
+    if [ $TASK_RESULT == $PASS_STRING ]; then
       echo
       echo "Job has completed."
       echo "Task Status: $TASK_STATUS"
       echo "Task Result: $TASK_RESULT"
       break
+    # We could add support for --ignoreProblems but haven't seen any issues installing automatjon-keys, and if
+    #   it did fail, you probably shouldn't ignore that one, leaving this alone for now
     elif [[ $TASK_RESULT == "Warn" ]] || [[ $TASK_RESULT == "Fail" ]]; then
       EXIT_RESULT=$(xmlstarlet sel -t --value-of "//task[@name='$TASK']/results/result[@path='rhts_task/exit']/@result" job-result)
       if [[ $EXIT_RESULT == "Pass" ]]; then
@@ -294,4 +346,3 @@ for TASK in $TASKS; do
   echo
   echo "===================== $TASK STATUS ================"
 done
-
