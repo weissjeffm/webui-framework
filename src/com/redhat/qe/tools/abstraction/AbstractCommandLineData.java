@@ -1,5 +1,6 @@
 package com.redhat.qe.tools.abstraction;
 
+import java.io.File;
 import java.lang.reflect.Field;
 import java.math.BigInteger;
 import java.text.DateFormat;
@@ -28,26 +29,28 @@ public abstract class AbstractCommandLineData {
 			Field abstractionField = null;
 			try {
 				abstractionField = this.getClass().getField(keyField);
-				if (productData.get(keyField).equals("")) {
-					abstractionField.set(this, null);
-					log.finer("No value was parsed for abstractionField '"+this.getClass().getName()+"."+abstractionField.getName()+"'.  Setting it to null.");
-					continue;
-				}
+// this is wrong since an empty string is a valid non-null value
+//				if (productData.get(keyField).equals("")) {
+//					abstractionField.set(this, null);
+//					log.finer("No value was parsed for abstractionField '"+this.getClass().getName()+"."+abstractionField.getName()+"'.  Setting it to null.");
+//					continue;
+//				}
 				if (abstractionField.getType().equals(Calendar.class))
 					abstractionField.set(this, this.parseDateString(productData.get(keyField)));
 				else if (abstractionField.getType().equals(Integer.class))
 					abstractionField.set(this, this.parseInt(productData.get(keyField)));
+				else if (abstractionField.getType().equals(File.class))
+					abstractionField.set(this, this.parseFile(productData.get(keyField)));
 				else if (abstractionField.getType().equals(Long.class))
 					abstractionField.set(this, this.parseLong(productData.get(keyField)));
 				else if (abstractionField.getType().equals(BigInteger.class))
 					abstractionField.set(this, this.parseBigInteger(productData.get(keyField)));
 				else if (abstractionField.getType().equals(Boolean.class))
-					//abstractionField.set(this, productData.get(keyField).toLowerCase().equals("true")||productData.get(keyField).equals("1"));
 					abstractionField.set(this, this.parseBoolean(productData.get(keyField)));
 				else
 					abstractionField.set(this, productData.get(keyField));
 			} catch (Exception e){
-				log.warning("Exception caught while creating Candlepin abstraction: " + e.getMessage());
+				log.warning("Exception caught while parsing the value for this abstraction field: " + e.getMessage());
 				if (abstractionField != null)
 					try {
 						abstractionField.set(this, null);
@@ -65,10 +68,10 @@ public abstract class AbstractCommandLineData {
 	//@Override
 	public boolean equals(Object obj) {
 		AbstractCommandLineData certObj = (AbstractCommandLineData)obj;
-		for(Field certField:certObj.getClass().getDeclaredFields()){
+		for(Field certField:certObj.getClass().getFields()){	// Notes: getDeclaredFields() will return all fields declared in the current object including protected and private fields, but not fields in any parent objects.  getFields() returns all public fields visible on the object, including parents.  Notes: http://umakemyheadhurt.blogspot.com/2009/11/getdeclaredfields-vs-getfields.html
 			
 			try {
-				Field correspondingField = this.getClass().getField(certField.getName());
+				Field correspondingField = this.getClass().getField(certField.getName());	// Note: if certField refers to a protected static, then you'll get java.lang.IllegalAccessException: Class com.redhat.qe.tools.abstraction.AbstractCommandLineData can not access a member of class com.redhat.qe.sm.data.InstalledProduct with modifiers "protected static"
 				if (correspondingField.get(this)==null && certField.get(certObj)==null) continue;
 				if (correspondingField.get(this)==null && certField.get(certObj)!=null) return false;
 				if (!correspondingField.get(this).equals(certField.get(certObj))) return false;
@@ -110,6 +113,8 @@ public abstract class AbstractCommandLineData {
 	protected Boolean parseBoolean(String booleanString){
 		if (booleanString.toLowerCase().equals("true")) return Boolean.TRUE;
 		if (booleanString.toLowerCase().equals("false")) return Boolean.FALSE;
+		if (booleanString.toLowerCase().equals("yes")) return Boolean.TRUE;
+		if (booleanString.toLowerCase().equals("no")) return Boolean.FALSE;
 		if (booleanString.equals("1")) return Boolean.TRUE; 
 		if (booleanString.equals("0")) return Boolean.FALSE;
 		log.warning("Do not know how to infer a Boolean value from '"+booleanString+"'.");
@@ -126,6 +131,10 @@ public abstract class AbstractCommandLineData {
 	
 	protected BigInteger parseBigInteger(String bigIntegerString){
 		return new BigInteger(bigIntegerString);
+	}
+	
+	protected File parseFile(String pathname){
+		return new File(pathname);
 	}
 	
 	static protected boolean addRegexMatchesToList(Pattern regex, String to_parse, List<Map<String,String>> matchList, String sub_key) {
