@@ -68,10 +68,10 @@ public abstract class AbstractCommandLineData {
 	//@Override
 	public boolean equals(Object obj) {
 		AbstractCommandLineData certObj = (AbstractCommandLineData)obj;
-		for(Field certField:certObj.getClass().getDeclaredFields()){
+		for(Field certField:certObj.getClass().getFields()){	// Notes: getDeclaredFields() will return all fields declared in the current object including protected and private fields, but not fields in any parent objects.  getFields() returns all public fields visible on the object, including parents.  Notes: http://umakemyheadhurt.blogspot.com/2009/11/getdeclaredfields-vs-getfields.html
 			
 			try {
-				Field correspondingField = this.getClass().getField(certField.getName());
+				Field correspondingField = this.getClass().getField(certField.getName());	// Note: if certField refers to a protected static, then you'll get java.lang.IllegalAccessException: Class com.redhat.qe.tools.abstraction.AbstractCommandLineData can not access a member of class com.redhat.qe.sm.data.InstalledProduct with modifiers "protected static"
 				if (correspondingField.get(this)==null && certField.get(certObj)==null) continue;
 				if (correspondingField.get(this)==null && certField.get(certObj)!=null) return false;
 				if (!correspondingField.get(this).equals(certField.get(certObj))) return false;
