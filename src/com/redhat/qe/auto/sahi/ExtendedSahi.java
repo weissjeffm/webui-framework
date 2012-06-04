@@ -74,33 +74,33 @@ public class ExtendedSahi extends Browser {
 	}
 	
 	//Wait until the element get present or timeout, which one is lesser
-	public boolean waitForElementDivExists(Browser browser, String element, int waitTimeMilliSeconds){
+	public boolean waitForElementDivExists(Browser browser, String element, long waitTimeMilliSeconds){
 		return waitForElementExists(browser, browser.div(element), "Div: "+element, waitTimeMilliSeconds);
 	}
 
-	public boolean waitForElementRowExists(Browser browser, String element, int waitTimeMilliSeconds){
+	public boolean waitForElementRowExists(Browser browser, String element, long waitTimeMilliSeconds){
 		return waitForElementExists(browser, browser.row(element), "Row: "+element, waitTimeMilliSeconds);
 	}
 	
-	public boolean waitForElementDivVisible(Browser browser, String element, int waitTimeMilliSeconds){
+	public boolean waitForElementDivVisible(Browser browser, String element, long waitTimeMilliSeconds){
 		return waitForElementVisible(browser, browser.row(element), "Div: "+element, waitTimeMilliSeconds);
 	}
 	
-	public boolean waitForElementRowVisible(Browser browser, String element, int waitTimeMilliSeconds){
+	public boolean waitForElementRowVisible(Browser browser, String element, long waitTimeMilliSeconds){
 		return waitForElementVisible(browser, browser.row(element), "Row: "+element, waitTimeMilliSeconds);
 	}
 
-	public boolean waitForElementExists(Browser browser, ElementStub elementStub, String element, int waitTimeMilliSeconds){
-		_logger.info("Waiting for the element: ["+element+"], Remaining wait time: "+(waitTimeMilliSeconds/1000)+" Second(s)...");
-		while(waitTimeMilliSeconds >=  0){
+	public boolean waitForElementExists(Browser browser, ElementStub elementStub, String element, long maximunWaitTime){
+		_logger.info("Waiting for the element: ["+element+"], Remaining wait time: "+(maximunWaitTime/1000)+" Second(s)...");
+		while(maximunWaitTime >=  0){
 			if(elementStub.exists()){
 				_logger.info("Element ["+element+"] exists.");
 				return true;
 			}else{
 				browser.waitFor(500);
-				waitTimeMilliSeconds -= 500;
-				if((waitTimeMilliSeconds%(1000*5)) == 0){
-					_logger.info("Waiting for the element: ["+element+"], Remaining wait time: "+(waitTimeMilliSeconds/1000)+" Second(s)...");
+				maximunWaitTime -= 500;
+				if((maximunWaitTime%(1000*5)) <= 0){
+					_logger.info("Waiting for the element: ["+element+"], Remaining wait time: "+(maximunWaitTime/1000)+" Second(s)...");
 				}
 			}
 		}		
@@ -108,7 +108,7 @@ public class ExtendedSahi extends Browser {
 		return false;
 	}
 
-	public boolean waitForElementVisible(Browser browser, ElementStub elementStub, String element, int waitTimeMilliSeconds){
+	public boolean waitForElementVisible(Browser browser, ElementStub elementStub, String element, long waitTimeMilliSeconds){
 		_logger.finer("Waiting for the element: ["+element+"], Remaining wait time: "+(waitTimeMilliSeconds/1000)+" Second(s)...");
 		while(waitTimeMilliSeconds >=  0){
 			if(elementStub.isVisible()){
@@ -117,7 +117,7 @@ public class ExtendedSahi extends Browser {
 			}else{
 				browser.waitFor(500);
 				waitTimeMilliSeconds -= 500;
-				if((waitTimeMilliSeconds%(1000*5)) == 0){
+				if((waitTimeMilliSeconds%(1000*5)) <= 0){
 					_logger.finer("Waiting for the element: ["+element+"], Remaining wait time: "+(waitTimeMilliSeconds/1000)+" Second(s)...");
 				}
 			}
