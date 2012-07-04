@@ -24,13 +24,36 @@ public class ExtendedSahi extends Browser {
 		Configuration.initJava(sahiDir, userDataDir);
 	}
 	
+	//Core Drop Down selector
+	public void selectDropDownByElementStub(Browser browser, ElementStub dropDownBox, ElementStub optionToSelect){
+		browser.xy(dropDownBox, 3,3).click();
+		browser.xy(optionToSelect, 3,3).click();
+		_logger.log(Level.INFO, "Selected the element ["+optionToSelect+"]");
+	}
+	
 	//This method is used to select drop down on GWT web (Example- RHQ 4.x)
 	public void selectComboBoxDivRow(Browser browser, String comboBoxIdentifier, String optionToSelect){
-		//browser.focus(browser.div(comboBoxIdentifier));
-		browser.xy(browser.div(comboBoxIdentifier), 3, 3).click();
-		//browser.row(optionToSelect).focus();
-		browser.xy(browser.row(optionToSelect), 3, 3).click();
-		_logger.log(Level.INFO, "Selected the element ["+optionToSelect+"]");
+		selectDropDownByElementStub(browser, browser.div(comboBoxIdentifier), browser.row(optionToSelect));
+	}
+	
+	//This method is used to select drop down, by div, div element
+	public void selectComboBoxDivDiv(Browser browser, String comboBoxIdentifier, String optionToSelect){
+		selectDropDownByElementStub(browser, browser.div(comboBoxIdentifier), browser.div(optionToSelect));
+	}
+	
+	//Select drop down with near object by row Option
+	public void selectComboBoxByNearCellOptionByRow(Browser browser, String comboBoxIdentifier, String nearElement, String optionToSelect){
+		selectComboBoxByNearCell(browser, comboBoxIdentifier, nearElement, browser.row(optionToSelect));
+	}
+	
+	//Select drop down with near object by div Option
+	public void selectComboBoxByNearCellOptionByDiv(Browser browser, String comboBoxIdentifier, String nearElement, String optionToSelect){
+		selectComboBoxByNearCell(browser, comboBoxIdentifier, nearElement, browser.div(optionToSelect));
+	}
+	
+	//Select drop down with near cell object with elementStub option
+	public void selectComboBoxByNearCell(Browser browser, String comboBoxIdentifier, String nearElement, ElementStub optionToSelect){
+		selectDropDownByElementStub(browser, browser.div(comboBoxIdentifier).near(browser.cell(nearElement)), optionToSelect);
 	}
 	
 	//Getting array value from String
