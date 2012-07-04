@@ -28,6 +28,7 @@ public class ExtendedSahi extends Browser {
 	public void selectDropDownByElementStub(Browser browser, ElementStub dropDownBox, ElementStub optionToSelect){
 		browser.xy(dropDownBox, 3,3).click();
 		browser.xy(optionToSelect, 3,3).click();
+		_logger.log(Level.INFO, "Drop Down Box ["+dropDownBox+"]");
 		_logger.log(Level.INFO, "Selected the element ["+optionToSelect+"]");
 	}
 	
