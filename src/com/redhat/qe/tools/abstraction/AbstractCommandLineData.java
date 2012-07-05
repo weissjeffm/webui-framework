@@ -2,11 +2,13 @@ package com.redhat.qe.tools.abstraction;
 
 import java.io.File;
 import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
 import java.math.BigInteger;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
@@ -47,6 +49,8 @@ public abstract class AbstractCommandLineData {
 					abstractionField.set(this, this.parseBigInteger(productData.get(keyField)));
 				else if (abstractionField.getType().equals(Boolean.class))
 					abstractionField.set(this, this.parseBoolean(productData.get(keyField)));
+				else if (abstractionField.getType().equals(List.class) && ((ParameterizedType) abstractionField.getGenericType()).toString().endsWith("<java.lang.String>"))	// is the field is of type List<String>
+					abstractionField.set(this, this.parseListString(productData.get(keyField)));
 				else
 					abstractionField.set(this, productData.get(keyField));
 			} catch (Exception e){
@@ -135,6 +139,13 @@ public abstract class AbstractCommandLineData {
 	
 	protected File parseFile(String pathname){
 		return new File(pathname);
+	}
+	
+	protected List<String> parseListString(String listString){
+		List<String> list = new ArrayList<String>();
+		// split the string by new lines (and white space), then return the new list
+		if (!listString.isEmpty()) list = Arrays.asList(listString.split("\n\\s*"));
+		return list;
 	}
 	
 	static protected boolean addRegexMatchesToList(Pattern regex, String to_parse, List<Map<String,String>> matchList, String sub_key) {
