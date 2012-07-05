@@ -2,6 +2,7 @@ package com.redhat.qe.auto.sahi;
 
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -27,7 +28,11 @@ public class ExtendedSahi extends Browser {
 	//Core Drop Down selector
 	public void selectDropDownByElementStub(Browser browser, ElementStub dropDownBox, ElementStub optionToSelect){
 		browser.xy(dropDownBox, 3,3).click();
+		List<ElementStub> optionToSelectSimilar = optionToSelect.collectSimilar();
+		optionToSelect = optionToSelectSimilar.get(optionToSelectSimilar.size()-1);
+		_logger.log(Level.INFO, "Selected Option Name: "+optionToSelect.getText());
 		browser.xy(optionToSelect, 3,3).click();
+		
 		_logger.log(Level.INFO, "Drop Down Box ["+dropDownBox+"]");
 		_logger.log(Level.INFO, "Selected the element ["+optionToSelect+"]");
 	}
