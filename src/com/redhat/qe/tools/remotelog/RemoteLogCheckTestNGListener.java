@@ -27,12 +27,12 @@ public class RemoteLogCheckTestNGListener implements ITestListener,ISuiteListene
 	
 	private static final Pattern envVarPattern = Pattern.compile("\\$\\{env\\:([^\\}]+)\\}");
 	private static final Pattern systemPropPattern = Pattern.compile("\\$\\{([^\\}]+)\\}");
-	private AgentLogHandle classWatcher = null;
-	private AgentLogHandle globalWatcher = null;
+	private RemoteLogHandle classWatcher = null;
+	private RemoteLogHandle globalWatcher = null;
 	@Override
 	public void onStart(ISuite arg0) {
 		if (System.getProperty("com.redhat.qe.tools.remote.log.check")!=null) {
-			globalWatcher = new AgentLogHandle("global",true);
+			globalWatcher = new RemoteLogHandle("global",true,true);
 
 			try {
 				String user = RemoteLog.class.getMethod("user", new Class<?>[0]).getDefaultValue().toString();
@@ -64,8 +64,8 @@ public class RemoteLogCheckTestNGListener implements ITestListener,ISuiteListene
 	}
 
 	@Override
-	public void onTestFailure(ITestResult arg0) {
-		disconnectWatcher(classWatcher);
+	public void onTestFailure(ITestResult result) {
+		checkLogs(result);
 	}
 
 	@Override
@@ -94,10 +94,13 @@ public class RemoteLogCheckTestNGListener implements ITestListener,ISuiteListene
 			check = getClassAnnotation(klass);
 		}
 		// class/method watcher has always higher priority
-		AgentLogHandle watcher = create(check);
+		RemoteLogHandle watcher = create(check);
 		if (watcher==null) {
 			watcher = globalWatcher;
-		}		
+		}
+		else {
+			classWatcher = watcher;
+		}
 		if (watcher!=null && watcher.isEnabled()) {
 			log.fine("Enabling checker "+watcher.toString()+ " for class "+klass.getCanonicalName());
 			watcher.watch();
@@ -106,28 +109,39 @@ public class RemoteLogCheckTestNGListener implements ITestListener,ISuiteListene
 
 	@Override
 	public void onTestSuccess(ITestResult result) {
-		
-		// class/method watcher has always higher priority
-		AgentLogHandle watcher = classWatcher;
-		if (watcher==null) {
-			watcher = globalWatcher;
-		}			
-		if (watcher!=null && watcher.isEnabled()) {
-			StringBuilder message = new StringBuilder();
-			for (RemoteLogAccess rla : watcher.getLogs()) {
-				log.fine("Examining "+rla.toString()+"...");
-				List<String> errorLines = rla.filteredLines();
-				if (!errorLines.isEmpty()) {
-					log.warning("Founds lines matching ["+rla.getFilter()+"] in "+rla.toString()+" , seting test result as FAILED");
-					message.append(rla.toString()+":\n");
-					message.append(linesToStr(errorLines)+"\n");
+		checkLogs(result);
+	}
+	
+	private void checkLogs(ITestResult result) {
+		try {			
+			// class/method watcher has always higher priority
+			RemoteLogHandle watcher = classWatcher;
+			if (watcher==null) {
+				watcher = globalWatcher;
+			}			
+			if (watcher!=null && watcher.isEnabled()) {
+				// we check only successful tests and also failed when enabled
+				if (result.isSuccess() || (result.getStatus() == ITestResult.FAILURE && watcher.isAssertFailed())) {
+					StringBuilder message = new StringBuilder();
+					for (RemoteLogAccess rla : watcher.getLogs()) {
+						log.fine("Examining "+rla.toString()+"...");
+						List<String> errorLines = rla.filteredLines();
+						if (!errorLines.isEmpty()) {
+							log.warning("Founds lines matching ["+rla.getFilter()+"] in "+rla.toString()+" , seting test result as FAILED");
+							message.append(rla.toString()+":\n");
+							message.append(linesToStr(errorLines)+"\n");
+						}
+					}
+					if (message.length()>0) {
+						result.setStatus(ITestResult.FAILURE);
+						result.setThrowable(new RuntimeException("Following error lines were found in\n"+message.toString(),result.getThrowable()));
+					}
 				}
 			}
-			if (message.length()>0) {
-				result.setStatus(ITestResult.FAILURE);
-				result.setThrowable(new RuntimeException("Following error lines were found in\n"+message.toString()));
-			}
-		}			
+		}
+		catch (Exception ex) {
+			ex.printStackTrace();
+		}
 		disconnectWatcher(classWatcher);
 	}
 	
@@ -183,15 +197,15 @@ public class RemoteLogCheckTestNGListener implements ITestListener,ISuiteListene
 	/**
 	 * creates new instance of agent log based on {@link CheckRemoteLog annotation}
 	 */
-	private AgentLogHandle create(CheckRemoteLog check) {
+	private RemoteLogHandle create(CheckRemoteLog check) {
 		if (check==null) {
 			return null;
 		}
 		if (!check.enabled()) {
 			// user requires to turn off checker
-			return new AgentLogHandle(null,false);
+			return new RemoteLogHandle(null,false,false);
 		}
-		AgentLogHandle inst = new AgentLogHandle("class",true);
+		RemoteLogHandle inst = new RemoteLogHandle("class",true,check.assertFailed());
 		for (RemoteLog rl : check.logs()) {
 			RemoteLogAccess rla = create(rl);
 			if (rla!=null) {
@@ -200,7 +214,7 @@ public class RemoteLogCheckTestNGListener implements ITestListener,ISuiteListene
 		}		
 		return inst;
 	}
-	private void disconnectWatcher(AgentLogHandle watcher) {
+	private void disconnectWatcher(RemoteLogHandle watcher) {
 		if (watcher!=null && watcher.getLogs()!=null) {
 			watcher.disconnect();
 			watcher.setEnabled(false);
@@ -219,13 +233,19 @@ public class RemoteLogCheckTestNGListener implements ITestListener,ISuiteListene
 	 * @author lzoubek
 	 *
 	 */
-	private static class AgentLogHandle {
+	private static class RemoteLogHandle {
 		private final List<RemoteLogAccess> logs = new ArrayList<RemoteLogAccess>();
 		private boolean enabled = true;
+		private boolean assertFailed = true;
 		private final String level;
-		private AgentLogHandle(String level,boolean enabled) {
+		private RemoteLogHandle(String level,boolean enabled, boolean assertFailed) {
 			this.enabled = enabled;
 			this.level = level;
+			this.assertFailed = assertFailed;
+		}
+
+		public boolean isAssertFailed() {
+			return assertFailed;
 		}
 
 		public void setEnabled(boolean enabled) {
