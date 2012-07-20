@@ -39,7 +39,7 @@ Add `http://clojars.org/repo` to the repositories section of your
 `build.gradle` file, as has been done below.
 
 
-```
+```groovy
 repositories {
     mavenCentral()
     [
@@ -58,7 +58,7 @@ repositories {
 
 Then add the libraries you need to the `dependencies` section.
 
-```
+```groovy
 dependencies {
     compile "com.redhat.qe:jul.test.records:1.0.1",
             "com.redhat.qe:assertions:1.0.2"
